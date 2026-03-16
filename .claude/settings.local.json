@@ -15,7 +15,8 @@
       "Bash(done)",
       "Bash(python3:*)",
       "Bash(mv:*)",
-      "Bash(grep -rn \"PRETTY_LAYOUT_SUAVE\\\\|\\\\\"suave\\\\\"\\\\|mode.*suave\\\\|suave.*mode\\\\|ai-fab-wrap\\\\|ai-fab-btn\\\\|\\\\.ai-fab[^-]\\\\|computeFreePosition\\\\|hidden.*panel\\\\|panel.*hidden\" \"E:\\\\20_UNI\\\\Html proyects\\\\Claude proyect Capa8\\\\capa8_app\\\\src\" --include=\"*.js\" 2>/dev/null | grep -v \".git\")"
+      "Bash(grep -rn \"PRETTY_LAYOUT_SUAVE\\\\|\\\\\"suave\\\\\"\\\\|mode.*suave\\\\|suave.*mode\\\\|ai-fab-wrap\\\\|ai-fab-btn\\\\|\\\\.ai-fab[^-]\\\\|computeFreePosition\\\\|hidden.*panel\\\\|panel.*hidden\" \"E:\\\\20_UNI\\\\Html proyects\\\\Claude proyect Capa8\\\\capa8_app\\\\src\" --include=\"*.js\" 2>/dev/null | grep -v \".git\")",
+      "Bash(npx kill-port:*)"
     ]
   }
 }

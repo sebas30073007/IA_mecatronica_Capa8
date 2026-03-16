@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -9,18 +10,31 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // ===== Config =====
-const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || "0.0.0.0";
-const OLLAMA_URL = process.env.OLLAMA_URL || "http://127.0.0.1:11434";
-const MODEL = process.env.MODEL || "qwen3:8b";
-const API_TOKEN = process.env.CAPA8_TOKEN || "";
+const PORT         = process.env.PORT         || 3000;
+const HOST         = process.env.HOST         || "0.0.0.0";
+const API_TOKEN    = process.env.CAPA8_TOKEN  || "";
+
+// ── Proveedor LLM ──────────────────────────────────────────────────────────
+const LLM_PROVIDER = (process.env.LLM_PROVIDER || "ollama").toLowerCase(); // "groq" | "ollama"
+
+// Ollama
+const OLLAMA_URL   = process.env.OLLAMA_URL   || "http://127.0.0.1:11434";
+const MODEL        = process.env.MODEL        || "qwen3:8b";
+
+// Groq
+const GROQ_API_KEY = process.env.GROQ_API_KEY || "";
+const GROQ_MODEL   = process.env.GROQ_MODEL   || "llama-3.3-70b-versatile";
+const GROQ_URL     = "https://api.groq.com/openai/v1/chat/completions";
+
+// Nombre activo para logs y /api/health
+const ACTIVE_MODEL = LLM_PROVIDER === "groq" ? GROQ_MODEL : MODEL;
 
 app.use(express.json({ limit: "2mb" }));
 
 app.get("/server.js", (_, res) => res.status(404).end());
 app.use(express.static(__dirname, { extensions: ["html"] }));
 
-app.get("/api/health", (_, res) => res.json({ ok: true, model: MODEL }));
+app.get("/api/health", (_, res) => res.json({ ok: true, model: ACTIVE_MODEL, provider: LLM_PROVIDER }));
 
 // ===== Modos y prompts =====
 
@@ -237,6 +251,55 @@ function buildPrompt({ nivel, enfoque, intentType, history, message, graphContex
   return { prompt: lines.join("\n"), system, isDiagramMode, isActionIntent };
 }
 
+// ===== Capa de abstracción LLM =====
+// Recibe prompt (string estilo Ollama), system (string|undefined) y temperature.
+// Devuelve el texto generado o lanza un Error.
+async function callLLM(prompt, system, temperature) {
+  if (LLM_PROVIDER === "groq") {
+    if (!GROQ_API_KEY) throw new Error("GROQ_API_KEY no configurada en .env");
+
+    const messages = [];
+    if (system) messages.push({ role: "system", content: system });
+    messages.push({ role: "user", content: prompt });
+
+    const r = await fetch(GROQ_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${GROQ_API_KEY}`,
+      },
+      body: JSON.stringify({ model: GROQ_MODEL, messages, temperature }),
+    });
+
+    if (!r.ok) {
+      const txt = await r.text();
+      throw new Error(`Groq error ${r.status}: ${txt}`);
+    }
+
+    const data = await r.json();
+    return data.choices?.[0]?.message?.content || "";
+
+  } else {
+    // Ollama
+    const body = { model: MODEL, prompt, stream: false, options: { temperature } };
+    if (system) body.system = system;
+
+    const r = await fetch(`${OLLAMA_URL}/api/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (!r.ok) {
+      const txt = await r.text();
+      throw new Error(`Ollama error ${r.status}: ${txt}`);
+    }
+
+    const data = await r.json();
+    return data.response || "";
+  }
+}
+
 app.post("/api/chat", async (req, res) => {
   try {
     if (API_TOKEN) {
@@ -254,36 +317,22 @@ app.post("/api/chat", async (req, res) => {
     });
 
     const temp = INTENT_TEMPS[intentType] ?? (isActionIntent ? 0.0 : isDiagramMode ? 0.1 : 0.2);
-    const ollamaBody = { model: MODEL, prompt, stream: false, options: { temperature: temp } };
-    if (system) ollamaBody.system = system;
 
-    const r = await fetch(`${OLLAMA_URL}/api/generate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(ollamaBody)
-    });
-
-    if (!r.ok) {
-      const txt = await r.text();
-      return res.status(502).json({ error: "Ollama error", detail: txt });
+    let raw;
+    try {
+      raw = await callLLM(prompt, system, temp);
+    } catch (e) {
+      return res.status(502).json({ error: "LLM error", detail: String(e.message) });
     }
-
-    const data = await r.json();
-    let answer = cleanAnswer(data.response || "");
+    let answer = cleanAnswer(raw);
 
     // Auto-retry once if no CAPA8_ACTION blocks on an action request
     const isActionRequest = isActionIntent || ACTION_KEYWORDS.test(message);
     if (isDiagramMode && !(/\[CAPA8_ACTION\]/.test(answer)) && isActionRequest) {
       const retryPrompt = `${prompt}\n\nIMPORTANT: Previous response had no [CAPA8_ACTION] blocks. You MUST emit [CAPA8_ACTION] JSON blocks for: "${String(message).trim()}". No explanations, no Mermaid, only [CAPA8_ACTION] blocks.`;
       try {
-        const retryBody = { model: MODEL, prompt: retryPrompt, stream: false, options: { temperature: 0.0 } };
-        if (system) retryBody.system = system;
-        const r2 = await fetch(`${OLLAMA_URL}/api/generate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(retryBody) });
-        if (r2.ok) {
-          const data2 = await r2.json();
-          const retryAnswer = cleanAnswer(data2.response || "");
-          if (/\[CAPA8_ACTION\]/.test(retryAnswer)) answer = retryAnswer;
-        }
+        const retryAnswer = cleanAnswer(await callLLM(retryPrompt, system, 0.0));
+        if (/\[CAPA8_ACTION\]/.test(retryAnswer)) answer = retryAnswer;
       } catch (_) { /* retry failed — keep original answer */ }
     }
 
@@ -314,24 +363,14 @@ app.post("/api/debug-chat", async (req, res) => {
     const temp = temperature != null ? Number(temperature) : (INTENT_TEMPS[intentType] ?? (isActionIntent ? 0.0 : isDiagramMode ? 0.1 : 0.2));
 
     const start = Date.now();
-    const ollamaBody = { model: MODEL, prompt, stream: false, options: { temperature: temp } };
-    if (system) ollamaBody.system = system;
-
-    const r = await fetch(`${OLLAMA_URL}/api/generate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(ollamaBody)
-    });
-
+    let rawAnswer;
+    try {
+      rawAnswer = (await callLLM(prompt, system, temp)).trim();
+    } catch (e) {
+      return res.status(502).json({ error: "LLM error", detail: String(e.message) });
+    }
     const elapsedMs = Date.now() - start;
 
-    if (!r.ok) {
-      const txt = await r.text();
-      return res.status(502).json({ error: "Ollama error", detail: txt });
-    }
-
-    const data = await r.json();
-    const rawAnswer = (data.response || "").trim();
     let answer = cleanAnswer(rawAnswer);
     let retried = false;
 
@@ -340,18 +379,12 @@ app.post("/api/debug-chat", async (req, res) => {
     if (useAutoRetry && isDiagramMode && !(/\[CAPA8_ACTION\]/.test(answer)) && isActionRequest) {
       const retryPrompt = `${prompt}\n\nIMPORTANT: Previous response had no [CAPA8_ACTION] blocks. You MUST emit [CAPA8_ACTION] JSON blocks for: "${String(message).trim()}". No explanations, no Mermaid, only [CAPA8_ACTION] blocks.`;
       try {
-        const retryBody = { model: MODEL, prompt: retryPrompt, stream: false, options: { temperature: 0.0 } };
-        if (system) retryBody.system = system;
-        const r2 = await fetch(`${OLLAMA_URL}/api/generate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(retryBody) });
-        if (r2.ok) {
-          const data2 = await r2.json();
-          const retryAnswer = cleanAnswer(data2.response || "");
-          if (/\[CAPA8_ACTION\]/.test(retryAnswer)) { answer = retryAnswer; retried = true; }
-        }
+        const retryAnswer = cleanAnswer(await callLLM(retryPrompt, system, 0.0));
+        if (/\[CAPA8_ACTION\]/.test(retryAnswer)) { answer = retryAnswer; retried = true; }
       } catch (_) { /* retry failed */ }
     }
 
-    res.json({ answer, rawAnswer, promptSent: prompt, systemSent: system || null, isDiagramMode, elapsedMs, model: MODEL, temperature: temp, retried });
+    res.json({ answer, rawAnswer, promptSent: prompt, systemSent: system || null, isDiagramMode, elapsedMs, model: ACTIVE_MODEL, provider: LLM_PROVIDER, temperature: temp, retried });
   } catch (err) {
     res.status(500).json({ error: "Server error", detail: String(err?.message || err) });
   }
@@ -359,5 +392,9 @@ app.post("/api/debug-chat", async (req, res) => {
 
 app.listen(PORT, HOST, () => {
   console.log(`Capa8 server listo en http://${HOST}:${PORT}`);
-  console.log(`Usando Ollama: ${OLLAMA_URL} | Modelo: ${MODEL}`);
+  if (LLM_PROVIDER === "groq") {
+    console.log(`Proveedor: Groq | Modelo: ${GROQ_MODEL}`);
+  } else {
+    console.log(`Proveedor: Ollama | URL: ${OLLAMA_URL} | Modelo: ${MODEL}`);
+  }
 });
