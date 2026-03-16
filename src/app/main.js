@@ -156,13 +156,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (raw) {
       store.dispatch({ type: ActionTypes.LOAD_GRAPH, payload: { graph: raw } });
       snapNodesToGrid();
-      requestAnimationFrame(() => resolveAndDispatch(store, store.dispatch, ActionTypes, null));
+      requestAnimationFrame(() => {
+        resolveAndDispatch(store, store.dispatch, ActionTypes, null);
+        runPrettyNoHistory();
+      });
       showToast("Cargado desde URL ✅");
     } else {
       const saved = sessionStorage.getItem(DIAGRAM_KEY);
       if (saved) {
         store.dispatch({ type: ActionTypes.LOAD_GRAPH, payload: { graph: JSON.parse(saved) } });
-        requestAnimationFrame(() => resolveAndDispatch(store, store.dispatch, ActionTypes, null));
+        requestAnimationFrame(() => {
+          resolveAndDispatch(store, store.dispatch, ActionTypes, null);
+          runPrettyNoHistory();
+        });
         showToast("Diagrama restaurado ✅");
       }
     }
@@ -340,11 +346,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   } catch (e) { console.warn("chatPanel:", e); }
 
+  const aiFabIcon = document.getElementById("ai-fab-icon");
+  const aiFabPanel = document.getElementById("ai-fab-panel");
+
+  function openSidebar() {
+    aiFabPanel.classList.add("open");
+    stageWrap?.classList.add("has-ai-open");
+    if (aiFabIcon) aiFabIcon.className = "fa-solid fa-chevron-right";
+    const badge = document.getElementById("ai-tab-badge");
+    if (badge) badge.hidden = true;
+    chatPanel?.refreshWelcome();
+  }
+  function closeSidebar() {
+    aiFabPanel.classList.remove("open");
+    stageWrap?.classList.remove("has-ai-open");
+    if (aiFabIcon) aiFabIcon.className = "fa-solid fa-chevron-left";
+  }
+
   document.getElementById("ai-fab-btn").addEventListener("click", () => {
-    const panel = document.getElementById("ai-fab-panel");
-    const wasOpen = panel.classList.contains("open");
-    panel.classList.toggle("open");
-    if (!wasOpen) chatPanel?.refreshWelcome();
+    aiFabPanel.classList.contains("open") ? closeSidebar() : openSidebar();
+  });
+
+  // Sync close button inside panel (created dynamically by chatPanel.js)
+  aiFabPanel.addEventListener("click", e => {
+    if (e.target.closest("#fab-panel-close")) closeSidebar();
   });
 
   // ── Context menu ─────────────────────────────────────────────────────
@@ -483,6 +508,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     requestAnimationFrame(() => requestAnimationFrame(() => fitToScreen(60, ZOOM_MAX)));
   }
 
+  function runPrettyNoHistory() {
+    prettyLayout({
+      graph: store.getState().graph,
+      pushHistorySnapshot,
+      dispatch: store.dispatch,
+      ActionTypes,
+      skipHistory: true,
+    });
+    requestAnimationFrame(() => requestAnimationFrame(() => fitToScreen(60, ZOOM_MAX)));
+  }
+
   // ── Stage: click / drag / link ───────────────────────────────────────
   let dragging = null;
 
@@ -529,6 +565,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       };
       pushHistorySnapshot();
       store.dispatch({ type: ActionTypes.ADD_NODE, payload: { node } });
+      // Ghost drop flash
+      if (ghostEl && !ghostEl.hidden) {
+        ghostEl.classList.remove("drop-flash");
+        void ghostEl.offsetWidth; // reflow to restart animation
+        ghostEl.classList.add("drop-flash");
+        ghostEl.addEventListener("animationend", () => ghostEl.classList.remove("drop-flash"), { once: true });
+      }
       return;
     }
 
@@ -554,41 +597,96 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // ── Touch events — drag de nodos en móvil ────────────────────────────
+  // ── Touch events — drag de nodos + pan de canvas + pinch-zoom ────────
+  let touchPan = null;    // { sx, sy, px, py } — single finger pan
+  let touchPinch = null;  // { dist, cx, cy } — two finger pinch
+
+  function getTouchDist(t1, t2) {
+    return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+  }
+  function getTouchCenter(t1, t2) {
+    return { x: (t1.clientX + t2.clientX) / 2, y: (t1.clientY + t2.clientY) / 2 };
+  }
+
   stageEl.addEventListener("touchstart", e => {
+    if (e.touches.length === 2) {
+      // Pinch-zoom starts — cancel any node drag or pan
+      dragging = null;
+      touchPan = null;
+      e.preventDefault();
+      const [t1, t2] = [e.touches[0], e.touches[1]];
+      touchPinch = { dist: getTouchDist(t1, t2), ...getTouchCenter(t1, t2) };
+      return;
+    }
     if (e.touches.length !== 1) return;
     const touch = e.touches[0];
     const state = store.getState();
-    if (state.ui.tool !== "select") return;
     const nodeEl = document.elementFromPoint(touch.clientX, touch.clientY)?.closest(".node");
-    if (!nodeEl) return;
-    e.preventDefault();
-    const nodeId = nodeEl.dataset.nodeId;
-    store.dispatch({ type: ActionTypes.SET_SELECTION, payload: { selection: { kind: "node", id: nodeId } } });
-    const rect = stageEl.getBoundingClientRect();
-    const { x, y } = toWorld(touch.clientX - rect.left, touch.clientY - rect.top);
-    const node = state.graph.nodes.find(n => n.id === nodeId);
-    if (node) dragging = { nodeId, offsetX: Math.round(x) - node.x, offsetY: Math.round(y) - node.y };
+
+    if (nodeEl && state.ui.tool === "select") {
+      // Node drag
+      e.preventDefault();
+      const nodeId = nodeEl.dataset.nodeId;
+      store.dispatch({ type: ActionTypes.SET_SELECTION, payload: { selection: { kind: "node", id: nodeId } } });
+      const rect = stageEl.getBoundingClientRect();
+      const { x, y } = toWorld(touch.clientX - rect.left, touch.clientY - rect.top);
+      const node = state.graph.nodes.find(n => n.id === nodeId);
+      if (node) dragging = { nodeId, offsetX: Math.round(x) - node.x, offsetY: Math.round(y) - node.y };
+    } else if (!nodeEl) {
+      // Canvas pan
+      e.preventDefault();
+      touchPan = { sx: touch.clientX, sy: touch.clientY, px: vp.panX, py: vp.panY };
+    }
   }, { passive: false });
 
   window.addEventListener("touchmove", e => {
-    if (!dragging || e.touches.length !== 1) return;
-    e.preventDefault();
-    const touch = e.touches[0];
-    const rect = stageEl.getBoundingClientRect();
-    const { x, y } = toWorld(touch.clientX - rect.left, touch.clientY - rect.top);
-    store.dispatch({ type: ActionTypes.MOVE_NODE, payload: {
-      id: dragging.nodeId,
-      x: Math.round(x - dragging.offsetX),
-      y: Math.round(y - dragging.offsetY),
-    }});
+    if (e.touches.length === 2 && touchPinch) {
+      e.preventDefault();
+      const [t1, t2] = [e.touches[0], e.touches[1]];
+      const newDist = getTouchDist(t1, t2);
+      const factor = newDist / touchPinch.dist;
+      const center = getTouchCenter(t1, t2);
+      const rect = stageEl.getBoundingClientRect();
+      const sx = center.x - rect.left;
+      const sy = center.y - rect.top;
+      const newZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, vp.zoom * factor));
+      vp.panX = sx - (sx - vp.panX) * (newZoom / vp.zoom);
+      vp.panY = sy - (sy - vp.panY) * (newZoom / vp.zoom);
+      vp.zoom = newZoom;
+      applyViewport();
+      touchPinch = { dist: newDist, x: center.x, y: center.y };
+      return;
+    }
+    if (e.touches.length === 1 && touchPan) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      vp.panX = touchPan.px + (touch.clientX - touchPan.sx);
+      vp.panY = touchPan.py + (touch.clientY - touchPan.sy);
+      applyViewport();
+      return;
+    }
+    if (dragging && e.touches.length === 1) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const rect = stageEl.getBoundingClientRect();
+      const { x, y } = toWorld(touch.clientX - rect.left, touch.clientY - rect.top);
+      store.dispatch({ type: ActionTypes.MOVE_NODE, payload: {
+        id: dragging.nodeId,
+        x: Math.round(x - dragging.offsetX),
+        y: Math.round(y - dragging.offsetY),
+      }});
+    }
   }, { passive: false });
 
-  window.addEventListener("touchend", () => {
-    if (dragging) {
-      const releasedId = dragging.nodeId;
-      dragging = null;
-      resolveCollisions(releasedId);
+  window.addEventListener("touchend", e => {
+    if (e.touches.length < 2) touchPinch = null;
+    if (e.touches.length === 0) {
+      touchPan = null;
+      if (dragging) {
+        const releasedId = dragging.nodeId;
+        dragging = null;
+        resolveCollisions(releasedId);
+      }
     }
   });
 
@@ -649,13 +747,55 @@ document.addEventListener("DOMContentLoaded", async () => {
     const count = issues.filter(i => i.severity === "error" || i.severity === "warning").length;
     const badge = document.getElementById("ai-tab-badge");
     if (!badge) return;
-    if (count > 0) {
+    const panelOpen = aiFabPanel?.classList.contains("open");
+    if (count > 0 && !panelOpen) {
       badge.textContent = count;
       badge.hidden = false;
     } else {
       badge.hidden = true;
     }
   }
+
+  // ── Ghost cursor setup ────────────────────────────────────────────────
+  const ghostEl = document.getElementById("cursor-ghost");
+  const GHOST_ICONS = {
+    router:   '<i class="fa-solid fa-server"></i>',
+    switch:   '<i class="fa-solid fa-network-wired"></i>',
+    pc:       '<i class="fa-solid fa-display"></i>',
+    firewall: '<i class="fa-solid fa-shield-halved"></i>',
+    server:   '<i class="fa-solid fa-database"></i>',
+    cloud:    '<i class="fa-solid fa-cloud"></i>',
+    ap:       '<i class="fa-solid fa-wifi"></i>',
+    plc:      '<i class="fa-solid fa-microchip"></i>',
+    ur3:      '<i class="fa-solid fa-robot"></i>',
+    agv:      '<i class="fa-solid fa-truck-fast"></i>',
+  };
+
+  function showGhost(tool) {
+    if (!ghostEl || !GHOST_ICONS[tool]) { hideGhost(); return; }
+    ghostEl.innerHTML = GHOST_ICONS[tool];
+    ghostEl.hidden = false;
+    stageEl.classList.add("has-tool");
+  }
+  function hideGhost() {
+    if (!ghostEl) return;
+    ghostEl.hidden = true;
+    stageEl.classList.remove("has-tool");
+  }
+
+  stageEl.addEventListener("mousemove", e => {
+    if (ghostEl?.hidden === false) {
+      ghostEl.style.left = e.clientX + "px";
+      ghostEl.style.top  = e.clientY + "px";
+    }
+  });
+  stageEl.addEventListener("mouseleave", () => {
+    if (ghostEl) ghostEl.hidden = true;
+  });
+  stageEl.addEventListener("mouseenter", () => {
+    const tool = store.getState().ui.tool;
+    if (GHOST_ICONS[tool]) ghostEl.hidden = false;
+  });
 
   // ── Menu actions ─────────────────────────────────────────────────────
   async function handleMenuAction(actionId) {
@@ -665,6 +805,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       const tool = actionId.replace("TOOL_", "").toLowerCase();
       store.dispatch({ type: ActionTypes.SET_TOOL, payload: { tool } });
       linkDraft = null;
+      if (GHOST_ICONS[tool]) showGhost(tool);
+      else hideGhost();
       render();
       return;
     }
@@ -687,7 +829,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       pushHistorySnapshot();
       try { sessionStorage.removeItem(DIAGRAM_KEY); } catch {}
       store.dispatch({ type: ActionTypes.LOAD_GRAPH, payload: { graph: createDemoGraph() } });
-      requestAnimationFrame(() => resolveAndDispatch(store, store.dispatch, ActionTypes, null));
+      requestAnimationFrame(() => {
+        resolveAndDispatch(store, store.dispatch, ActionTypes, null);
+        runPretty();
+      });
       showToast("Reset ✅");
       return;
     }
@@ -749,13 +894,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       LOAD_EXAMPLE_SMALL_LAN:    "small_lan",
       LOAD_EXAMPLE_VLAN_ROUTING: "vlan_routing",
       LOAD_EXAMPLE_WAN_REDUNDANT:"wan_redundant",
+      LOAD_EXAMPLE_DATA_CENTER:  "data_center",
+      LOAD_EXAMPLE_HOME_NETWORK: "home_network",
+      LOAD_EXAMPLE_DMZ:          "dmz",
+      LOAD_EXAMPLE_CAMPUS:       "campus",
     };
     if (actionId in EXAMPLE_MAP) {
       try {
         const ex = await loadExample(EXAMPLE_MAP[actionId]);
         pushHistorySnapshot();
         store.dispatch({ type: ActionTypes.LOAD_GRAPH, payload: { graph: ex } });
-        requestAnimationFrame(() => resolveAndDispatch(store, store.dispatch, ActionTypes, null));
+        requestAnimationFrame(() => {
+          resolveAndDispatch(store, store.dispatch, ActionTypes, null);
+          runPretty();
+        });
         showToast("Ejemplo ✅");
       } catch {
         showToast("No se pudo cargar ejemplo");

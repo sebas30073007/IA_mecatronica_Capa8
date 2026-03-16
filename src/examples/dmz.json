@@ -1,0 +1,27 @@
+{
+  "version": 3,
+  "meta": { "name": "DMZ con Doble Firewall" },
+  "nodes": [
+    { "id": "cl1",  "type": "cloud",    "label": "Internet",    "x": 400, "y": 60,  "ip": "203.0.113.1", "mask": "24", "gateway": "" },
+    { "id": "fw1",  "type": "firewall", "label": "FW-Externo",  "x": 400, "y": 200, "ip": "10.0.0.1",   "mask": "24", "gateway": "203.0.113.1" },
+    { "id": "sw1",  "type": "switch",   "label": "SW-DMZ",      "x": 400, "y": 340, "ip": "10.0.1.1",   "mask": "24", "gateway": "10.0.0.1" },
+    { "id": "sv1",  "type": "server",   "label": "Web Server",  "x": 250, "y": 460, "ip": "10.0.1.10",  "mask": "24", "gateway": "10.0.1.1" },
+    { "id": "sv2",  "type": "server",   "label": "Mail Server", "x": 550, "y": 460, "ip": "10.0.1.11",  "mask": "24", "gateway": "10.0.1.1" },
+    { "id": "fw2",  "type": "firewall", "label": "FW-Interno",  "x": 400, "y": 580, "ip": "10.0.2.1",   "mask": "24", "gateway": "10.0.1.1" },
+    { "id": "sw2",  "type": "switch",   "label": "SW-LAN",      "x": 400, "y": 720, "ip": "10.0.3.1",   "mask": "24", "gateway": "10.0.2.1" },
+    { "id": "pc1",  "type": "pc",       "label": "PC-Admin",    "x": 200, "y": 860, "ip": "10.0.3.10",  "mask": "24", "gateway": "10.0.3.1" },
+    { "id": "pc2",  "type": "pc",       "label": "PC-Dev",      "x": 400, "y": 860, "ip": "10.0.3.11",  "mask": "24", "gateway": "10.0.3.1" },
+    { "id": "pc3",  "type": "pc",       "label": "PC-User",     "x": 600, "y": 860, "ip": "10.0.3.12",  "mask": "24", "gateway": "10.0.3.1" }
+  ],
+  "links": [
+    { "id": "l1", "source": "cl1", "target": "fw1", "latencyMs": 20,  "bandwidthMbps": 100,  "lossPct": 0, "status": "up" },
+    { "id": "l2", "source": "fw1", "target": "sw1", "latencyMs": 1,   "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l3", "source": "sw1", "target": "sv1", "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l4", "source": "sw1", "target": "sv2", "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l5", "source": "sw1", "target": "fw2", "latencyMs": 1,   "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l6", "source": "fw2", "target": "sw2", "latencyMs": 1,   "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l7", "source": "sw2", "target": "pc1", "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l8", "source": "sw2", "target": "pc2", "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l9", "source": "sw2", "target": "pc3", "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "version": 3,
+  "meta": { "name": "Red Campus" },
+  "nodes": [
+    { "id": "cl1",  "type": "cloud",    "label": "WAN/Internet",  "x": 600, "y": 60,  "ip": "8.8.8.1",     "mask": "24", "gateway": "" },
+    { "id": "r1",   "type": "router",   "label": "Edge-Router",   "x": 600, "y": 200, "ip": "172.16.0.1",  "mask": "24", "gateway": "8.8.8.1" },
+    { "id": "sw_c", "type": "switch",   "label": "Core-SW",       "x": 600, "y": 360, "ip": "172.16.1.1",  "mask": "24", "gateway": "172.16.0.1" },
+    { "id": "sw_a", "type": "switch",   "label": "SW-EdifA",      "x": 250, "y": 520, "ip": "172.16.2.1",  "mask": "24", "gateway": "172.16.1.1" },
+    { "id": "sw_b", "type": "switch",   "label": "SW-EdifB",      "x": 600, "y": 520, "ip": "172.16.3.1",  "mask": "24", "gateway": "172.16.1.1" },
+    { "id": "sw_d", "type": "switch",   "label": "SW-EdifC",      "x": 950, "y": 520, "ip": "172.16.4.1",  "mask": "24", "gateway": "172.16.1.1" },
+    { "id": "ap1",  "type": "ap",       "label": "AP-EdifA",      "x": 100, "y": 680, "ip": "172.16.2.2",  "mask": "24", "gateway": "172.16.2.1" },
+    { "id": "pc1",  "type": "pc",       "label": "Lab-A1",        "x": 250, "y": 700, "ip": "172.16.2.10", "mask": "24", "gateway": "172.16.2.1" },
+    { "id": "pc2",  "type": "pc",       "label": "Lab-A2",        "x": 380, "y": 680, "ip": "172.16.2.11", "mask": "24", "gateway": "172.16.2.1" },
+    { "id": "ap2",  "type": "ap",       "label": "AP-EdifB",      "x": 500, "y": 680, "ip": "172.16.3.2",  "mask": "24", "gateway": "172.16.3.1" },
+    { "id": "pc3",  "type": "pc",       "label": "Aula-B1",       "x": 640, "y": 700, "ip": "172.16.3.10", "mask": "24", "gateway": "172.16.3.1" },
+    { "id": "pc4",  "type": "pc",       "label": "Aula-B2",       "x": 760, "y": 680, "ip": "172.16.3.11", "mask": "24", "gateway": "172.16.3.1" },
+    { "id": "ap3",  "type": "ap",       "label": "AP-EdifC",      "x": 860, "y": 680, "ip": "172.16.4.2",  "mask": "24", "gateway": "172.16.4.1" },
+    { "id": "pc5",  "type": "pc",       "label": "Admin-C1",      "x": 980, "y": 700, "ip": "172.16.4.10", "mask": "24", "gateway": "172.16.4.1" },
+    { "id": "sv1",  "type": "server",   "label": "Servidor-Web",  "x": 600, "y": 200, "ip": "172.16.0.10", "mask": "24", "gateway": "172.16.0.1" }
+  ],
+  "links": [
+    { "id": "l01", "source": "cl1",  "target": "r1",   "latencyMs": 20,  "bandwidthMbps": 100,  "lossPct": 0, "status": "up" },
+    { "id": "l02", "source": "r1",   "target": "sv1",  "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l03", "source": "r1",   "target": "sw_c", "latencyMs": 1,   "bandwidthMbps": 10000,"lossPct": 0, "status": "up" },
+    { "id": "l04", "source": "sw_c", "target": "sw_a", "latencyMs": 2,   "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l05", "source": "sw_c", "target": "sw_b", "latencyMs": 2,   "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l06", "source": "sw_c", "target": "sw_d", "latencyMs": 2,   "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l07", "source": "sw_a", "target": "ap1",  "latencyMs": 0.5, "bandwidthMbps": 300,  "lossPct": 1, "status": "up" },
+    { "id": "l08", "source": "sw_a", "target": "pc1",  "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l09", "source": "sw_a", "target": "pc2",  "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l10", "source": "sw_b", "target": "ap2",  "latencyMs": 0.5, "bandwidthMbps": 300,  "lossPct": 1, "status": "up" },
+    { "id": "l11", "source": "sw_b", "target": "pc3",  "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l12", "source": "sw_b", "target": "pc4",  "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l13", "source": "sw_d", "target": "ap3",  "latencyMs": 0.5, "bandwidthMbps": 300,  "lossPct": 1, "status": "up" },
+    { "id": "l14", "source": "sw_d", "target": "pc5",  "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" }
+  ]
+}

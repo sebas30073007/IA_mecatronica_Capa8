@@ -53,15 +53,15 @@
         <div class="onav-tools" id="onav-tools">
             <span class="onav-label">NIVEL</span>
             <div id="nivel-buttons" style="display:flex;gap:4px;">
-                <button class="onav-chip" data-nivel="guiado">Guiado</button>
-                <button class="onav-chip active" data-nivel="balanceado">Balanceado</button>
-                <button class="onav-chip" data-nivel="tecnico">Técnico</button>
+                <button class="onav-chip" data-nivel="guiado" data-tooltip="Paso a paso con analogías. Ideal si estás aprendiendo.">Guiado</button>
+                <button class="onav-chip active" data-nivel="balanceado" data-tooltip="Directo y práctico. Para uso general.">Balanceado</button>
+                <button class="onav-chip" data-nivel="tecnico" data-tooltip="Denso, referencias RFC/IEEE. Para expertos.">Técnico</button>
             </div>
             <div class="onav-divider"></div>
             <span class="onav-label">MODO</span>
             <div id="enfoque-buttons" style="display:flex;gap:4px;">
-                <button class="onav-chip active" data-enfoque="disenar">Diseñar</button>
-                <button class="onav-chip" data-enfoque="solver">Solver</button>
+                <button class="onav-chip active" data-enfoque="disenar" data-tooltip="Propone y construye topologías.">Diseñar</button>
+                <button class="onav-chip" data-enfoque="solver" data-tooltip="Diagnostica problemas en la red.">Solver</button>
             </div>
             <div class="onav-divider"></div>
             <span class="onav-label">TOOLS</span>
@@ -97,14 +97,14 @@
     <div class="onav-mobile-menu" id="onav-mobile-menu" hidden>
         <span class="onav-mobile-label">NIVEL</span>
         <div class="onav-mobile-chips">
-            <button class="onav-chip" data-nivel="guiado">Guiado</button>
-            <button class="onav-chip active" data-nivel="balanceado">Balanceado</button>
-            <button class="onav-chip" data-nivel="tecnico">Técnico</button>
+            <button class="onav-chip" data-nivel="guiado" data-tooltip="Paso a paso con analogías. Ideal si estás aprendiendo.">Guiado</button>
+            <button class="onav-chip active" data-nivel="balanceado" data-tooltip="Directo y práctico. Para uso general.">Balanceado</button>
+            <button class="onav-chip" data-nivel="tecnico" data-tooltip="Denso, referencias RFC/IEEE. Para expertos.">Técnico</button>
         </div>
         <span class="onav-mobile-label">MODO</span>
         <div class="onav-mobile-chips">
-            <button class="onav-chip active" data-enfoque="disenar">Diseñar</button>
-            <button class="onav-chip" data-enfoque="solver">Solver</button>
+            <button class="onav-chip active" data-enfoque="disenar" data-tooltip="Propone y construye topologías.">Diseñar</button>
+            <button class="onav-chip" data-enfoque="solver" data-tooltip="Diagnostica problemas en la red.">Solver</button>
         </div>
         <span class="onav-mobile-label">TOOLS</span>
         <div class="onav-mobile-chips">
@@ -127,7 +127,7 @@
         <div class="chat-page-input">
             <div class="chat-page-input-inner">
                 <div class="input-wrapper">
-                    <input type="text" placeholder="Escribe tu mensaje aquí..." class="chat-input">
+                    <textarea class="chat-input" rows="1" placeholder="Escribe tu mensaje aquí..."></textarea>
                     <button class="send-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="19" x2="12" y2="5"/>

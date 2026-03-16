@@ -4,25 +4,30 @@
 export const NIVELES = {
   guiado: {
     label: "Guiado",
-    snippet: `Explica paso a paso sin asumir conocimiento previo. Usa analogías simples. Advierte errores comunes del principiante. Termina con una pregunta de reflexión.`,
+    description: "Paso a paso con analogías. Ideal si estás aprendiendo.",
+    snippet: `Explica paso a paso sin asumir conocimiento previo. Usa analogías simples. No des código ni comandos CLI sin explicarlos. Nunca asumas que el usuario conoce siglas. Advierte errores comunes del principiante. Termina con una pregunta de reflexión.`,
   },
   balanceado: {
     label: "Balanceado",
+    description: "Directo y práctico. Para uso general.",
     snippet: `Sé directo y práctico. Responde en máximo 3 párrafos o una lista concisa. No sobre-expliques.`,
   },
   tecnico: {
     label: "Técnico",
-    snippet: `Respuestas densas y precisas. Referencia RFC/IEEE/OSI cuando corresponda. Identifica proactivamente fallas de diseño. Trata al usuario como par técnico.`,
+    description: "Denso, referencias RFC/IEEE. Para expertos.",
+    snippet: `Respuestas densas y precisas. No uses analogías simplificadas. Cita estándares RFC/IEEE/OSI cuando corresponda. Identifica proactivamente fallas de diseño. Trata al usuario como par técnico.`,
   },
 };
 
 export const ENFOQUES = {
   disenar: {
     label: "Diseñar",
+    description: "Propone y construye topologías.",
     snippet: `Tu objetivo es ayudar a construir y completar topologías. Cuando el usuario describe una red, propón una estructura clara y emite acciones para crearla.`,
   },
   solver: {
     label: "Solver",
+    description: "Diagnostica problemas en la red.",
     snippet: `Tu objetivo es diagnosticar. Analiza la topología, detecta inconsistencias, explica el problema y propón correcciones concretas.`,
   },
 };

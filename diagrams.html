@@ -117,7 +117,7 @@
     <!-- Terminal bottom slide panel -->
     <div id="terminal-bottom" class="terminal-bottom terminal-bottom--hidden">
       <div class="terminal-bottom-header">
-        <span>Terminal</span>
+        <span class="t-green">CAPA8-NET TERMINAL v1.0</span>
         <div>
           <button id="btn-term-clear" class="term-hdr-btn">Limpiar</button>
           <button id="btn-term-close" class="term-hdr-btn">✕</button>
@@ -125,7 +125,7 @@
       </div>
       <div class="terminal-output" id="terminal-output"></div>
       <div class="terminal-input-row">
-        <span class="terminal-prompt">$</span>
+        <span class="terminal-prompt t-green">root@capa8:~$</span>
         <input id="terminal-input" class="terminal-input" type="text"
                placeholder="ping 10.0.0.1" autocomplete="off" />
         <button id="terminal-send" class="terminal-send">↵</button>
@@ -136,7 +136,7 @@
     <div class="ai-side-wrap" id="ai-side-wrap">
       <div class="ai-fab-panel" id="ai-fab-panel"></div>
       <button class="ai-tab-btn" id="ai-fab-btn" title="Asistente IA">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <i class="fa-solid fa-chevron-left" id="ai-fab-icon"></i>
         <span class="ai-tab-label">IA</span>
         <span id="ai-tab-badge" class="ai-tab-badge" hidden></span>
       </button>
@@ -161,6 +161,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Cursor ghost for node placement -->
+  <div id="cursor-ghost" class="cursor-ghost" hidden></div>
 
 </body>
 </html>

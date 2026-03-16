@@ -55,6 +55,11 @@ export const MENUS = [
       { key: "exSmall",   label: "LAN pequeña",         icon: "fa-solid fa-diagram-project", shortcut: "", action: "LOAD_EXAMPLE_SMALL_LAN",    status: "Ejemplo: LAN pequeña." },
       { key: "exVlan",    label: "VLAN + Routing",       icon: "fa-solid fa-sitemap",         shortcut: "", action: "LOAD_EXAMPLE_VLAN_ROUTING",  status: "Ejemplo: VLAN + Routing." },
       { key: "exWan",     label: "WAN Redundante",       icon: "fa-solid fa-globe",           shortcut: "", action: "LOAD_EXAMPLE_WAN_REDUNDANT", status: "Ejemplo: WAN Redundante." },
+      { sep: true },
+      { key: "exDC",      label: "Data Center",          icon: "fa-solid fa-server",          shortcut: "", action: "LOAD_EXAMPLE_DATA_CENTER",   status: "Ejemplo: Data Center." },
+      { key: "exHome",    label: "Red Doméstica",        icon: "fa-solid fa-house",           shortcut: "", action: "LOAD_EXAMPLE_HOME_NETWORK",  status: "Ejemplo: Red Doméstica." },
+      { key: "exDmz",     label: "DMZ dual firewall",   icon: "fa-solid fa-shield-halved",   shortcut: "", action: "LOAD_EXAMPLE_DMZ",           status: "Ejemplo: DMZ." },
+      { key: "exCampus",  label: "Red Campus",           icon: "fa-solid fa-building",        shortcut: "", action: "LOAD_EXAMPLE_CAMPUS",        status: "Ejemplo: Campus." },
     ],
   },
 ];

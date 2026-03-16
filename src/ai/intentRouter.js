@@ -2,7 +2,7 @@
 // Clasificación determinista de intención antes de llamar al LLM.
 
 // Verbos imperativos/infinitivos de modificación explícita
-const MODIFY_VERBS = /\b(agrega|agregar|añade|añadir|crea|crear|conecta|conectar|elimina|eliminar|diseña|diseñar|modifica\s+el|borra|borrar|quita|quitar|remueve|remover|pon|poner|inserta|insertar|add|create|connect|delete|remove|design)\b/i;
+const MODIFY_VERBS = /\b(agrega|agregar|añade|añadir|crea|crear|conecta|conectar|elimina|eliminar|diseña|diseñar|modifica\s+el|borra|borrar|quita|quitar|remueve|remover|pon|poner|inserta|insertar|haz|hacer|construye|construir|genera|generar|arma|armar|implementa|implementar|forma|formar|monta|montar|add|create|connect|delete|remove|design|build|generate)\b/i;
 
 // Keywords de diagnóstico / solver
 const SOLVER_KEYWORDS = /\b(problema|error|falla|fallo|por\s+qu[eé]\s+no|no\s+funciona|diagnostica|detecta|analiza|revisa|encuentra\s+el|qu[eé]\s+est[aá]\s+mal|qu[eé]\s+pasa|ping\s+falla|no\s+hay\s+ruta)\b/i;

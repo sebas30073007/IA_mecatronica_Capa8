@@ -37,9 +37,38 @@ export function createTerminalPanel({ store, dispatch, ActionTypes, onPingReques
     const state = store.getState();
     const pc = currentPcId ? state.graph.nodes.find(n => n.id === currentPcId) : null;
     const log = state.terminalLog || "";
-    outputEl.textContent = log || (pc
-      ? `CAPA 8 Terminal - ${pc.label} (${pc.ip || "sin IP"})\n`
-      : "Selecciona una PC para usar la terminal.\n");
+
+    let rawText;
+    if (log) {
+      rawText = log;
+    } else if (pc) {
+      rawText = `CAPA8 Network Terminal v1.0 — escribe 'help' para ver comandos\n> Conectado a ${pc.label} (${pc.ip || "sin IP"})\n`;
+    } else {
+      rawText = "CAPA8 Network Terminal v1.0 — Selecciona una PC para comenzar.\n";
+    }
+
+    // Colorize via HTML
+    const escaped = rawText
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
+    const colored = escaped
+      // IPs and MACs: cyan
+      .replace(/\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d+)?)\b/g, '<span class="t-cyan">$1</span>')
+      .replace(/\b([0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2})\b/g, '<span class="t-cyan">$1</span>')
+      // RTT times: cyan
+      .replace(/\b(\d+ms)\b/g, '<span class="t-cyan">$1</span>')
+      // Error lines: red
+      .replace(/(Request timed out\.|No route to host.*|Error.*|not found.*|inválido.*|no encontrado.*)/g, '<span class="t-error">$1</span>')
+      // Prompt lines (> cmd): green
+      .replace(/(^|\n)(&gt; .+)/g, '$1<span class="t-green">$2</span>')
+      // Section headers (lines with ════ or ────): green
+      .replace(/([═─]{4,})/g, '<span class="t-green">$1</span>')
+      // Success indicators
+      .replace(/(Reply from|bytes=\d+|TTL=\d+)/g, '<span class="t-success">$1</span>');
+
+    outputEl.innerHTML = colored;
     outputEl.scrollTop = outputEl.scrollHeight;
 
     if (inputEl) {
@@ -53,8 +82,16 @@ export function createTerminalPanel({ store, dispatch, ActionTypes, onPingReques
     dispatch({ type: ActionTypes.TERMINAL_APPEND, payload: text });
   }
 
+  function appendHtml(html) {
+    if (!outputEl) return;
+    const span = document.createElement("span");
+    span.innerHTML = html;
+    outputEl.appendChild(span);
+    outputEl.scrollTop = outputEl.scrollHeight;
+  }
+
   function handleCommand(cmd, pc, graph) {
-    append(`\n> ${cmd}\n`);
+    append(`> ${cmd}\n`);
 
     const parts = cmd.split(/\s+/);
     const head = parts[0].toLowerCase();

@@ -137,6 +137,22 @@ function adaptiveHGap(ids, nodeMap) {
   return Math.max(BASE_HGAP, 60 + maxLen * 7);
 }
 
+// ── HGAP mínimo para un tier considerando bloques fan-out ─────────────────
+// Si el tier contiene parents con fan-out, el gap entre nodos debe ser al
+// menos tan ancho como el bloque fan-out más ancho + padding lateral.
+function tierHGap(ids, fanoutParents, nodeMap) {
+  const base = adaptiveHGap(ids, nodeMap);
+  let maxBlockW = 0;
+  for (const id of ids) {
+    if (fanoutParents.has(id)) {
+      const leaves = fanoutParents.get(id);
+      const w = (Math.min(leaves.length, MAX_PER_ROW) - 1) * ENDPOINT_HGAP;
+      maxBlockW = Math.max(maxBlockW, w);
+    }
+  }
+  return maxBlockW > 0 ? Math.max(base, maxBlockW + 80) : base;
+}
+
 // ── Layout de una componente conexa ──────────────────────────────────────
 function layoutComponent({ compIds, adj, nodeMap, roles }) {
   const compNodes = compIds.map(id => nodeMap.get(id)).filter(Boolean);
@@ -216,7 +232,7 @@ function layoutComponent({ compIds, adj, nodeMap, roles }) {
     for (let ri = 0; ri < numTierRows; ri++) {
       const t    = sortedTiers[ri];
       const ids  = byTier.get(t);
-      const hgap = adaptiveHGap(ids, nodeMap);
+      const hgap = tierHGap(ids, fanoutParents, nodeMap);
       const rowW = (ids.length - 1) * hgap;
       const y    = tierYArr[ri];
       ids.forEach((id, i) => tempPos.set(id, { x: cx - rowW / 2 + i * hgap, y }));
@@ -230,7 +246,7 @@ function layoutComponent({ compIds, adj, nodeMap, roles }) {
       const t       = sortedTiers[ri];
       const ordered = barycenterOrder(byTier.get(t), adj, tempPos, nodeMap);
       byTier.set(t, ordered);
-      const hgap = adaptiveHGap(ordered, nodeMap);
+      const hgap = tierHGap(ordered, fanoutParents, nodeMap);
       const rowW = (ordered.length - 1) * hgap;
       ordered.forEach((id, i) => tempPos.set(id, { x: cx - rowW / 2 + i * hgap, y: tierYArr[ri] }));
     }
@@ -238,7 +254,7 @@ function layoutComponent({ compIds, adj, nodeMap, roles }) {
       const t       = sortedTiers[ri];
       const ordered = barycenterOrder(byTier.get(t), adj, tempPos, nodeMap);
       byTier.set(t, ordered);
-      const hgap = adaptiveHGap(ordered, nodeMap);
+      const hgap = tierHGap(ordered, fanoutParents, nodeMap);
       const rowW = (ordered.length - 1) * hgap;
       ordered.forEach((id, i) => tempPos.set(id, { x: cx - rowW / 2 + i * hgap, y: tierYArr[ri] }));
     }
@@ -249,7 +265,7 @@ function layoutComponent({ compIds, adj, nodeMap, roles }) {
   for (let ri = 0; ri < numTierRows; ri++) {
     const t    = sortedTiers[ri];
     const ids  = byTier.get(t);
-    const hgap = adaptiveHGap(ids, nodeMap);
+    const hgap = tierHGap(ids, fanoutParents, nodeMap);
     const rowW = (ids.length - 1) * hgap;
     ids.forEach((id, i) => {
       finalPos.set(id, {
@@ -309,11 +325,11 @@ function layoutComponent({ compIds, adj, nodeMap, roles }) {
 /**
  * Aplica Pretty v2 al grafo actual.
  */
-export function prettyLayout({ graph, pushHistorySnapshot, dispatch, ActionTypes }) {
+export function prettyLayout({ graph, pushHistorySnapshot, dispatch, ActionTypes, skipHistory = false }) {
   const { nodes, links } = graph;
   if (nodes.length === 0) return;
 
-  pushHistorySnapshot();
+  if (!skipHistory) pushHistorySnapshot();
 
   const { adj, nodeMap } = buildAdj(nodes, links);
   const roles = new Map();

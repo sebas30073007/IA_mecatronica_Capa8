@@ -130,6 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Botón: toggle clase has-text según contenido del input
   chatInput?.addEventListener("input", () => {
     sendBtn?.classList.toggle("has-text", chatInput.value.trim().length > 0);
+    chatInput.style.height = "auto";
+    chatInput.style.height = Math.min(chatInput.scrollHeight, 96) + "px";
   });
 
   // Typing indicator
@@ -192,6 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
     convStore.addMessage({ role: "user", content: text, surface: "home", timestamp: Date.now() });
 
     chatInput.value = "";
+    chatInput.style.height = "auto";
     sendBtn.classList.remove("has-text");
     chatInput.disabled = true;
     sendBtn.disabled = true;
@@ -229,7 +232,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   sendBtn?.addEventListener("click", sendMessage);
   chatInput?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") sendMessage();
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
   });
 
   // Restaurar historial desde convStore (mensajes de surface: home)

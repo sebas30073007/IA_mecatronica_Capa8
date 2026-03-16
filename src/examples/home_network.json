@@ -1,0 +1,21 @@
+{
+  "version": 3,
+  "meta": { "name": "Red Doméstica" },
+  "nodes": [
+    { "id": "r1",  "type": "router",  "label": "Router ISP",  "x": 400, "y": 80,  "ip": "192.168.1.1",  "mask": "24", "gateway": "" },
+    { "id": "ap1", "type": "ap",      "label": "AP-WiFi",     "x": 250, "y": 240, "ip": "192.168.1.2",  "mask": "24", "gateway": "192.168.1.1" },
+    { "id": "pc1", "type": "pc",      "label": "PC-Escritorio","x": 100, "y": 400, "ip": "192.168.1.10", "mask": "24", "gateway": "192.168.1.1" },
+    { "id": "pc2", "type": "pc",      "label": "Laptop",       "x": 250, "y": 420, "ip": "192.168.1.11", "mask": "24", "gateway": "192.168.1.1" },
+    { "id": "pc3", "type": "pc",      "label": "Smart TV",     "x": 400, "y": 420, "ip": "192.168.1.12", "mask": "24", "gateway": "192.168.1.1" },
+    { "id": "pc4", "type": "pc",      "label": "Móvil-1",      "x": 550, "y": 420, "ip": "192.168.1.13", "mask": "24", "gateway": "192.168.1.1" },
+    { "id": "sv1", "type": "server",  "label": "NAS",          "x": 600, "y": 240, "ip": "192.168.1.20", "mask": "24", "gateway": "192.168.1.1" }
+  ],
+  "links": [
+    { "id": "l1", "source": "r1",  "target": "ap1", "latencyMs": 1,  "bandwidthMbps": 300, "lossPct": 0,  "status": "up" },
+    { "id": "l2", "source": "r1",  "target": "sv1", "latencyMs": 0.5,"bandwidthMbps": 1000,"lossPct": 0,  "status": "up" },
+    { "id": "l3", "source": "ap1", "target": "pc1", "latencyMs": 2,  "bandwidthMbps": 300, "lossPct": 1,  "status": "up" },
+    { "id": "l4", "source": "ap1", "target": "pc2", "latencyMs": 3,  "bandwidthMbps": 150, "lossPct": 2,  "status": "up" },
+    { "id": "l5", "source": "ap1", "target": "pc3", "latencyMs": 4,  "bandwidthMbps": 150, "lossPct": 2,  "status": "up" },
+    { "id": "l6", "source": "ap1", "target": "pc4", "latencyMs": 5,  "bandwidthMbps": 100, "lossPct": 3,  "status": "up" }
+  ]
+}

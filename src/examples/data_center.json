@@ -1,0 +1,26 @@
+{
+  "version": 3,
+  "meta": { "name": "Data Center Básico" },
+  "nodes": [
+    { "id": "fw1", "type": "firewall", "label": "FW-Edge",   "x": 500, "y": 100, "ip": "10.0.0.1",  "mask": "24", "gateway": "" },
+    { "id": "sw1", "type": "switch",   "label": "Core-SW1",  "x": 350, "y": 280, "ip": "10.0.1.1",  "mask": "24", "gateway": "10.0.0.1" },
+    { "id": "sw2", "type": "switch",   "label": "Core-SW2",  "x": 650, "y": 280, "ip": "10.0.1.2",  "mask": "24", "gateway": "10.0.0.1" },
+    { "id": "sv1", "type": "server",   "label": "Web-01",    "x": 150, "y": 460, "ip": "10.0.2.10", "mask": "24", "gateway": "10.0.1.1" },
+    { "id": "sv2", "type": "server",   "label": "Web-02",    "x": 300, "y": 460, "ip": "10.0.2.11", "mask": "24", "gateway": "10.0.1.1" },
+    { "id": "sv3", "type": "server",   "label": "App-01",    "x": 450, "y": 460, "ip": "10.0.3.10", "mask": "24", "gateway": "10.0.1.2" },
+    { "id": "sv4", "type": "server",   "label": "App-02",    "x": 600, "y": 460, "ip": "10.0.3.11", "mask": "24", "gateway": "10.0.1.2" },
+    { "id": "sv5", "type": "server",   "label": "DB-01",     "x": 750, "y": 460, "ip": "10.0.4.10", "mask": "24", "gateway": "10.0.1.2" },
+    { "id": "sv6", "type": "server",   "label": "DB-02",     "x": 900, "y": 460, "ip": "10.0.4.11", "mask": "24", "gateway": "10.0.1.2" }
+  ],
+  "links": [
+    { "id": "l1",  "source": "fw1", "target": "sw1", "latencyMs": 1,   "bandwidthMbps": 10000, "lossPct": 0, "status": "up" },
+    { "id": "l2",  "source": "fw1", "target": "sw2", "latencyMs": 1,   "bandwidthMbps": 10000, "lossPct": 0, "status": "up" },
+    { "id": "l3",  "source": "sw1", "target": "sw2", "latencyMs": 0.1, "bandwidthMbps": 40000, "lossPct": 0, "status": "up" },
+    { "id": "l4",  "source": "sw1", "target": "sv1", "latencyMs": 0.5, "bandwidthMbps": 1000,  "lossPct": 0, "status": "up" },
+    { "id": "l5",  "source": "sw1", "target": "sv2", "latencyMs": 0.5, "bandwidthMbps": 1000,  "lossPct": 0, "status": "up" },
+    { "id": "l6",  "source": "sw2", "target": "sv3", "latencyMs": 0.5, "bandwidthMbps": 1000,  "lossPct": 0, "status": "up" },
+    { "id": "l7",  "source": "sw2", "target": "sv4", "latencyMs": 0.5, "bandwidthMbps": 1000,  "lossPct": 0, "status": "up" },
+    { "id": "l8",  "source": "sw2", "target": "sv5", "latencyMs": 0.5, "bandwidthMbps": 1000,  "lossPct": 0, "status": "up" },
+    { "id": "l9",  "source": "sw2", "target": "sv6", "latencyMs": 0.5, "bandwidthMbps": 1000,  "lossPct": 0, "status": "up" }
+  ]
+}

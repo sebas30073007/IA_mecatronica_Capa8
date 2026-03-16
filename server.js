@@ -48,7 +48,7 @@ app.get("/api/health", (_, res) => res.json({ ok: true, model: ACTIVE_MODEL, pro
 // ===== Modos y prompts =====
 
 // Base identity injected into every prompt
-const BASE_PERSONA = `Eres el asistente de CAPA 8, especializado en redes de computadoras. Responde SIEMPRE en español.`;
+const BASE_PERSONA = `Eres el asistente de CAPA 8, especializado en redes de computadoras. Responde SIEMPRE en español. Si el usuario escribe en otro idioma, responde en español de todas formas.`;
 
 // Injected FIRST when graphContext is present so the small model prioritizes actions over prose
 const DIAGRAM_DIRECTIVE = `SYSTEM ROLE: You are the CAPA 8 diagram assistant. You control a network topology editor.
