@@ -29,17 +29,9 @@ const GROQ_URL     = "https://api.groq.com/openai/v1/chat/completions";
 // Nombre activo para logs y /api/health
 const ACTIVE_MODEL = LLM_PROVIDER === "groq" ? GROQ_MODEL : MODEL;
 
-// CORS — permite peticiones desde GitHub Pages y localhost
-const ALLOWED_ORIGINS = [
-  "https://sebas30073007.github.io",
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
-];
+// CORS — abierto para permitir peticiones desde GitHub Pages y cualquier origen
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (!origin || ALLOWED_ORIGINS.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin || "*");
-  }
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Capa8-Token");
   if (req.method === "OPTIONS") return res.sendStatus(204);
