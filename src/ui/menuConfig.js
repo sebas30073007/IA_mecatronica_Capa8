@@ -1,0 +1,60 @@
+// src/ui/menuConfig.js
+// Fuente única de verdad para la estructura de menús del simulador.
+export const MENUS = [
+  {
+    key: "file",
+    label: "Archivo",
+    items: [
+      { key: "new",       label: "Nuevo",            icon: "fa-solid fa-file",          shortcut: "Ctrl+N", action: "FILE_NEW",              status: "Nuevo diagrama." },
+      { key: "import",    label: "Importar JSON…",   icon: "fa-solid fa-upload",        shortcut: "Ctrl+O", action: "FILE_IMPORT",           status: "Importar JSON…" },
+      { key: "export",    label: "Exportar JSON…",   icon: "fa-solid fa-download",      shortcut: "Ctrl+S", action: "FILE_EXPORT",           status: "Exportar JSON…" },
+      { sep: true },
+      { key: "exportUrl", label: "Exportar a URL",   icon: "fa-solid fa-link",          shortcut: "Ctrl+L", action: "EXPORT_URL",            status: "Exportado a URL." },
+      { key: "copyUrl",   label: "Copiar URL",       icon: "fa-solid fa-copy",          shortcut: "",       action: "COPY_URL",              status: "URL copiada." },
+      { sep: true },
+      { key: "reset",     label: "Reset",            icon: "fa-solid fa-rotate-left",   shortcut: "",       action: "RESET_DEMO",            status: "Demo reseteada." },
+    ],
+  },
+  {
+    key: "draw",
+    label: "Dibujar",
+    items: [
+      { key: "toolSelect",   label: "Seleccionar",  icon: "fa-solid fa-arrow-pointer",   shortcut: "Esc", action: "TOOL_SELECT",   status: "Modo: select" },
+      { sep: true },
+      { key: "toolRouter",   label: "Router",       icon: "fa-solid fa-server",          shortcut: "R",   action: "TOOL_ROUTER",   status: "Modo: router" },
+      { key: "toolSwitch",   label: "Switch",       icon: "fa-solid fa-network-wired",   shortcut: "S",   action: "TOOL_SWITCH",   status: "Modo: switch" },
+      { key: "toolPC",       label: "PC",           icon: "fa-solid fa-display",         shortcut: "P",   action: "TOOL_PC",       status: "Modo: pc" },
+      { sep: true },
+      { key: "toolFirewall", label: "Firewall",     icon: "fa-solid fa-shield-halved",   shortcut: "F",   action: "TOOL_FIREWALL", status: "Modo: firewall" },
+      { key: "toolServer",   label: "Servidor",     icon: "fa-solid fa-database",        shortcut: "",    action: "TOOL_SERVER",   status: "Modo: server" },
+      { key: "toolCloud",    label: "Nube",         icon: "fa-solid fa-cloud",           shortcut: "",    action: "TOOL_CLOUD",    status: "Modo: cloud" },
+      { key: "toolAP",       label: "Access Point", icon: "fa-solid fa-wifi",            shortcut: "",    action: "TOOL_AP",       status: "Modo: ap" },
+      { sep: true },
+      { key: "toolPLC",      label: "PLC",          icon: "fa-solid fa-microchip",       shortcut: "",    action: "TOOL_PLC",      status: "Modo: plc" },
+      { key: "toolUR3",      label: "Robot UR3",    icon: "fa-solid fa-robot",           shortcut: "",    action: "TOOL_UR3",      status: "Modo: ur3" },
+      { key: "toolAGV",      label: "AGV",          icon: "fa-solid fa-truck-fast",      shortcut: "",    action: "TOOL_AGV",      status: "Modo: agv" },
+      { sep: true },
+      { key: "toolLink",     label: "Enlace",       icon: "fa-solid fa-link",            shortcut: "L",   action: "TOOL_LINK",     status: "Modo: link" },
+    ],
+  },
+  {
+    key: "settings",
+    label: "Ajustes",
+    items: [
+      { key: "grid",       label: "Mostrar/Ocultar rejilla", icon: "fa-solid fa-border-all",          shortcut: "G", action: null,               status: "Rejilla alternada." },
+      { key: "whiteBg",    label: "Fondo blanco",            icon: "fa-solid fa-droplet",             shortcut: "",  action: null,               status: "Fondo alternado." },
+      { key: "toggleIPs", label: "Mostrar/Ocultar IPs",     icon: "fa-solid fa-tag",                 shortcut: "I", action: "TOGGLE_IP_LABELS", status: "IPs alternadas." },
+      { sep: true },
+      { key: "prettyLayout", label: "Organizar (Pretty)",   icon: "fa-solid fa-wand-magic-sparkles", shortcut: "O", action: "PRETTY_LAYOUT",    status: "Diagrama organizado." },
+    ],
+  },
+  {
+    key: "examples",
+    label: "Ejemplos",
+    items: [
+      { key: "exSmall",   label: "LAN pequeña",         icon: "fa-solid fa-diagram-project", shortcut: "", action: "LOAD_EXAMPLE_SMALL_LAN",    status: "Ejemplo: LAN pequeña." },
+      { key: "exVlan",    label: "VLAN + Routing",       icon: "fa-solid fa-sitemap",         shortcut: "", action: "LOAD_EXAMPLE_VLAN_ROUTING",  status: "Ejemplo: VLAN + Routing." },
+      { key: "exWan",     label: "WAN Redundante",       icon: "fa-solid fa-globe",           shortcut: "", action: "LOAD_EXAMPLE_WAN_REDUNDANT", status: "Ejemplo: WAN Redundante." },
+    ],
+  },
+];

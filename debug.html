@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CAPA 8 · Debug IA</title>
+  <style>
+    :root {
+      --bg:       #0d0e10;
+      --surface:  #16181c;
+      --surface2: #1e2028;
+      --border:   rgba(255,255,255,0.08);
+      --accent:   #c8102e;
+      --text:     #e0e2e8;
+      --soft:     rgba(224,226,232,0.65);
+      --muted:    rgba(224,226,232,0.32);
+      --green:    #22c55e;
+      --red:      #ef4444;
+      --yellow:   #f59e0b;
+      --mono:     'Consolas','Monaco',monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: system-ui, sans-serif; font-size: 13px;
+      height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 14px; border-bottom: 1px solid var(--border);
+      background: var(--surface); flex-shrink: 0;
+    }
+    header h1 { font-size: 13px; font-weight: 700; }
+    .badge { background: var(--accent); color: #fff; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 4px; letter-spacing:.04em; }
+    header a { margin-left: auto; color: var(--muted); text-decoration: none; font-size: 11px; }
+    header a:hover { color: var(--soft); }
+
+    /* ── Layout ── */
+    .layout { display: grid; grid-template-columns: 290px 1fr; flex: 1; overflow: hidden; }
+
+    /* ── Left panel ── */
+    .left { border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+    .section { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    .section-title {
+      font-size: 9px; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+    }
+    label { display: block; font-size: 11px; color: var(--soft); margin-bottom: 3px; }
+    select, input[type=number] {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); border-radius: 6px; padding: 5px 8px;
+      font-size: 12px; outline: none;
+    }
+    select:focus, input:focus { border-color: var(--accent); }
+    textarea {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); border-radius: 6px; padding: 6px 8px;
+      font-size: 11px; font-family: var(--mono); resize: vertical; outline: none; min-height: 70px;
+    }
+    textarea:focus { border-color: var(--accent); }
+
+    .row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .row label { margin: 0; flex: 1; font-size: 11px; }
+
+    /* Toggle */
+    .toggle { position: relative; width: 30px; height: 16px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .tog-sl {
+      position: absolute; inset: 0; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 16px; cursor: pointer; transition: .2s;
+    }
+    .toggle input:checked + .tog-sl { background: var(--accent); border-color: var(--accent); }
+    .tog-sl:before {
+      content: ""; position: absolute; width: 10px; height: 10px;
+      left: 2px; top: 2px; background: #fff; border-radius: 50%; transition: .2s;
+    }
+    .toggle input:checked + .tog-sl:before { left: 16px; }
+
+    /* Temp row */
+    .temp-row { display: flex; align-items: center; gap: 6px; }
+    .temp-row input[type=number] { width: 60px; }
+    .temp-note { font-size: 10px; color: var(--muted); }
+
+    /* Send */
+    .send-btn {
+      width: 100%; padding: 8px; margin-top: 6px;
+      background: linear-gradient(135deg, var(--accent), #e8234e);
+      border: none; color: #fff; border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .15s;
+    }
+    .send-btn:hover:not(:disabled) { opacity: .88; }
+    .send-btn:disabled { opacity: .38; cursor: default; }
+
+    .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+    .stat { font-size: 10px; color: var(--muted); }
+    .stat strong { color: var(--soft); }
+
+    /* ── Right panel ── */
+    .right { display: flex; flex-direction: column; overflow: hidden; }
+
+    .tabs {
+      display: flex; gap: 2px; padding: 8px 12px 0;
+      border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .tab {
+      padding: 5px 14px; font-size: 11px; font-weight: 600; color: var(--muted);
+      cursor: pointer; border-radius: 6px 6px 0 0;
+      border: 1px solid transparent; border-bottom: none; background: transparent;
+      transition: color .15s;
+    }
+    .tab.active { color: var(--text); background: var(--surface2); border-color: var(--border); }
+    .tab:hover:not(.active) { color: var(--soft); }
+    .tab-badge {
+      display: inline-block; background: var(--accent); color: #fff;
+      font-size: 9px; font-weight: 700; padding: 0 5px; border-radius: 4px; margin-left: 5px;
+    }
+
+    .tab-content { display: none; flex: 1; overflow-y: auto; padding: 12px; flex-direction: column; gap: 8px; }
+    .tab-content.active { display: flex; }
+
+    .placeholder { color: var(--muted); font-size: 12px; text-align: center; padding: 48px 20px; }
+
+    /* Code block */
+    .code-block {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 12px; font-family: var(--mono); font-size: 11.5px;
+      white-space: pre-wrap; word-break: break-all; color: var(--soft);
+      flex: 1; overflow-y: auto;
+    }
+    .code-block .hl { color: #f59e0b; font-weight: 700; }
+
+    /* Action cards */
+    .action-card {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 12px;
+    }
+    .action-card.ok  { border-color: rgba(34,197,94,.35); }
+    .action-card.err { border-color: rgba(239,68,68,.35); }
+    .action-card.warn { border-color: rgba(245,158,11,.35); }
+
+    .action-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .chip {
+      padding: 1px 7px; border-radius: 4px; font-size: 10px; font-weight: 700;
+    }
+    .chip.ok   { background: rgba(34,197,94,.15);  color: var(--green); }
+    .chip.err  { background: rgba(239,68,68,.15);  color: var(--red); }
+    .chip.warn { background: rgba(245,158,11,.15); color: var(--yellow); }
+    .chip.info { background: rgba(200,16,46,.12);  color: var(--accent); }
+
+    .action-json { font-family: var(--mono); font-size: 11px; color: var(--soft); white-space: pre-wrap; }
+    .val-msg { font-size: 11px; margin-top: 4px; }
+    .val-msg.ok   { color: var(--green); }
+    .val-msg.err  { color: var(--red); }
+    .val-msg.warn { color: var(--yellow); }
+
+    .no-blocks { color: var(--muted); font-size: 12px; padding: 20px; text-align: center; border: 1px dashed var(--border); border-radius: 8px; }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block; width: 11px; height: 11px;
+      border: 2px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .summary-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .summary-pill {
+      padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+      background: var(--surface2); border: 1px solid var(--border); color: var(--soft);
+    }
+    .summary-pill.ok  { border-color: rgba(34,197,94,.35);  color: var(--green); }
+    .summary-pill.err { border-color: rgba(239,68,46,.35);  color: var(--red); }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>CAPA 8</h1>
+  <span class="badge">Debug IA</span>
+  <a href="/diagrams.html">← Diagramas</a>
+</header>
+
+<div class="layout">
+
+  <!-- ══ LEFT PANEL ══════════════════════════════════════════ -->
+  <div class="left">
+
+    <div class="section">
+      <div class="section-title">Configuración</div>
+
+      <label>Modo</label>
+      <select id="mode-sel">
+        <option value="problem-solving">Problem Solving</option>
+        <option value="senior" selected>Senior</option>
+        <option value="junior">Junior</option>
+      </select>
+
+      <br>
+
+      <label style="margin-top:8px">Temperature</label>
+      <div class="temp-row">
+        <input type="number" id="temp-inp" value="0.0" min="0" max="1" step="0.05">
+        <span class="temp-note">0.0 = determinístico (recomendado para diagramas)</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Ingeniería de Prompt</div>
+      <div class="row">
+        <label>Parámetro <code style="font-size:10px;color:var(--accent)">system</code> de Ollama</label>
+        <label class="toggle">
+          <input type="checkbox" id="tog-system" checked>
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+      <div class="row">
+        <label>Pre-sembrar historial con ejemplo</label>
+        <label class="toggle">
+          <input type="checkbox" id="tog-seed" checked>
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+      <div class="row">
+        <label>Auto-retry si no hay bloques</label>
+        <label class="toggle">
+          <input type="checkbox" id="tog-retry" checked>
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Contexto</div>
+
+      <div class="row">
+        <label>Enviar graphContext (topología)</label>
+        <label class="toggle">
+          <input type="checkbox" id="tog-ctx" checked>
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+
+      <textarea id="ctx-area" rows="5" placeholder="Topología en texto (buildGraphContext output)">Topología actual: 3 nodo(s), 2 enlace(s).
+  ROUTERs: Router1 [id:n1, pos:300,150] (192.168.1.1)
+  SWITCHs: Switch1 [id:n2, pos:300,280] (sin IP)
+  PCs: PC1 [id:n3, pos:150,400] (192.168.1.10)
+Conexiones:
+  Router1 ↔ Switch1: 5ms / 1000Mbps [id:l1]
+  Switch1 ↔ PC1: 2ms / 100Mbps [id:l2]
+No se detectaron problemas evidentes en la topología.</textarea>
+
+      <div class="row" style="margin-top:8px">
+        <label>Incluir historial de conversación</label>
+        <label class="toggle">
+          <input type="checkbox" id="tog-hist">
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="section" style="flex:1">
+      <div class="section-title">Mensaje</div>
+      <textarea id="msg-area" rows="4" placeholder="Ej: agrega 2 PCs y conéctalas al Switch1"></textarea>
+      <button class="send-btn" id="send-btn">Enviar</button>
+
+      <div class="stat-row" id="stats" style="display:none">
+        <span class="stat">Modelo: <strong id="st-model">—</strong></span>
+        <span class="stat">Tiempo: <strong id="st-time">—</strong></span>
+        <span class="stat">Temp: <strong id="st-temp">—</strong></span>
+        <span class="stat">Modo: <strong id="st-mode">—</strong></span>
+        <span class="stat" id="st-retry-wrap" style="display:none">Retry: <strong id="st-retry" style="color:var(--yellow)">✓</strong></span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ RIGHT PANEL ═════════════════════════════════════════ -->
+  <div class="right">
+
+    <div class="tabs">
+      <div class="tab active" data-tab="blocks">Bloques CAPA8<span class="tab-badge" id="badge-blocks">0</span></div>
+      <div class="tab" data-tab="raw">Respuesta cruda</div>
+      <div class="tab" data-tab="prompt">Prompt enviado</div>
+    </div>
+
+    <!-- Tab: Bloques -->
+    <div class="tab-content active" id="tab-blocks">
+      <div class="placeholder" id="blocks-placeholder">
+        Envía un mensaje para ver los bloques CAPA8_ACTION detectados.
+      </div>
+    </div>
+
+    <!-- Tab: Raw -->
+    <div class="tab-content" id="tab-raw">
+      <div class="placeholder" id="raw-placeholder">Respuesta cruda del modelo aquí.</div>
+    </div>
+
+    <!-- Tab: Prompt -->
+    <div class="tab-content" id="tab-prompt">
+      <div class="placeholder" id="prompt-placeholder">El prompt completo enviado a Ollama aparecerá aquí.</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Tab switching ──────────────────────────────────────────────────────────
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+    tab.classList.add("active");
+    document.getElementById("tab-" + tab.dataset.tab).classList.add("active");
+  });
+});
+
+// ── Context toggle ─────────────────────────────────────────────────────────
+document.getElementById("tog-ctx").addEventListener("change", e => {
+  document.getElementById("ctx-area").disabled = !e.target.checked;
+  document.getElementById("ctx-area").style.opacity = e.target.checked ? "1" : "0.35";
+});
+
+// ── Validation (lightweight inline version) ────────────────────────────────
+const VALID_ACTIONS  = new Set(["add_node","add_link","delete_node","delete_link","set_link_status","apply_graph"]);
+const VALID_TYPES    = new Set(["router","switch","pc"]);
+const VALID_STATUSES = new Set(["up","down"]);
+
+function validateAction(action) {
+  if (!VALID_ACTIONS.has(action.action))
+    return { ok: false, msg: `Acción desconocida: "${action.action}"` };
+
+  if (action.action === "add_node") {
+    if (!action.label) return { ok: false, msg: "Falta 'label'" };
+    if (action.type && !VALID_TYPES.has(action.type))
+      return { ok: false, msg: `Tipo inválido: "${action.type}"` };
+    if (action.x == null || action.y == null)
+      return { ok: true, warn: "Sin coordenadas x/y — se usará posición automática" };
+  }
+  if (action.action === "add_link") {
+    if (!action.sourceLabel && !action.sourceId) return { ok: false, msg: "Falta sourceLabel/sourceId" };
+    if (!action.targetLabel && !action.targetId) return { ok: false, msg: "Falta targetLabel/targetId" };
+  }
+  if (action.action === "delete_node") {
+    if (!action.label && !action.id) return { ok: false, msg: "Falta 'label' o 'id'" };
+  }
+  if (action.action === "set_link_status") {
+    if (!VALID_STATUSES.has(action.status)) return { ok: false, msg: `Estado inválido: "${action.status}"` };
+  }
+  if (action.action === "apply_graph") {
+    if (!action.graph || !Array.isArray(action.graph.nodes))
+      return { ok: false, msg: "apply_graph: falta 'graph.nodes'" };
+  }
+  return { ok: true };
+}
+
+// ── Highlight CAPA8_ACTION blocks in raw text ──────────────────────────────
+function highlightRaw(text) {
+  return text
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/(\[CAPA8_ACTION\])/g, '<span class="hl">$1</span>')
+    .replace(/(\[\/CAPA8_ACTION\])/g, '<span class="hl">$1</span>');
+}
+
+// ── Parse CAPA8_ACTION blocks ──────────────────────────────────────────────
+function parseBlocks(text) {
+  const results = [];
+  const re = /\[CAPA8_ACTION\]([\s\S]*?)\[\/CAPA8_ACTION\]/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const raw = m[1].trim();
+    try {
+      const parsed = JSON.parse(raw);
+      results.push({ raw, parsed, parseOk: true });
+    } catch(e) {
+      results.push({ raw, parsed: null, parseOk: false, parseErr: e.message });
+    }
+  }
+  return results;
+}
+
+// ── Render blocks tab ──────────────────────────────────────────────────────
+function renderBlocks(blocks, rawAnswer) {
+  const tab = document.getElementById("tab-blocks");
+  tab.innerHTML = "";
+
+  // Summary row
+  if (blocks.length > 0) {
+    const parseOk  = blocks.filter(b => b.parseOk).length;
+    const validOk  = blocks.filter(b => b.parseOk && validateAction(b.parsed).ok).length;
+    const warnings = blocks.filter(b => b.parseOk && validateAction(b.parsed).warn).length;
+    const parseErr = blocks.length - parseOk;
+    const row = document.createElement("div");
+    row.className = "summary-row";
+    row.innerHTML = `
+      <span class="summary-pill">${blocks.length} bloque(s) detectado(s)</span>
+      ${parseOk  ? `<span class="summary-pill ok">✅ ${parseOk} JSON válido</span>` : ""}
+      ${parseErr ? `<span class="summary-pill err">❌ ${parseErr} JSON roto</span>` : ""}
+      ${validOk  ? `<span class="summary-pill ok">✅ ${validOk} acción(es) válida(s)</span>` : ""}
+      ${warnings ? `<span class="summary-pill warn">⚠️ ${warnings} advertencia(s)</span>` : ""}
+    `;
+    tab.appendChild(row);
+  }
+
+  if (blocks.length === 0) {
+    const div = document.createElement("div");
+    div.className = "no-blocks";
+    const hasText = rawAnswer && rawAnswer.trim().length > 0;
+    div.innerHTML = hasText
+      ? "❌ No se encontró ningún bloque <code>[CAPA8_ACTION]</code> en la respuesta.<br><small style='color:var(--muted)'>El modelo respondió en texto libre — revisar tab <strong>Respuesta cruda</strong>.</small>"
+      : "Sin respuesta aún.";
+    tab.appendChild(div);
+    return;
+  }
+
+  blocks.forEach((b, i) => {
+    const card = document.createElement("div");
+    const validation = b.parseOk ? validateAction(b.parsed) : null;
+    const cardClass = !b.parseOk ? "err" : (!validation.ok ? "err" : (validation.warn ? "warn" : "ok"));
+    card.className = `action-card ${cardClass}`;
+
+    let headerHTML = `<div class="action-head">
+      <span style="font-size:12px;font-weight:700;color:var(--soft)">#${i+1}</span>`;
+
+    if (!b.parseOk) {
+      headerHTML += `<span class="chip err">JSON inválido</span><span style="font-size:11px;color:var(--red)">${b.parseErr}</span>`;
+    } else {
+      headerHTML += `<span class="chip info">${b.parsed.action}</span>`;
+      if (b.parsed.type)  headerHTML += `<span class="chip info">${b.parsed.type}</span>`;
+      if (b.parsed.label) headerHTML += `<span style="font-size:11px;color:var(--soft)">"${b.parsed.label}"</span>`;
+      if (!validation.ok)  headerHTML += `<span class="chip err">inválida</span>`;
+      else if (validation.warn) headerHTML += `<span class="chip warn">⚠ advertencia</span>`;
+      else headerHTML += `<span class="chip ok">válida</span>`;
+    }
+    headerHTML += "</div>";
+
+    let bodyHTML = `<div class="action-json">${b.raw.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>`;
+
+    if (b.parseOk && validation) {
+      if (!validation.ok)   bodyHTML += `<div class="val-msg err">❌ ${validation.msg}</div>`;
+      else if (validation.warn) bodyHTML += `<div class="val-msg warn">⚠️ ${validation.warn}</div>`;
+      else bodyHTML += `<div class="val-msg ok">✅ Estructura correcta</div>`;
+    }
+
+    card.innerHTML = headerHTML + bodyHTML;
+    tab.appendChild(card);
+  });
+}
+
+// ── Send ──────────────────────────────────────────────────────────────────
+const sendBtn  = document.getElementById("send-btn");
+const msgArea  = document.getElementById("msg-area");
+const badgeEl  = document.getElementById("badge-blocks");
+
+let conversationHistory = [];
+
+sendBtn.addEventListener("click", sendMessage);
+msgArea.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
+async function sendMessage() {
+  const message = msgArea.value.trim();
+  if (!message) return;
+
+  const mode        = document.getElementById("mode-sel").value;
+  const temperature = parseFloat(document.getElementById("temp-inp").value);
+  const useCtx      = document.getElementById("tog-ctx").checked;
+  const useHist     = document.getElementById("tog-hist").checked;
+  const graphContext = useCtx ? document.getElementById("ctx-area").value.trim() : "";
+  const flags = {
+    useSystemParam: document.getElementById("tog-system").checked,
+    useSeedHistory: document.getElementById("tog-seed").checked,
+    useAutoRetry:   document.getElementById("tog-retry").checked,
+  };
+
+  sendBtn.disabled = true;
+  sendBtn.innerHTML = '<span class="spinner"></span> Esperando…';
+
+  // Clear tabs
+  document.getElementById("tab-blocks").innerHTML = '<div class="placeholder"><span class="spinner"></span> Generando respuesta…</div>';
+  document.getElementById("tab-raw").innerHTML    = '<div class="placeholder"><span class="spinner"></span></div>';
+  document.getElementById("tab-prompt").innerHTML = '<div class="placeholder"><span class="spinner"></span></div>';
+  badgeEl.textContent = "…";
+
+  try {
+    const body = {
+      message,
+      mode,
+      temperature,
+      graphContext: graphContext || undefined,
+      history: useHist ? conversationHistory.slice(-6) : [],
+      flags,
+    };
+
+    const res  = await fetch("/api/debug-chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+
+    if (data.error) {
+      document.getElementById("tab-blocks").innerHTML = `<div class="placeholder" style="color:var(--red)">Error: ${data.error}<br><small>${data.detail||""}</small></div>`;
+      return;
+    }
+
+    // Update history
+    conversationHistory.push({ role: "user", content: message });
+    conversationHistory.push({ role: "assistant", content: data.answer });
+
+    // Stats
+    document.getElementById("stats").style.display = "flex";
+    document.getElementById("st-model").textContent = data.model || "—";
+    document.getElementById("st-time").textContent  = data.elapsedMs ? (data.elapsedMs / 1000).toFixed(1) + "s" : "—";
+    document.getElementById("st-temp").textContent  = data.temperature ?? "—";
+    document.getElementById("st-mode").textContent  = data.isDiagramMode ? "diagrama" : "chat";
+    const retryWrap = document.getElementById("st-retry-wrap");
+    retryWrap.style.display = data.retried ? "inline" : "none";
+
+    // ── Blocks tab
+    const blocks = parseBlocks(data.answer);
+    badgeEl.textContent = blocks.length;
+    renderBlocks(blocks, data.answer);
+
+    // ── Raw tab
+    const rawTab = document.getElementById("tab-raw");
+    rawTab.innerHTML = "";
+    if (data.rawAnswer !== data.answer) {
+      const note = document.createElement("div");
+      note.style.cssText = "font-size:10px;color:var(--yellow);margin-bottom:6px";
+      note.textContent = "⚠️ El servidor limpió markdown fences — mostrando respuesta limpia abajo.";
+      rawTab.appendChild(note);
+    }
+    const rawBlock = document.createElement("div");
+    rawBlock.className = "code-block";
+    rawBlock.innerHTML = highlightRaw(data.answer);
+    rawTab.appendChild(rawBlock);
+
+    // ── Prompt tab
+    const promptTab = document.getElementById("tab-prompt");
+    promptTab.innerHTML = "";
+    if (data.systemSent) {
+      const sysLabel = document.createElement("div");
+      sysLabel.style.cssText = "font-size:10px;font-weight:700;color:var(--accent);margin-bottom:4px;letter-spacing:.08em";
+      sysLabel.textContent = "SYSTEM (campo system de Ollama):";
+      promptTab.appendChild(sysLabel);
+      const sysBlock = document.createElement("div");
+      sysBlock.className = "code-block";
+      sysBlock.style.marginBottom = "10px";
+      sysBlock.textContent = data.systemSent;
+      promptTab.appendChild(sysBlock);
+      const promptLabel = document.createElement("div");
+      promptLabel.style.cssText = "font-size:10px;font-weight:700;color:var(--soft);margin-bottom:4px;letter-spacing:.08em";
+      promptLabel.textContent = "PROMPT (campo prompt de Ollama):";
+      promptTab.appendChild(promptLabel);
+    }
+    const promptBlock = document.createElement("div");
+    promptBlock.className = "code-block";
+    promptBlock.textContent = data.promptSent || "(prompt no disponible)";
+    promptTab.appendChild(promptBlock);
+
+    // Auto-switch to blocks tab if blocks found, else to raw
+    if (blocks.length === 0) {
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+      document.querySelector('[data-tab="raw"]').classList.add("active");
+      document.getElementById("tab-raw").classList.add("active");
+    } else {
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+      document.querySelector('[data-tab="blocks"]').classList.add("active");
+      document.getElementById("tab-blocks").classList.add("active");
+    }
+
+  } catch (err) {
+    document.getElementById("tab-blocks").innerHTML =
+      `<div class="placeholder" style="color:var(--red)">Error de conexión: ${err.message}</div>`;
+    badgeEl.textContent = "!";
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.textContent = "Enviar";
+    msgArea.value = "";
+    msgArea.focus();
+  }
+}
+</script>
+</body>
+</html>

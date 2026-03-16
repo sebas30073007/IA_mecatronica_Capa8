@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAPA 8 - Diagramas</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/fa/css/all.min.css">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="icon" href="./favicon.ico">
+
+  <script>
+    // Aplica tema antes del primer paint para evitar flash
+    if (localStorage.getItem('capa8_theme') === 'light')
+      document.documentElement.dataset.theme = 'light';
+  </script>
+  <script src="./assets/marked.umd.js"></script>
+  <script type="module" src="./src/app/main.js"></script>
+</head>
+
+<body>
+  <!-- Obsidiana navbar (shared) -->
+  <header class="obsidiana-nav">
+    <!-- Logo con dropdown -->
+    <div class="onav-logo-wrap">
+      <button class="onav-logo-btn" id="onav-logo-btn">
+        <img class="onav-logo-img" src="assets/img/Logo IA.png" alt="CAPA 8" />
+        <svg class="onav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+      <div class="onav-dropdown" id="onav-dropdown" hidden>
+        <a href="./index.html" class="onav-dropdown-item">
+          <span class="onav-dropdown-item-title">IA</span>
+          <span class="onav-dropdown-item-sub">Asistente de redes</span>
+        </a>
+        <a href="./about.html" class="onav-dropdown-item">
+          <span class="onav-dropdown-item-title">Sobre el Proyecto</span>
+          <span class="onav-dropdown-item-sub">Sobre el proyecto</span>
+        </a>
+        <a href="./diagrams.html" class="onav-dropdown-item active">
+          <span class="onav-dropdown-item-title">Diagramas</span>
+          <span class="onav-dropdown-item-sub">Simulador de topologías</span>
+        </a>
+        <a href="https://github.com/tu-usuario/capa8" target="_blank" rel="noopener noreferrer" class="onav-dropdown-item">
+          <span class="onav-dropdown-item-title">Repo</span>
+          <span class="onav-dropdown-item-sub">Repositorio GitHub</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="onav-divider"></div>
+
+    <!-- Archivo / Dibujar / Ajustes / Ejemplos dropdowns -->
+    <div id="sim-menubar" class="sim-menubar onav-menus"></div>
+
+    <!-- Hamburger (mobile) -->
+    <button class="onav-hamburger onav-icon-btn" id="onav-hamburger" title="Menú">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+
+    <div class="onav-spacer"></div>
+
+    <!-- Action buttons -->
+    <div class="onav-diag-actions">
+      <button id="btn-run" class="cnav-btn cnav-btn-run">
+        <i class="fa-solid fa-play"></i> Run
+      </button>
+      <button id="btn-terminal" class="cnav-icon-btn" title="Terminal">
+        <i class="fa-solid fa-terminal"></i>
+      </button>
+      <button id="btn-copylink" class="cnav-icon-btn" title="Copiar enlace">
+        <i class="fa-solid fa-link" id="btn-copylink-icon"></i>
+      </button>
+    </div>
+
+    <!-- Tema toggle -->
+    <button id="theme-toggle" class="theme-toggle-btn" title="Cambiar tema (claro/oscuro)">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+
+    <!-- Online pill -->
+    <div class="onav-online">
+      <span class="onav-dot"></span>
+      <span class="onav-online-text">Online</span>
+    </div>
+  </header>
+
+  <!-- Mobile tools dropdown -->
+  <div class="onav-mobile-menu" id="onav-mobile-menu" hidden>
+    <div id="sim-menubar-mobile" class="onav-mobile-sim-menu"></div>
+  </div>
+
+  <!-- Canvas fills remaining viewport -->
+  <div class="sim-stage-wrap" id="sim-stage-wrap">
+
+    <div class="network-stage" id="network-stage" aria-label="Workspace de diagramas">
+      <div class="stage-world" id="stage-world">
+        <svg class="stage-svg" id="stage-svg"></svg>
+      </div>
+    </div>
+
+    <!-- Inspector overlay (top-right of canvas) -->
+    <div id="inspector-overlay" class="inspector-overlay" hidden></div>
+
+    <!-- Node right-click context menu -->
+    <div id="node-ctx-menu" class="node-ctx-menu" hidden></div>
+
+    <!-- Node/link status badge (bottom-left) -->
+    <div id="status-badge" class="status-badge">0 nodos · 0 enlaces</div>
+
+    <!-- Terminal bottom slide panel -->
+    <div id="terminal-bottom" class="terminal-bottom terminal-bottom--hidden">
+      <div class="terminal-bottom-header">
+        <span>Terminal</span>
+        <div>
+          <button id="btn-term-clear" class="term-hdr-btn">Limpiar</button>
+          <button id="btn-term-close" class="term-hdr-btn">✕</button>
+        </div>
+      </div>
+      <div class="terminal-output" id="terminal-output"></div>
+      <div class="terminal-input-row">
+        <span class="terminal-prompt">$</span>
+        <input id="terminal-input" class="terminal-input" type="text"
+               placeholder="ping 10.0.0.1" autocomplete="off" />
+        <button id="terminal-send" class="terminal-send">↵</button>
+      </div>
+    </div>
+
+    <!-- AI Side Panel -->
+    <div class="ai-side-wrap" id="ai-side-wrap">
+      <div class="ai-fab-panel" id="ai-fab-panel"></div>
+      <button class="ai-tab-btn" id="ai-fab-btn" title="Asistente IA">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span class="ai-tab-label">IA</span>
+        <span id="ai-tab-badge" class="ai-tab-badge" hidden></span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Advanced Properties Modal -->
+  <div id="adv-modal-backdrop" class="adv-modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="adv-modal">
+      <div class="adv-modal-header">
+        <span id="adv-modal-title" class="adv-modal-title">Saber más</span>
+        <button id="adv-modal-close" class="adv-modal-close" title="Cerrar (Esc)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="adv-modal-body" class="adv-modal-body"></div>
+      <div class="adv-modal-footer">
+        <button id="adv-modal-cancel" class="adv-modal-btn adv-modal-btn--cancel" style="display:none"></button>
+        <button id="adv-modal-apply" class="adv-modal-btn adv-modal-btn--apply" style="display:none"></button>
+        <button id="adv-modal-close-footer" class="adv-modal-btn adv-modal-btn--apply">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

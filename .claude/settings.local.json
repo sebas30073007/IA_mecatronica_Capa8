@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(node:*)",
+      "Bash(\"E:/20_UNI/Html proyects/Claude proyect/capa8_app/src/examples/small_lan.json\":*)",
+      "Bash(\"E:/20_UNI/Html proyects/Claude proyect/capa8_app/src/examples/vlan_routing.json\":*)",
+      "Bash(\"E:/20_UNI/Html proyects/Claude proyect/capa8_app/src/examples/wan_redundant.json\":*)",
+      "Bash(del:*)",
+      "Bash(curl:*)",
+      "Bash(ls:*)",
+      "Bash(for f in *.svg)",
+      "Bash(do echo \"=== $f ===\")",
+      "Read(//e/20_UNI/Html proyects/Claude proyect Capa8/capa8_app/**)",
+      "Bash(done)",
+      "Bash(python3:*)",
+      "Bash(mv:*)",
+      "Bash(grep -rn \"PRETTY_LAYOUT_SUAVE\\\\|\\\\\"suave\\\\\"\\\\|mode.*suave\\\\|suave.*mode\\\\|ai-fab-wrap\\\\|ai-fab-btn\\\\|\\\\.ai-fab[^-]\\\\|computeFreePosition\\\\|hidden.*panel\\\\|panel.*hidden\" \"E:\\\\20_UNI\\\\Html proyects\\\\Claude proyect Capa8\\\\capa8_app\\\\src\" --include=\"*.js\" 2>/dev/null | grep -v \".git\")"
+    ]
+  }
+}

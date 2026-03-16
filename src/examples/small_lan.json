@@ -1,0 +1,15 @@
+{
+  "version": 3,
+  "meta": { "name": "LAN pequeña (ejemplo)", "createdAt": 0, "updatedAt": 0 },
+  "nodes": [
+    { "id": "n1", "type": "router", "label": "Router 1", "x": 400, "y": 150, "ip": "10.0.0.1"  },
+    { "id": "n2", "type": "switch", "label": "Switch 1", "x": 400, "y": 340, "ip": "10.0.1.2"  },
+    { "id": "n3", "type": "pc",    "label": "PC 1",      "x": 580, "y": 520, "ip": "10.0.1.10" },
+    { "id": "n4", "type": "pc",    "label": "PC 2",      "x": 220, "y": 520, "ip": "10.0.1.11" }
+  ],
+  "links": [
+    { "id": "l1", "source": "n1", "target": "n2", "latencyMs": 5,  "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l2", "source": "n2", "target": "n3", "latencyMs": 18, "bandwidthMbps": 100,  "lossPct": 1, "status": "up" },
+    { "id": "l3", "source": "n2", "target": "n4", "latencyMs": 12, "bandwidthMbps": 100,  "lossPct": 0, "status": "up" }
+  ]
+}

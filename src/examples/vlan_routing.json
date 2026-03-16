@@ -1,0 +1,21 @@
+{
+  "version": 3,
+  "meta": { "name": "VLAN + Routing Inter-VLAN" },
+  "nodes": [
+    { "id": "n1", "type": "router", "label": "Router (L3)",   "x": 440, "y": 110, "ip": "192.168.1.1"   },
+    { "id": "n2", "type": "switch", "label": "SW-VLAN10",     "x": 230, "y": 300, "ip": "192.168.10.2"  },
+    { "id": "n3", "type": "switch", "label": "SW-VLAN20",     "x": 650, "y": 300, "ip": "192.168.20.2"  },
+    { "id": "n4", "type": "pc",    "label": "PC-A (VLAN10)",  "x":  80, "y": 490, "ip": "192.168.10.10" },
+    { "id": "n5", "type": "pc",    "label": "PC-B (VLAN10)",  "x": 280, "y": 490, "ip": "192.168.10.11" },
+    { "id": "n6", "type": "pc",    "label": "PC-C (VLAN20)",  "x": 500, "y": 490, "ip": "192.168.20.10" },
+    { "id": "n7", "type": "pc",    "label": "PC-D (VLAN20)",  "x": 720, "y": 490, "ip": "192.168.20.11" }
+  ],
+  "links": [
+    { "id": "l1", "source": "n1", "target": "n2", "latencyMs": 2, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l2", "source": "n1", "target": "n3", "latencyMs": 2, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l3", "source": "n2", "target": "n4", "latencyMs": 1, "bandwidthMbps": 100,  "lossPct": 0, "status": "up" },
+    { "id": "l4", "source": "n2", "target": "n5", "latencyMs": 1, "bandwidthMbps": 100,  "lossPct": 0, "status": "up" },
+    { "id": "l5", "source": "n3", "target": "n6", "latencyMs": 1, "bandwidthMbps": 100,  "lossPct": 0, "status": "up" },
+    { "id": "l6", "source": "n3", "target": "n7", "latencyMs": 1, "bandwidthMbps": 100,  "lossPct": 0, "status": "up" }
+  ]
+}

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Icons — Final</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@600;700;800&display=swap');
+
+  /* ── Color tokens: dark theme (default) ── */
+  :root {
+    --bg:        #0d1117;
+    --surface:   #161b22;
+    --border:    rgba(255,255,255,0.08);
+    --text:      #e6edf3;
+    --muted:     #8b949e;
+    --toggle-bg: #21262d;
+    --shadow:    rgba(0,0,0,0.5);
+
+    /* semantic icon colors — slightly brighter for dark BG */
+    --c-router:   #60a5fa;
+    --c-switch:   #22d3ee;
+    --c-pc:       #a78bfa;
+    --c-firewall: #f87171;
+    --c-server:   #34d399;
+    --c-cloud:    #7dd3fc;
+    --c-ap:       #fbbf24;
+    --c-plc:      #a78bfa;
+    --c-ur3:      #38bdf8;
+    --c-agv:      #fb923c;
+
+    /* bubble tints */
+    --b-router:   rgba(96,165,250,0.12);
+    --b-switch:   rgba(34,211,238,0.12);
+    --b-pc:       rgba(167,139,250,0.12);
+    --b-firewall: rgba(248,113,113,0.12);
+    --b-server:   rgba(52,211,153,0.12);
+    --b-cloud:    rgba(125,211,252,0.12);
+    --b-ap:       rgba(251,191,36,0.12);
+    --b-plc:      rgba(167,139,250,0.12);
+    --b-ur3:      rgba(56,189,248,0.12);
+    --b-agv:      rgba(251,146,60,0.12);
+  }
+
+  /* ── Light theme overrides ── */
+  body.light {
+    --bg:        #f0f4f8;
+    --surface:   #ffffff;
+    --border:    rgba(0,0,0,0.09);
+    --text:      #1a202c;
+    --muted:     #64748b;
+    --toggle-bg: #e2e8f0;
+    --shadow:    rgba(0,0,0,0.1);
+
+    /* slightly deeper colors for light BG readability */
+    --c-router:   #2563eb;
+    --c-switch:   #0891b2;
+    --c-pc:       #7c3aed;
+    --c-firewall: #dc2626;
+    --c-server:   #059669;
+    --c-cloud:    #3b82f6;
+    --c-ap:       #d97706;
+    --c-plc:      #6d28d9;
+    --c-ur3:      #0369a1;
+    --c-agv:      #c2410c;
+
+    --b-router:   #2563eb;
+    --b-switch:   #0891b2;
+    --b-pc:       #7c3aed;
+    --b-firewall: #dc2626;
+    --b-server:   #059669;
+    --b-cloud:    #3b82f6;
+    --b-ap:       #d97706;
+    --b-plc:      #6d28d9;
+    --b-ur3:      #0369a1;
+    --b-agv:      #c2410c;
+  }
+
+  /* Light mode: icono blanco sobre círculo de color */
+  body.light .icon-wrap svg { filter: brightness(0) invert(1); }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 36px 28px 80px;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .header-left h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text);
+  }
+  .header-left p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Theme toggle ── */
+  .toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    user-select: none;
+  }
+  .toggle {
+    width: 44px;
+    height: 24px;
+    background: var(--toggle-bg);
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: background 0.25s;
+    flex-shrink: 0;
+  }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--muted);
+    top: 2px;
+    left: 3px;
+    transition: transform 0.25s, background 0.25s;
+  }
+  body.light .toggle::after {
+    transform: translateX(20px);
+    background: var(--text);
+  }
+
+  /* ── Grid ── */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding: 5px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: inline-block;
+  }
+
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 14px;
+    max-width: 900px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 10px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+  .card:hover {
+    border-color: rgba(128,128,128,0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px var(--shadow);
+  }
+
+  .icon-wrap {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon-wrap svg {
+    width: 46px;
+    height: 46px;
+  }
+
+  /* bubble tints — CSS vars */
+  .bg-router   { background: var(--b-router); }
+  .bg-switch   { background: var(--b-switch); }
+  .bg-pc       { background: var(--b-pc); }
+  .bg-firewall { background: var(--b-firewall); }
+  .bg-server   { background: var(--b-server); }
+  .bg-cloud    { background: var(--b-cloud); }
+  .bg-ap       { background: var(--b-ap); }
+  .bg-plc      { background: var(--b-plc); }
+  .bg-ur3      { background: var(--b-ur3); }
+  .bg-agv      { background: var(--b-agv); }
+
+  .card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Network Icons — Final</h1>
+    <p>// versión definitiva · ajustada para fondo claro y oscuro</p>
+  </div>
+  <div class="toggle-wrap">
+    <span>DARK</span>
+    <div class="toggle" id="toggle" onclick="toggleTheme()"></div>
+    <span>LIGHT</span>
+  </div>
+</div>
+
+<div class="section-label">// iconos definitivos</div>
+<div class="icon-grid" id="grid"></div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SVG DEFINITIONS — usando currentColor via CSS var inline
+     Cada icono usa su color semántico via atributo style o fill
+     Para adaptar al tema, los SVGs usan la variable CSS del tipo
+════════════════════════════════════════════════════════════ -->
+<script>
+function toggleTheme() {
+  document.body.classList.toggle('light');
+}
+
+// Cada icono usa su var CSS de color para adaptar automáticamente a tema
+const ICONS = {
+
+  // ── ROUTER: círculo grande, 4 flechas DENTRO, sin cruz, todas igual tamaño
+  router: (c) => `<svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="25" cy="25" r="22" stroke="${c}" stroke-width="1.8"/>
+    <!-- NORTE: saliente — cola abajo, punta arriba -->
+    <line x1="25" y1="21" x2="25" y2="13" stroke="${c}" stroke-width="1.7" stroke-linecap="round"/>
+    <polygon points="25,10 21.5,15 28.5,15" fill="${c}"/>
+    <!-- SUR: saliente — cola arriba, punta abajo -->
+    <line x1="25" y1="29" x2="25" y2="37" stroke="${c}" stroke-width="1.7" stroke-linecap="round"/>
+    <polygon points="25,40 21.5,35 28.5,35" fill="${c}"/>
+    <!-- ESTE: entrante — +1px separado -->
+    <line x1="32" y1="25" x2="40" y2="25" stroke="${c}" stroke-width="1.7" stroke-linecap="round"/>
+    <polygon points="29,25 34,21.5 34,28.5" fill="${c}"/>
+    <!-- OESTE: entrante — +1px separado -->
+    <line x1="10" y1="25" x2="18" y2="25" stroke="${c}" stroke-width="1.7" stroke-linecap="round"/>
+    <polygon points="21,25 16,21.5 16,28.5" fill="${c}"/>
+  </svg>`,
+
+  // ── SWITCH: sin "antenas" — solo el cuerpo rect + puertos + LEDs
+  switch: (c) => `<svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="4" y="18" width="42" height="14" rx="3" stroke="${c}" stroke-width="1.8" fill="none"/>
+    <!-- 4 puertos rectangulares -->
+    <rect x="8"  y="22" width="5" height="6" rx="1" stroke="${c}" stroke-width="1.2"/>
+    <rect x="15" y="22" width="5" height="6" rx="1" stroke="${c}" stroke-width="1.2" opacity=".8"/>
+    <rect x="22" y="22" width="5" height="6" rx="1" stroke="${c}" stroke-width="1.2" opacity=".6"/>
+    <rect x="29" y="22" width="5" height="6" rx="1" stroke="${c}" stroke-width="1.2" opacity=".4"/>
+    <!-- LED indicador -->
+    <circle cx="39" cy="25" r="2.2" fill="${c}"/>
+  </svg>`,
+
+  // ── PC: monitor bajado para verse centrado visualmente en el círculo
+  pc: (c) => `<svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="7" y="11" width="36" height="22" rx="3" stroke="${c}" stroke-width="1.8" fill="none"/>
+    <rect x="10" y="14" width="30" height="16" rx="1.5" stroke="${c}" stroke-width="1" opacity=".3" fill="none"/>
+    <line x1="14" y1="19" x2="28" y2="19" stroke="${c}" stroke-width="1" opacity=".5" stroke-linecap="round"/>
+    <line x1="14" y1="22" x2="36" y2="22" stroke="${c}" stroke-width="1" opacity=".35" stroke-linecap="round"/>
+    <line x1="14" y1="25" x2="22" y2="25" stroke="${c}" stroke-width="1" opacity=".25" stroke-linecap="round"/>
+    <line x1="25" y1="33" x2="25" y2="38" stroke="${c}" stroke-width="2" stroke-linecap="round"/>
+    <line x1="16" y1="41" x2="34" y2="41" stroke="${c}" stroke-width="2" stroke-linecap="round"/>
+    <line x1="25" y1="38" x2="16" y2="41" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="25" y1="38" x2="34" y2="41" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>`,
+
+  // ── FIREWALL: Propuesta B (escudo + candado)
+  firewall: (c) => `<svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M25 5L9 13v12c0 10 7 18 16 20 9-2 16-10 16-20V13L25 5z"
+          fill="none" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/>
+    <rect x="18" y="26" width="14" height="10" rx="2" stroke="${c}" stroke-width="1.5" fill="none"/>
+    <path d="M20 26v-3a5 5 0 0110 0v3" stroke="${c}" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    <circle cx="25" cy="31" r="2" fill="${c}"/>
+  </svg>`,
+
+  // ── SERVER: Propuesta B (3 racks con puertos + LEDs)
+  server: (c) => `<svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="7" y="9"  width="36" height="9" rx="2" stroke="${c}" stroke-width="1.7" fill="none"/>
+    <rect x="7" y="21" width="36" height="9" rx="2" stroke="${c}" stroke-width="1.7" fill="none"/>
+    <rect x="7" y="33" width="36" height="9" rx="2" stroke="${c}" stroke-width="1.7" fill="none"/>
+    <rect x="10" y="11.5" width="18" height="4" rx="1" stroke="${c}" stroke-width="1" opacity=".3" fill="none"/>
+    <rect x="10" y="23.5" width="18" height="4" rx="1" stroke="${c}" stroke-width="1" opacity=".3" fill="none"/>
+    <rect x="10" y="35.5" width="18" height="4" rx="1" stroke="${c}" stroke-width="1" opacity=".3" fill="none"/>
+    <circle cx="37" cy="13.5" r="2" fill="${c}"/>
+    <circle cx="37" cy="25.5" r="2" fill="${c}" opacity=".6"/>
+    <circle cx="37" cy="37.5" r="2" fill="${c}" opacity=".35"/>
+  </svg>`,
+
+  // ── CLOUD: Propuesta B (nube + cables + nodos) — más grande y centrada
+  cloud: (c) => `<svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M36 30H17a8 8 0 01-1-15.9A10 10 0 0133 16a7 7 0 013 12z"
+          fill="none" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/>
+    <line x1="19" y1="37" x2="19" y2="30" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="25" y1="39" x2="25" y2="30" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="31" y1="37" x2="31" y2="30" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="19" cy="38.5" r="1.5" fill="${c}"/>
+    <circle cx="25" cy="40.5" r="1.5" fill="${c}"/>
+    <circle cx="31" cy="38.5" r="1.5" fill="${c}"/>
+  </svg>`,
+
+  // ── AP: ondas bajadas, más separación entre ondas y cuerpo físico
+  ap: (c) => `<svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Arcos WiFi — posición intermedia, centro emisión en (25, 24) -->
+    <path d="M8 15 A24 24 0 0 1 42 15" stroke="${c}" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    <path d="M13 20 A17 17 0 0 1 37 20" stroke="${c}" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    <path d="M18 25 A10 10 0 0 1 32 25" stroke="${c}" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    <!-- Punto de origen -->
+    <circle cx="25" cy="26" r="2.5" fill="${c}"/>
+    <!-- Cable -->
+    <line x1="25" y1="28.5" x2="25" y2="33" stroke="${c}" stroke-width="1.4" stroke-linecap="round"/>
+    <!-- Cuerpo físico del AP — bien separado abajo -->
+    <rect x="16" y="33" width="18" height="5" rx="2.5" stroke="${c}" stroke-width="1.4" fill="none"/>
+    <circle cx="29" cy="35.5" r="1.2" fill="${c}" opacity=".7"/>
+  </svg>`,
+
+  // ── PLC: Original sin palitos verticales inferiores
+  plc: (c) => `<svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="8" y="10" width="34" height="28" rx="3" stroke="${c}" stroke-width="1.8" fill="none"/>
+    <rect x="12" y="14" width="26" height="7" rx="1" stroke="${c}" stroke-width="1.2" opacity=".5" fill="none"/>
+    <circle cx="14" cy="27" r="2" fill="${c}"/>
+    <circle cx="21" cy="27" r="2" fill="${c}" opacity=".6"/>
+    <circle cx="28" cy="27" r="2" fill="${c}" opacity=".35"/>
+  </svg>`,
+
+  // ── UR3: opción E corregida — eslabón 1 nace desde centro del círculo hombro
+  ur3: (c) => `<svg viewBox="4 18 42 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Base -->
+    <rect x="8" y="39" width="12" height="5" rx="2.5" fill="${c}" opacity=".8"/>
+    <rect x="11" y="34" width="6" height="6" rx="1" stroke="${c}" stroke-width="1.5" fill="none"/>
+    <!-- Articulación hombro -->
+    <circle cx="14" cy="33" r="3" stroke="${c}" stroke-width="1.5" fill="none"/>
+    <circle cx="14" cy="33" r="1" fill="${c}"/>
+    <!-- Eslabón 1: nace desde centro del círculo (14,33) -->
+    <line x1="14" y1="33" x2="19" y2="23" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Articulación codo 1 -->
+    <circle cx="20" cy="22" r="2.8" stroke="${c}" stroke-width="1.4" fill="none"/>
+    <circle cx="20" cy="22" r="0.9" fill="${c}"/>
+    <!-- Eslabón 2: horizontal hacia la derecha, desde centro codo -->
+    <line x1="20" y1="22" x2="32" y2="22" stroke="${c}" stroke-width="2.2" stroke-linecap="round"/>
+    <!-- Articulación codo 2 -->
+    <circle cx="33" cy="22" r="2.8" stroke="${c}" stroke-width="1.4" fill="none"/>
+    <circle cx="33" cy="22" r="0.9" fill="${c}"/>
+    <!-- Eslabón 3: diagonal hacia abajo, desde centro codo 2 -->
+    <line x1="33" y1="22" x2="35" y2="33" stroke="${c}" stroke-width="2" stroke-linecap="round"/>
+    <!-- Articulación muñeca -->
+    <circle cx="35" cy="34" r="2.3" stroke="${c}" stroke-width="1.3" fill="none"/>
+    <!-- Pinza paralela al suelo desde centro muñeca -->
+    <line x1="32" y1="36" x2="29" y2="39" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="38" y1="36" x2="41" y2="39" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="32" y1="37.5" x2="38" y2="37.5" stroke="${c}" stroke-width="1.2" stroke-linecap="round" opacity=".4"/>
+  </svg>`,
+
+  // ── AGV: bajado y desplazado a la derecha
+  agv: (c) => `<svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Cuerpo principal — desplazado derecha y abajo, más grande -->
+    <rect x="13" y="15" width="30" height="20" rx="3" stroke="${c}" stroke-width="1.8" fill="none"/>
+    <!-- Frente con punta (lado izquierdo) -->
+    <path d="M13 18 L8 22 L8 28 L13 32" stroke="${c}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <!-- 4 ruedas -->
+    <rect x="14" y="11" width="8" height="4" rx="1.5" stroke="${c}" stroke-width="1.4" fill="none"/>
+    <rect x="30" y="11" width="8" height="4" rx="1.5" stroke="${c}" stroke-width="1.4" fill="none"/>
+    <rect x="14" y="35" width="8" height="4" rx="1.5" stroke="${c}" stroke-width="1.4" fill="none"/>
+    <rect x="30" y="35" width="8" height="4" rx="1.5" stroke="${c}" stroke-width="1.4" fill="none"/>
+    <!-- Sensor frontal -->
+    <circle cx="8" cy="25" r="1.5" fill="${c}"/>
+  </svg>`,
+};
+
+const NODES = [
+  { key: 'router',   label: 'Router',   cssVar: '--c-router'   },
+  { key: 'switch',   label: 'Switch',   cssVar: '--c-switch'   },
+  { key: 'pc',       label: 'PC',       cssVar: '--c-pc'       },
+  { key: 'firewall', label: 'Firewall', cssVar: '--c-firewall' },
+  { key: 'server',   label: 'Server',   cssVar: '--c-server'   },
+  { key: 'cloud',    label: 'Cloud',    cssVar: '--c-cloud'    },
+  { key: 'ap',       label: 'AP',       cssVar: '--c-ap'       },
+  { key: 'plc',      label: 'PLC',      cssVar: '--c-plc'      },
+  { key: 'ur3',      label: 'UR3',      cssVar: '--c-ur3'      },
+  { key: 'agv',      label: 'AGV',      cssVar: '--c-agv'      },
+];
+
+function getCSSVar(varName) {
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  NODES.forEach(({ key, label, cssVar }) => {
+    const color = getCSSVar(cssVar);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="icon-wrap bg-${key}">${ICONS[key](color)}</div>
+      <div class="card-label">${label}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// Re-render on theme toggle to pick up new CSS var values
+document.getElementById('toggle').addEventListener('click', () => {
+  // Wait for class toggle, then re-render
+  setTimeout(renderGrid, 30);
+});
+
+renderGrid();
+</script>
+</body>
+</html>

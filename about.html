@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAPA 8 - Sobre el Proyecto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/fa/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="obsidiana-nav">
+        <div class="onav-logo-wrap">
+            <button class="onav-logo-btn" id="onav-logo-btn">
+                <img class="onav-logo-img" src="assets/img/Logo IA.png" alt="CAPA 8" />
+                <svg class="onav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+            </button>
+            <div class="onav-dropdown" id="onav-dropdown" hidden>
+                <a href="index.html" class="onav-dropdown-item">
+                    <span class="onav-dropdown-item-title">IA</span>
+                    <span class="onav-dropdown-item-sub">Asistente de redes</span>
+                </a>
+                <a href="about.html" class="onav-dropdown-item active">
+                    <span class="onav-dropdown-item-title">Sobre el Proyecto</span>
+                    <span class="onav-dropdown-item-sub">Sobre el proyecto</span>
+                </a>
+                <a href="diagrams.html" class="onav-dropdown-item">
+                    <span class="onav-dropdown-item-title">Diagramas</span>
+                    <span class="onav-dropdown-item-sub">Simulador de topologías</span>
+                </a>
+                <a href="https://github.com/tu-usuario/capa8" target="_blank" rel="noopener noreferrer" class="onav-dropdown-item">
+                    <span class="onav-dropdown-item-title">Repo</span>
+                    <span class="onav-dropdown-item-sub">Repositorio GitHub</span>
+                </a>
+            </div>
+        </div>
+        <div class="onav-spacer"></div>
+        <button id="theme-toggle" class="theme-toggle-btn" title="Cambiar tema (claro/oscuro)">
+            <i class="fa-solid fa-moon"></i>
+        </button>
+        <div class="onav-online">
+            <span class="onav-dot"></span>
+            <span class="onav-online-text">Online</span>
+        </div>
+    </header>
+    <script>
+      const btn  = document.getElementById('onav-logo-btn');
+      const dd   = document.getElementById('onav-dropdown');
+      const wrap = btn.closest('.onav-logo-wrap');
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        dd.hidden = !dd.hidden;
+        btn.classList.toggle('open', !dd.hidden);
+      });
+      wrap.addEventListener('mouseenter', () => { dd.hidden = false; btn.classList.add('open'); });
+      wrap.addEventListener('mouseleave', () => { dd.hidden = true;  btn.classList.remove('open'); });
+      document.addEventListener('click', e => {
+        if (!btn.contains(e.target) && !dd.contains(e.target)) {
+          dd.hidden = true;
+          btn.classList.remove('open');
+        }
+      });
+
+      // Tema claro / oscuro
+      (function() {
+        const saved = localStorage.getItem('capa8_theme');
+        if (saved === 'light') document.documentElement.dataset.theme = 'light';
+        const toggleBtn = document.getElementById('theme-toggle');
+        const icon = toggleBtn?.querySelector('i');
+        if (icon && saved === 'light') icon.className = 'fa-solid fa-sun';
+        toggleBtn?.addEventListener('click', () => {
+          const isLight = document.documentElement.dataset.theme === 'light';
+          document.documentElement.dataset.theme = isLight ? '' : 'light';
+          localStorage.setItem('capa8_theme', isLight ? '' : 'light');
+          if (icon) icon.className = isLight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+        });
+      })();
+    </script>
+
+    <main class="container">
+        <section class="page-hero">
+            <h1 class="page-title">¿Qué es CAPA 8?</h1>
+            <p class="page-subtitle">
+                CAPA 8 es una IA especializada en soporte y diseño de redes, enfocada en convertir conocimiento técnico
+                en soluciones claras, visuales y accionables.
+            </p>
+        </section>
+
+        <section class="content-card">
+            <article class="content-block">
+                <h2 class="section-title">El Problema (Capa 8)</h2>
+                <p>
+                    En redes y telecomunicaciones, muchos problemas no son únicamente técnicos: también dependen del contexto humano,
+                    la interpretación del incidente, la documentación incompleta y la experiencia del operador.
+                </p>
+                <p>
+                    A esta capa “humana” se le suele llamar informalmente <strong>Capa 8</strong>. Es donde aparecen dudas como:
+                    “¿qué está fallando realmente?”, “¿cómo explico la topología?”, “¿qué impacto tendrá este cambio?”.
+                </p>
+            </article>
+
+            <article class="content-block">
+                <h2 class="section-title">Nuestra Solución (MVP)</h2>
+                <p>
+                    El MVP de CAPA 8 integra una interfaz de asistencia por IA con modos de uso (resolución de problemas, arquitectura de red
+                    y soporte junior) para responder con un enfoque más contextual.
+                </p>
+                <p>
+                    Además, incorpora una herramienta visual de diagramas para modelar topologías rápidamente y compartirlas mediante URL,
+                    inspirada en un enfoque <em>stateless</em> al estilo Falstad.
+                </p>
+            </article>
+
+            <article class="content-block">
+                <h2 class="section-title">Visión a Futuro (RAG y Telecomunicaciones)</h2>
+                <p>
+                    La evolución natural de CAPA 8 es integrar <strong>RAG (Retrieval-Augmented Generation)</strong> para consultar documentación técnica,
+                    playbooks, estándares, bitácoras y configuraciones reales en tiempo real.
+                </p>
+                <p>
+                    En un escenario de telecomunicaciones, esto permitiría a CAPA 8 sugerir diagnósticos más precisos, comparar diseños,
+                    validar buenas prácticas y asistir en operación, soporte y planeación de infraestructura.
+                </p>
+            </article>
+        </section>
+    </main>
+
+</body>
+</html>

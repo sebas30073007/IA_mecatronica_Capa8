@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capa 8 - IA de Redes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/fa/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:,">
+    <script>
+      if (localStorage.getItem('capa8_theme') === 'light')
+        document.documentElement.dataset.theme = 'light';
+    </script>
+    <script src="./assets/marked.umd.js"></script>
+    <script type="module" src="src/index.js"></script>
+</head>
+<body>
+
+    <!-- ── Navbar ── -->
+    <header class="obsidiana-nav">
+        <!-- Logo con dropdown -->
+        <div class="onav-logo-wrap">
+            <button class="onav-logo-btn" id="onav-logo-btn">
+                <img class="onav-logo-img" src="assets/img/Logo IA.png" alt="CAPA 8" />
+                <svg class="onav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+            </button>
+            <div class="onav-dropdown" id="onav-dropdown" hidden>
+                <a href="index.html" class="onav-dropdown-item active">
+                    <span class="onav-dropdown-item-title">IA</span>
+                    <span class="onav-dropdown-item-sub">Asistente de redes</span>
+                </a>
+                <a href="about.html" class="onav-dropdown-item">
+                    <span class="onav-dropdown-item-title">Sobre el Proyecto</span>
+                    <span class="onav-dropdown-item-sub">Sobre el proyecto</span>
+                </a>
+                <a href="diagrams.html" class="onav-dropdown-item">
+                    <span class="onav-dropdown-item-title">Diagramas</span>
+                    <span class="onav-dropdown-item-sub">Simulador de topologías</span>
+                </a>
+                <a href="https://github.com/tu-usuario/capa8" target="_blank" rel="noopener noreferrer" class="onav-dropdown-item">
+                    <span class="onav-dropdown-item-title">Repo</span>
+                    <span class="onav-dropdown-item-sub">Repositorio GitHub</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="onav-divider"></div>
+
+        <!-- Herramientas contextuales: NIVEL + ENFOQUE + TOOLS -->
+        <div class="onav-tools" id="onav-tools">
+            <span class="onav-label">NIVEL</span>
+            <div id="nivel-buttons" style="display:flex;gap:4px;">
+                <button class="onav-chip" data-nivel="guiado">Guiado</button>
+                <button class="onav-chip active" data-nivel="balanceado">Balanceado</button>
+                <button class="onav-chip" data-nivel="tecnico">Técnico</button>
+            </div>
+            <div class="onav-divider"></div>
+            <span class="onav-label">MODO</span>
+            <div id="enfoque-buttons" style="display:flex;gap:4px;">
+                <button class="onav-chip active" data-enfoque="disenar">Diseñar</button>
+                <button class="onav-chip" data-enfoque="solver">Solver</button>
+            </div>
+            <div class="onav-divider"></div>
+            <span class="onav-label">TOOLS</span>
+            <a class="onav-chip" href="diagrams.html">
+                <i class="fa-solid fa-share-nodes"></i> Diagrams
+            </a>
+        </div>
+
+        <!-- Hamburger (mobile) -->
+        <button class="onav-hamburger onav-icon-btn" id="onav-hamburger" title="Menú">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+        </button>
+
+        <div class="onav-spacer"></div>
+
+        <!-- Tema toggle -->
+        <button id="theme-toggle" class="theme-toggle-btn" title="Cambiar tema (claro/oscuro)">
+            <i class="fa-solid fa-moon"></i>
+        </button>
+
+        <!-- Online pill -->
+        <div class="onav-online">
+            <span class="onav-dot"></span>
+            <span class="onav-online-text">Online</span>
+        </div>
+    </header>
+
+    <!-- Mobile tools dropdown -->
+    <div class="onav-mobile-menu" id="onav-mobile-menu" hidden>
+        <span class="onav-mobile-label">NIVEL</span>
+        <div class="onav-mobile-chips">
+            <button class="onav-chip" data-nivel="guiado">Guiado</button>
+            <button class="onav-chip active" data-nivel="balanceado">Balanceado</button>
+            <button class="onav-chip" data-nivel="tecnico">Técnico</button>
+        </div>
+        <span class="onav-mobile-label">MODO</span>
+        <div class="onav-mobile-chips">
+            <button class="onav-chip active" data-enfoque="disenar">Diseñar</button>
+            <button class="onav-chip" data-enfoque="solver">Solver</button>
+        </div>
+        <span class="onav-mobile-label">TOOLS</span>
+        <div class="onav-mobile-chips">
+            <a class="onav-chip" href="diagrams.html"><i class="fa-solid fa-share-nodes"></i> Diagrams</a>
+        </div>
+    </div>
+
+    <!-- ── Chat page ── -->
+    <div class="chat-page">
+        <!-- Zona de mensajes (scroll) -->
+        <div class="chat-page-messages" id="chat-messages-wrap">
+            <div class="chat-page-messages-inner chat-messages">
+                <div class="message ai-message">
+                    Hola! Soy Capa_8, tu asistente de soporte en temas de redes, estoy aqui para resolver tus problemas de Capa 8. ¿En qué puedo ayudarte?
+                </div>
+            </div>
+        </div>
+
+        <!-- Input anclado al fondo -->
+        <div class="chat-page-input">
+            <div class="chat-page-input-inner">
+                <div class="input-wrapper">
+                    <input type="text" placeholder="Escribe tu mensaje aquí..." class="chat-input">
+                    <button class="send-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="19" x2="12" y2="5"/>
+                            <polyline points="5 12 12 5 19 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="chat-page-footer">
+                    <span>Capa_8 v3.0 · <span id="chat-mode-title">Balanceado · Diseñar</span></span>
+                    <span>Enter ↵</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
