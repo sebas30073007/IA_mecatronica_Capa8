@@ -1,4 +1,5 @@
 // src/index.js
+import { API_BASE } from "./config.js";
 import { convStore } from "./ai/convStore.js";
 import { parseResponse } from "./ai/responseParser.js";
 import { NIVELES, ENFOQUES } from "./ai/modes.js";
@@ -197,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showTyping();
 
     try {
-      const r = await fetch("/api/chat", {
+      const r = await fetch(`${API_BASE}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

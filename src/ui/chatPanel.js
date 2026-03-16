@@ -1,5 +1,6 @@
 // src/ui/chatPanel.js
 // Panel de chat integrado en el simulador (diagrams.html).
+import { API_BASE } from "../config.js";
 import { buildGraphContext } from "../ai/context-builder.js";
 import { analyzeTopology } from "../ai/topology-analyzer.js";
 import { NIVELES, ENFOQUES } from "../ai/modes.js";
@@ -159,7 +160,7 @@ export function createChatPanel({ store, onApplyAction, onApplyActions }) {
     inputEl.disabled = true;
 
     try {
-      const res = await fetch("/api/chat", {
+      const res = await fetch(`${API_BASE}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

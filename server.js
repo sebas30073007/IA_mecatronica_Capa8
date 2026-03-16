@@ -29,6 +29,23 @@ const GROQ_URL     = "https://api.groq.com/openai/v1/chat/completions";
 // Nombre activo para logs y /api/health
 const ACTIVE_MODEL = LLM_PROVIDER === "groq" ? GROQ_MODEL : MODEL;
 
+// CORS — permite peticiones desde GitHub Pages y localhost
+const ALLOWED_ORIGINS = [
+  "https://sebas30073007.github.io",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+];
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin || "*");
+  }
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Capa8-Token");
+  if (req.method === "OPTIONS") return res.sendStatus(204);
+  next();
+});
+
 app.use(express.json({ limit: "2mb" }));
 
 app.get("/server.js", (_, res) => res.status(404).end());
@@ -141,10 +158,20 @@ const INTENT_TEMPS = {
 };
 
 // Injected in chat mode (index.html) when user asks to design a topology
-const TOPOLOGY_GUIDE = `Cuando el usuario pida diseñar, crear o generar una topología de red, responde con un bloque apply_graph con el grafo completo v3 y una breve explicación. Ejemplo:
+const TOPOLOGY_GUIDE = `
+REGLA OBLIGATORIA — GENERACIÓN DE TOPOLOGÍAS:
+Cuando el usuario pida diseñar, crear, generar, construir o armar una red o topología, DEBES responder ÚNICAMENTE con un bloque [CAPA8_ACTION] de tipo apply_graph que contenga el grafo completo. NUNCA describas la red en texto corrido. NUNCA preguntes "¿necesitas algo más?" antes de generar. Genera primero, comenta brevemente después si hace falta.
+
+CORRECTO — emite el bloque directamente:
 [CAPA8_ACTION]
-{"action":"apply_graph","graph":{"version":3,"meta":{"label":"Red LAN","updatedAt":0},"nodes":[{"id":"n1","type":"router","label":"Router1","x":300,"y":150,"ip":"192.168.1.1"},{"id":"n2","type":"switch","label":"Switch1","x":300,"y":280,"ip":""},{"id":"n3","type":"pc","label":"PC1","x":150,"y":400,"ip":"192.168.1.10"},{"id":"n4","type":"pc","label":"PC2","x":450,"y":400,"ip":"192.168.1.11"}],"links":[{"id":"l1","source":"n1","target":"n2","latencyMs":2,"bandwidthMbps":1000,"lossPct":0,"status":"up"},{"id":"l2","source":"n2","target":"n3","latencyMs":1,"bandwidthMbps":100,"lossPct":0,"status":"up"},{"id":"l3","source":"n2","target":"n4","latencyMs":1,"bandwidthMbps":100,"lossPct":0,"status":"up"}]}}
-[/CAPA8_ACTION]`;
+{"action":"apply_graph","graph":{"version":3,"meta":{"label":"Red LAN","updatedAt":0},"nodes":[{"id":"n1","type":"router","label":"Router1","x":300,"y":150,"ip":"192.168.1.1"},{"id":"n2","type":"switch","label":"Switch1","x":300,"y":300,"ip":""},{"id":"n3","type":"pc","label":"PC1","x":150,"y":450,"ip":"192.168.1.10"},{"id":"n4","type":"pc","label":"PC2","x":450,"y":450,"ip":"192.168.1.11"}],"links":[{"id":"l1","source":"n1","target":"n2","latencyMs":2,"bandwidthMbps":1000,"lossPct":0,"status":"up"},{"id":"l2","source":"n2","target":"n3","latencyMs":1,"bandwidthMbps":100,"lossPct":0,"status":"up"},{"id":"l3","source":"n2","target":"n4","latencyMs":1,"bandwidthMbps":100,"lossPct":0,"status":"up"}]}}
+[/CAPA8_ACTION]
+
+INCORRECTO — NO hagas esto: "La topología consiste en un router conectado a un switch y 2 PCs..."
+
+Tipos de nodos válidos: "router", "switch", "pc", "firewall", "server", "cloud", "ap"
+Campos de nodo: id (único, ej "n1"), type, label, x, y, ip
+Campos de enlace: id (único, ej "l1"), source, target, latencyMs, bandwidthMbps, lossPct (0), status ("up")`;
 
 // Strip markdown fences that small models wrap around [CAPA8_ACTION] blocks
 function cleanAnswer(text) {
@@ -194,12 +221,7 @@ function buildPrompt({ nivel, enfoque, intentType, history, message, graphContex
       `\nEnfoque: ${getEnfoqueSnippet(enfoqueKey)}`,
     ];
 
-    // Only add action directive for intents that need modifications
-    if (isActionIntent) {
-      systemParts.push(`\n${DIAGRAM_DIRECTIVE}`);
-    } else {
-      systemParts.push(`\nPara preguntas técnicas responde normalmente sin bloques [CAPA8_ACTION].`);
-    }
+    systemParts.push(`\n${DIAGRAM_DIRECTIVE}`);
 
     if (useSystemParam) {
       system = systemParts.join("\n");
@@ -235,9 +257,8 @@ function buildPrompt({ nivel, enfoque, intentType, history, message, graphContex
       : "Assistant:");
 
   } else {
-    // Chat mode (index.html): build system from nivel + enfoque
-    system = getSystemPrompt(nivelKey, enfoqueKey);
-    lines.push(TOPOLOGY_GUIDE);
+    // Chat mode (index.html): build system from nivel + enfoque + topology format rules
+    system = getSystemPrompt(nivelKey, enfoqueKey) + "\n\n" + TOPOLOGY_GUIDE;
     lines.push("\nConversación (reciente):");
     for (const h of (history || [])) {
       const role = h.role === "assistant" ? "Asistente" : "Usuario";
@@ -326,7 +347,7 @@ app.post("/api/chat", async (req, res) => {
     }
     let answer = cleanAnswer(raw);
 
-    // Auto-retry once if no CAPA8_ACTION blocks on an action request
+    // Auto-retry: modo diagrama — si se esperaba acción pero no llegó bloque
     const isActionRequest = isActionIntent || ACTION_KEYWORDS.test(message);
     if (isDiagramMode && !(/\[CAPA8_ACTION\]/.test(answer)) && isActionRequest) {
       const retryPrompt = `${prompt}\n\nIMPORTANT: Previous response had no [CAPA8_ACTION] blocks. You MUST emit [CAPA8_ACTION] JSON blocks for: "${String(message).trim()}". No explanations, no Mermaid, only [CAPA8_ACTION] blocks.`;
@@ -334,6 +355,16 @@ app.post("/api/chat", async (req, res) => {
         const retryAnswer = cleanAnswer(await callLLM(retryPrompt, system, 0.0));
         if (/\[CAPA8_ACTION\]/.test(retryAnswer)) answer = retryAnswer;
       } catch (_) { /* retry failed — keep original answer */ }
+    }
+
+    // Auto-retry: modo chat (index.html) — si pidió topología pero no generó bloque
+    const TOPOLOGY_KEYWORDS = /\b(diseña|diseñar|crea|crear|genera|generar|haz|hacer|construye|construir|arma|armar|topolog[ií]a|red\s+de|red\s+con|una\s+red)\b/i;
+    if (!isDiagramMode && TOPOLOGY_KEYWORDS.test(message) && !(/\[CAPA8_ACTION\]/.test(answer))) {
+      const retryPrompt = `${prompt}\n\nRECUERDA: Debes responder con un bloque [CAPA8_ACTION] apply_graph completo con el grafo JSON. NO describas la red en texto. Emite el bloque directamente.`;
+      try {
+        const retryAnswer = cleanAnswer(await callLLM(retryPrompt, system, 0.0));
+        if (/\[CAPA8_ACTION\]/.test(retryAnswer)) answer = retryAnswer;
+      } catch (_) { /* retry failed */ }
     }
 
     res.json({ answer });
