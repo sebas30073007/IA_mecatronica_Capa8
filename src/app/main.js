@@ -291,6 +291,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function setTerminalVisible(visible) {
     showTerminal = visible;
+    if (visible && window.innerWidth <= 768) {
+      // On mobile: clear selection so inspector bottom sheet hides
+      store.dispatch({ type: ActionTypes.CLEAR_SELECTION });
+    }
     terminalBottom.classList.toggle("terminal-bottom--hidden", !showTerminal);
     btnTerminal.classList.toggle("active", showTerminal);
     updateBottomElements();
@@ -356,6 +360,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const badge = document.getElementById("ai-tab-badge");
     if (badge) badge.hidden = true;
     chatPanel?.refreshWelcome();
+    // On mobile: close terminal and inspector to avoid stacking conflicts
+    if (window.innerWidth <= 768) {
+      setTerminalVisible(false);
+      store.dispatch({ type: ActionTypes.CLEAR_SELECTION });
+    }
   }
   function closeSidebar() {
     aiFabPanel.classList.remove("open");
@@ -950,8 +959,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   store.subscribe(() => {
     const st = store.getState();
 
-    // Inspector overlay
+    // Inspector overlay — on mobile, close terminal when inspector opens
+    const inspectorWasHidden = document.getElementById("inspector-overlay").hidden;
     inspector.render(st);
+    const inspectorNowVisible = !document.getElementById("inspector-overlay").hidden;
+    if (inspectorNowVisible && inspectorWasHidden && window.innerWidth <= 768 && showTerminal) {
+      setTerminalVisible(false);
+    }
 
     // Status badge
     updateStatusBadge(st);
