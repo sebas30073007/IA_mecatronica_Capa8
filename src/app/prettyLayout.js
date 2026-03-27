@@ -80,7 +80,9 @@ function inferRole(node, adj, nodeMap) {
 
     case "router": {
       const hasWAN = nbs.some(n => n.type === "cloud" || n.type === "firewall");
-      return hasWAN ? "edge-routing" : "distribution";
+      if (hasWAN) return "edge-routing";
+      const hasSwitchNb = nbs.some(n => n.type === "switch");
+      return hasSwitchNb ? "core" : "distribution";
     }
 
     case "switch": {

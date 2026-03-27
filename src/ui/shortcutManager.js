@@ -27,6 +27,8 @@ export function bindShortcuts({ onAction, onStatus }) {
     if (key === "s") { onAction("TOOL_SWITCH");   onStatus?.("Herramienta: Switch (S)"); return; }
     if (key === "p") { onAction("TOOL_PC");       onStatus?.("Herramienta: PC (P)"); return; }
     if (key === "f") { onAction("TOOL_FIREWALL"); onStatus?.("Herramienta: Firewall (F)"); return; }
+    if (key === "n") { onAction("TOOL_CLOUD");    onStatus?.("Herramienta: Nube (N)"); return; }
+    if (key === "a") { onAction("TOOL_AP");       onStatus?.("Herramienta: Access Point (A)"); return; }
     if (key === "l") { onAction("TOOL_LINK");     onStatus?.("Herramienta: Enlace (L)"); return; }
     if (key === "i") { onAction("TOGGLE_IP_LABELS"); onStatus?.("IPs alternadas (I)"); return; }
     if (key === "o") { onAction("PRETTY_LAYOUT"); onStatus?.("Diagrama organizado (O)"); return; }

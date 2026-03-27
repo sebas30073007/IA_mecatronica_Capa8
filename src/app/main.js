@@ -10,7 +10,7 @@ import { showToast } from "../ui/toast.js";
 import { createInspector } from "../ui/inspectorPanel.js";
 import { createTerminalPanel } from "../ui/terminalPanel.js";
 
-import { renderStage } from "../render/renderer.js";
+import { renderStage, NODE_ICON_FN } from "../render/renderer.js";
 import { hitTestLink } from "../render/hitTest.js";
 
 import { importGraphFromURL, exportGraphToURL } from "../persistence/urlCodec.js";
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Ajusta zoom y pan para que el contenido (nodos) ocupe el canvas visible.
-  function fitToScreen(padding = 60, maxZoom = 0.92) {
+  function fitToScreen(padding = 60, maxZoom = 0.92, scale = 1.0) {
     const nodes = store.getState().graph.nodes;
     if (nodes.length === 0) return;
 
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const availW = W - padding * 2;
     const availH = H - padding * 2;
 
-    const newZoom = Math.max(ZOOM_MIN, Math.min(maxZoom, Math.min(availW / contentW, availH / contentH)));
+    const newZoom = Math.max(ZOOM_MIN, Math.min(maxZoom, Math.min(availW / contentW, availH / contentH))) * scale;
 
     // Centrar el bounding box de los nodos en el stage
     vp.zoom = newZoom;
@@ -412,11 +412,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       } else if (action === "ping") {
         const st = store.getState();
         const node = st.graph.nodes.find(n => n.id === nodeId);
-        if (node?.type === "pc") {
+        if (["pc", "agv", "plc", "ur3"].includes(node?.type)) {
           terminalPanel.setPc(nodeId);
           setTerminalVisible(true);
         } else {
-          showToast("Selecciona una PC para hacer ping");
+          showToast("Selecciona una PC, AGV, PLC o UR3 para hacer ping");
         }
       } else if (action === "delete") {
         pushHistorySnapshot();
@@ -514,7 +514,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       dispatch: store.dispatch,
       ActionTypes,
     });
-    requestAnimationFrame(() => requestAnimationFrame(() => fitToScreen(60, ZOOM_MAX)));
+    requestAnimationFrame(() => requestAnimationFrame(() => fitToScreen(60, ZOOM_MAX, 0.9)));
   }
 
   function runPrettyNoHistory() {
@@ -525,7 +525,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       ActionTypes,
       skipHistory: true,
     });
-    requestAnimationFrame(() => requestAnimationFrame(() => fitToScreen(60, ZOOM_MAX)));
+    requestAnimationFrame(() => requestAnimationFrame(() => fitToScreen(60, ZOOM_MAX, 0.9)));
   }
 
   // ── Stage: click / drag / link ───────────────────────────────────────
@@ -575,7 +575,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       pushHistorySnapshot();
       store.dispatch({ type: ActionTypes.ADD_NODE, payload: { node } });
       // Ghost drop flash
-      if (ghostEl && !ghostEl.hidden) {
+      if (ghostEl && ghostEl.classList.contains('ghost--visible')) {
         ghostEl.classList.remove("drop-flash");
         void ghostEl.offsetWidth; // reflow to restart animation
         ghostEl.classList.add("drop-flash");
@@ -767,43 +767,41 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ── Ghost cursor setup ────────────────────────────────────────────────
   const ghostEl = document.getElementById("cursor-ghost");
-  const GHOST_ICONS = {
-    router:   '<i class="fa-solid fa-server"></i>',
-    switch:   '<i class="fa-solid fa-network-wired"></i>',
-    pc:       '<i class="fa-solid fa-display"></i>',
-    firewall: '<i class="fa-solid fa-shield-halved"></i>',
-    server:   '<i class="fa-solid fa-database"></i>',
-    cloud:    '<i class="fa-solid fa-cloud"></i>',
-    ap:       '<i class="fa-solid fa-wifi"></i>',
-    plc:      '<i class="fa-solid fa-microchip"></i>',
-    ur3:      '<i class="fa-solid fa-robot"></i>',
-    agv:      '<i class="fa-solid fa-truck-fast"></i>',
+  const GHOST_ICON_COLORS = {
+    router: '#60a5fa', switch: '#22d3ee', pc: '#a78bfa',
+    firewall: '#f87171', server: '#34d399', cloud: '#7dd3fc',
+    ap: '#fbbf24', plc: '#a78bfa', ur3: '#38bdf8', agv: '#fb923c',
   };
+  const GHOST_ICONS = {};
+  for (const [type, fn] of Object.entries(NODE_ICON_FN)) {
+    GHOST_ICONS[type] = fn(GHOST_ICON_COLORS[type] ?? '#60a5fa');
+  }
 
   function showGhost(tool) {
     if (!ghostEl || !GHOST_ICONS[tool]) { hideGhost(); return; }
     ghostEl.innerHTML = GHOST_ICONS[tool];
-    ghostEl.hidden = false;
+    ghostEl.classList.add('ghost--visible');
     stageEl.classList.add("has-tool");
   }
   function hideGhost() {
     if (!ghostEl) return;
-    ghostEl.hidden = true;
+    ghostEl.classList.remove('ghost--visible');
     stageEl.classList.remove("has-tool");
+    stageEl.classList.remove("has-link-tool");
   }
 
   stageEl.addEventListener("mousemove", e => {
-    if (ghostEl?.hidden === false) {
+    if (ghostEl?.classList.contains('ghost--visible')) {
       ghostEl.style.left = e.clientX + "px";
       ghostEl.style.top  = e.clientY + "px";
     }
   });
   stageEl.addEventListener("mouseleave", () => {
-    if (ghostEl) ghostEl.hidden = true;
+    if (ghostEl) ghostEl.classList.remove('ghost--visible');
   });
   stageEl.addEventListener("mouseenter", () => {
     const tool = store.getState().ui.tool;
-    if (GHOST_ICONS[tool]) ghostEl.hidden = false;
+    if (GHOST_ICONS[tool]) ghostEl.classList.add('ghost--visible');
   });
 
   // ── Menu actions ─────────────────────────────────────────────────────
@@ -814,8 +812,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       const tool = actionId.replace("TOOL_", "").toLowerCase();
       store.dispatch({ type: ActionTypes.SET_TOOL, payload: { tool } });
       linkDraft = null;
-      if (GHOST_ICONS[tool]) showGhost(tool);
-      else hideGhost();
+      if (tool === 'link') {
+        stageEl.classList.add('has-link-tool');
+        hideGhost();
+      } else {
+        stageEl.classList.remove('has-link-tool');
+        if (GHOST_ICONS[tool]) showGhost(tool);
+        else hideGhost();
+      }
       render();
       return;
     }
@@ -978,7 +982,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const selNode = sel?.kind === "node"
       ? st.graph.nodes.find(n => n.id === sel.id)
       : null;
-    terminalPanel.setPc(selNode?.type === "pc" ? selNode.id : null);
+    terminalPanel.setPc(["pc", "agv", "plc", "ur3"].includes(selNode?.type) ? selNode.id : null);
 
     render();
 

@@ -1120,7 +1120,7 @@ a.pill-btn { text-decoration: none; }
   position: relative;
   flex: 1;
   overflow: hidden;
-  cursor: crosshair;
+  cursor: default;
   touch-action: none; /* allow custom pinch/pan/drag handlers */
   background-color: rgba(10, 10, 15, 0.85);
   background-image:
@@ -1797,8 +1797,9 @@ a.pill-btn { text-decoration: none; }
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  will-change: transform;
 }
-.node-icon svg { width: 40px; height: 40px; }
+.node-icon svg { width: 40px; height: 40px; shape-rendering: geometricPrecision; }
 
 .node.router .node-icon {
   background: radial-gradient(circle at 38% 34%, rgba(59,130,246,0.18), rgba(59,130,246,0.04));
@@ -3474,6 +3475,9 @@ a.pill-btn { text-decoration: none; }
 [data-theme="light"] .fab-enfoque-chip { color: #555; border-color: rgba(0,0,0,0.15); }
 [data-theme="light"] .fab-nivel-chip:hover,
 [data-theme="light"] .fab-enfoque-chip:hover { background: rgba(0,0,0,0.06); color: #1a1a1a; }
+[data-theme="light"] .fab-nivel-chip.active,
+[data-theme="light"] .fab-enfoque-chip.active { background: var(--accent); color: #fff; border-color: transparent; }
+[data-theme="light"] .diagram-toast { color: #fff; }
 [data-theme="light"] .fab-clarification { background: rgba(200,16,46,0.04) !important; }
 [data-theme="light"] .fab-clarification-opt { color: #555; border-color: rgba(0,0,0,0.15); }
 
@@ -3482,19 +3486,20 @@ a.pill-btn { text-decoration: none; }
   position: fixed;
   pointer-events: none;
   z-index: 9999;
-  font-size: 22px;
-  width: 36px;
-  height: 36px;
-  display: flex;
+  width: 48px;
+  height: 48px;
+  display: none;
   align-items: center;
   justify-content: center;
-  background: rgba(200,16,46,0.15);
-  border: 1.5px solid rgba(200,16,46,0.5);
-  border-radius: 8px;
-  color: var(--accent);
+  background: rgba(10,10,15,0.55);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 4px;
   transform: translate(-50%, -50%);
   transition: transform 0.05s linear;
 }
+.cursor-ghost.ghost--visible { display: flex; }
+.cursor-ghost svg { width: 100%; height: 100%; }
 .cursor-ghost.drop-flash {
   animation: ghost-drop 0.25s ease;
 }
@@ -3503,7 +3508,8 @@ a.pill-btn { text-decoration: none; }
   50%  { transform: translate(-50%, -50%) scale(1.35); opacity: 0.7; }
   100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
-.network-stage.has-tool { cursor: none; }
+.network-stage.has-link-tool { cursor: crosshair; }
+.network-stage.has-link-tool .node { cursor: crosshair; }
 
 
 /* ============================================================

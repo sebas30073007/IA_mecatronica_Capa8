@@ -31,7 +31,7 @@ const BUBBLE_COLORS_LIGHT = {
 };
 
 // ── Íconos SVG por tipo de nodo (funciones que reciben el color) ────────────
-const NODE_ICON_FN = {
+export const NODE_ICON_FN = {
   router: (c) => `<svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="25" cy="25" r="22" stroke="${c}" stroke-width="1.8"/>
     <line x1="25" y1="21" x2="25" y2="13" stroke="${c}" stroke-width="1.7" stroke-linecap="round"/>
