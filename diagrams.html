@@ -84,6 +84,12 @@
       <i class="fa-solid fa-moon"></i>
     </button>
 
+    <!-- Autosave indicator -->
+    <div id="autosave-indicator" class="autosave-indicator" aria-live="polite">
+      <i class="fa-solid fa-check"></i>
+      <span>Guardado</span>
+    </div>
+
     <!-- Online pill -->
     <div class="onav-online">
       <span class="onav-dot"></span>
@@ -112,33 +118,36 @@
     <div id="node-ctx-menu" class="node-ctx-menu" hidden></div>
 
     <!-- Node/link status badge (bottom-left) -->
-    <div id="status-badge" class="status-badge">0 nodos · 0 enlaces</div>
+    <div id="status-badge" class="status-badge" role="status" aria-live="polite">0 nodos · 0 enlaces</div>
 
     <!-- Terminal bottom slide panel -->
-    <div id="terminal-bottom" class="terminal-bottom terminal-bottom--hidden">
+    <div id="terminal-bottom" class="terminal-bottom terminal-bottom--hidden"
+         role="complementary" aria-label="Terminal de red">
       <div class="terminal-bottom-header">
         <span class="t-green">CAPA8-NET TERMINAL v1.0</span>
         <div>
-          <button id="btn-term-clear" class="term-hdr-btn">Limpiar</button>
-          <button id="btn-term-close" class="term-hdr-btn">✕</button>
+          <button id="btn-term-clear" class="term-hdr-btn" aria-label="Limpiar terminal">Limpiar</button>
+          <button id="btn-term-close" class="term-hdr-btn" aria-label="Cerrar terminal">✕</button>
         </div>
       </div>
-      <div class="terminal-output" id="terminal-output"></div>
+      <div class="terminal-output" id="terminal-output" role="log" aria-live="polite" aria-label="Salida del terminal"></div>
       <div class="terminal-input-row">
-        <span class="terminal-prompt t-green">root@capa8:~$</span>
+        <span class="terminal-prompt t-green" aria-hidden="true">root@capa8:~$</span>
         <input id="terminal-input" class="terminal-input" type="text"
-               placeholder="ping 10.0.0.1" autocomplete="off" />
-        <button id="terminal-send" class="terminal-send">↵</button>
+               placeholder="ping 10.0.0.1" autocomplete="off"
+               aria-label="Comando de terminal" />
+        <button id="terminal-send" class="terminal-send" aria-label="Ejecutar comando">↵</button>
       </div>
     </div>
 
     <!-- AI Side Panel -->
     <div class="ai-side-wrap" id="ai-side-wrap">
-      <div class="ai-fab-panel" id="ai-fab-panel"></div>
-      <button class="ai-tab-btn" id="ai-fab-btn" title="Asistente IA">
-        <i class="fa-solid fa-chevron-left" id="ai-fab-icon"></i>
+      <div class="ai-fab-panel" id="ai-fab-panel" role="complementary" aria-label="Panel del asistente IA"></div>
+      <button class="ai-tab-btn" id="ai-fab-btn" title="Asistente IA"
+              aria-label="Abrir asistente IA" aria-expanded="false" aria-controls="ai-fab-panel">
+        <i class="fa-solid fa-chevron-left" id="ai-fab-icon" aria-hidden="true"></i>
         <span class="ai-tab-label">IA</span>
-        <span id="ai-tab-badge" class="ai-tab-badge" hidden></span>
+        <span id="ai-tab-badge" class="ai-tab-badge" hidden aria-label="Problemas detectados"></span>
       </button>
     </div>
 
@@ -164,6 +173,9 @@
 
   <!-- Cursor ghost for node placement -->
   <div id="cursor-ghost" class="cursor-ghost" hidden></div>
+
+  <!-- Presentation mode exit hint -->
+  <div id="presentation-hint" class="presentation-exit-hint">Presiona Ctrl+P o Esc para salir del modo presentación</div>
 
 </body>
 </html>

@@ -1,0 +1,28 @@
+{
+  "version": 3,
+  "meta": { "name": "WAN MPLS (ejemplo)", "createdAt": 0, "updatedAt": 0 },
+  "nodes": [
+    { "id": "n1",  "type": "router",  "label": "PE-Bogotá",     "x": 200,  "y": 300,  "ip": "10.10.0.1"  },
+    { "id": "n2",  "type": "router",  "label": "P-Core-1",      "x": 420,  "y": 160,  "ip": "10.10.1.1"  },
+    { "id": "n3",  "type": "router",  "label": "P-Core-2",      "x": 420,  "y": 440,  "ip": "10.10.1.2"  },
+    { "id": "n4",  "type": "router",  "label": "PE-Medellín",   "x": 650,  "y": 300,  "ip": "10.10.0.2"  },
+    { "id": "n5",  "type": "router",  "label": "PE-Cali",       "x": 200,  "y": 500,  "ip": "10.10.0.3"  },
+    { "id": "n6",  "type": "router",  "label": "PE-Barranquilla","x": 650, "y": 100,  "ip": "10.10.0.4"  },
+    { "id": "n7",  "type": "switch",  "label": "SW-Bogotá",     "x": 80,   "y": 300,  "ip": "10.20.0.1"  },
+    { "id": "n8",  "type": "switch",  "label": "SW-Medellín",   "x": 780,  "y": 300,  "ip": "10.20.0.2"  },
+    { "id": "n9",  "type": "pc",      "label": "PC-Bogotá",     "x": 80,   "y": 170,  "ip": "10.20.0.10", "gateway": "10.20.0.1" },
+    { "id": "n10", "type": "server",  "label": "Srv-Medellín",  "x": 780,  "y": 440,  "ip": "10.20.0.20", "gateway": "10.20.0.2" }
+  ],
+  "links": [
+    { "id": "l1",  "source": "n7",  "target": "n1",  "latencyMs": 1,   "bandwidthMbps": 1000, "lossPct": 0, "status": "up", "mediaType": "fiber" },
+    { "id": "l2",  "source": "n1",  "target": "n2",  "latencyMs": 8,   "bandwidthMbps": 10000,"lossPct": 0, "status": "up", "mediaType": "fiber" },
+    { "id": "l3",  "source": "n1",  "target": "n3",  "latencyMs": 8,   "bandwidthMbps": 10000,"lossPct": 0, "status": "up", "mediaType": "fiber" },
+    { "id": "l4",  "source": "n2",  "target": "n4",  "latencyMs": 6,   "bandwidthMbps": 10000,"lossPct": 0, "status": "up", "mediaType": "fiber" },
+    { "id": "l5",  "source": "n3",  "target": "n4",  "latencyMs": 6,   "bandwidthMbps": 10000,"lossPct": 0, "status": "up", "mediaType": "fiber" },
+    { "id": "l6",  "source": "n2",  "target": "n6",  "latencyMs": 10,  "bandwidthMbps": 10000,"lossPct": 0, "status": "up", "mediaType": "fiber" },
+    { "id": "l7",  "source": "n3",  "target": "n5",  "latencyMs": 12,  "bandwidthMbps": 5000, "lossPct": 0, "status": "up", "mediaType": "fiber" },
+    { "id": "l8",  "source": "n4",  "target": "n8",  "latencyMs": 1,   "bandwidthMbps": 1000, "lossPct": 0, "status": "up", "mediaType": "fiber" },
+    { "id": "l9",  "source": "n7",  "target": "n9",  "latencyMs": 0.5, "bandwidthMbps": 100,  "lossPct": 0, "status": "up" },
+    { "id": "l10", "source": "n8",  "target": "n10", "latencyMs": 0.5, "bandwidthMbps": 100,  "lossPct": 0, "status": "up" }
+  ]
+}

@@ -290,6 +290,7 @@ export function renderStage({ stageEl, svgEl, worldEl, state, dispatch, ActionTy
       t.setAttribute("font-size", "9");
       t.setAttribute("font-weight", "500");
       t.setAttribute("font-family", "Inter, system-ui, sans-serif");
+      t.setAttribute("text-rendering", "geometricPrecision");
       t.textContent = text;
       svgEl.appendChild(t);
     }

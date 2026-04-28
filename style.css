@@ -379,6 +379,57 @@ body:has(.chat-page) {
   flex-shrink: 0;
 }
 
+/* Autosave indicator */
+.autosave-indicator {
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(45,212,160,0.10);
+  border: 1px solid rgba(45,212,160,0.18);
+  border-radius: 14px;
+  padding: 3px 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #2dd4a0;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.autosave-indicator.visible { opacity: 1; }
+.autosave-indicator i { font-size: 9px; }
+
+/* ── Modo presentación ─────────────────────────────────────────────────── */
+body.presentation-mode .obsidiana-nav,
+body.presentation-mode .onav-mobile-menu,
+body.presentation-mode .sim-menubar,
+body.presentation-mode #inspector-overlay,
+body.presentation-mode #terminal-bottom,
+body.presentation-mode .ai-side-wrap,
+body.presentation-mode .status-badge,
+body.presentation-mode #node-ctx-menu,
+body.presentation-mode #cursor-ghost { display: none !important; }
+
+body.presentation-mode .sim-stage-wrap { top: 0 !important; }
+
+.presentation-exit-hint {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(9,10,31,0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.6);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 2s ease 3s;  /* fade after 3s */
+}
+body:not(.presentation-mode) .presentation-exit-hint { display: none; }
+
 /* Mobile hamburger (hidden on desktop) */
 .onav-hamburger { display: none; }
 
@@ -1131,12 +1182,13 @@ a.pill-btn { text-decoration: none; }
 
 .network-stage.is-panning { cursor: grabbing !important; }
 
-/* World container — recibe el transform de zoom+pan */
+/* World container — transform handles zoom+pan.
+   No will-change: the browser rasterises text at the current scale rather than
+   pre-creating a GPU layer at 1× and stretching it → sharper text when zoomed. */
 .stage-world {
   position: absolute;
   top: 0; left: 0;
   transform-origin: 0 0;
-  will-change: transform;
 }
 
 .stage-svg {
@@ -1661,6 +1713,27 @@ a.pill-btn { text-decoration: none; }
 
 .field small { color: var(--text-muted); font-size: 0.72rem; }
 
+/* Real-time validation feedback */
+.field input.field-invalid {
+  border-color: #ef4444 !important;
+  background: rgba(239,68,68,0.06);
+}
+.field input.field-warn {
+  border-color: #f59e0b !important;
+  background: rgba(245,158,11,0.06);
+}
+.field-error {
+  display: block;
+  font-size: 0.7rem;
+  margin-top: 2px;
+  min-height: 0.9rem;
+  color: #ef4444;
+  font-family: var(--font-mono);
+}
+.field-error:empty { display: none; }
+[data-theme="light"] .field input.field-invalid { background: rgba(239,68,68,0.08); }
+[data-theme="light"] .field input.field-warn    { background: rgba(245,158,11,0.08); }
+
 /* Tips panel */
 .control-panel code {
   background: rgba(200,16,46,0.08);
@@ -1786,6 +1859,8 @@ a.pill-btn { text-decoration: none; }
   text-overflow: ellipsis;
   width: 100%;
   text-shadow: 0 1px 4px rgba(0,0,0,0.8), 0 0 8px rgba(0,0,0,0.6);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Disco crystal detrás del icono SVG */
@@ -1826,6 +1901,8 @@ a.pill-btn { text-decoration: none; }
   text-overflow: ellipsis;
   width: 100%;
   text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Indicadores de conectividad e internet */
@@ -3563,4 +3640,41 @@ a.pill-btn { text-decoration: none; }
     text-align: center;
     z-index: 600;
   }
+}
+
+/* ── Print stylesheet ──────────────────────────────────── */
+@media print {
+  /* Hide all navigation and panels */
+  .obsidiana-nav,
+  .onav-mobile-menu,
+  #inspector-overlay,
+  #terminal-bottom,
+  .ai-side-wrap,
+  .status-badge,
+  #node-ctx-menu,
+  #cursor-ghost,
+  #presentation-hint,
+  .diagram-toast { display: none !important; }
+
+  /* Let the diagram stage fill the page */
+  body { background: #fff !important; margin: 0; }
+  .sim-stage-wrap { position: static !important; top: 0 !important; height: auto !important; }
+  .network-stage  { overflow: visible !important; height: auto !important; min-height: 90vh; }
+  .stage-world    { transform: none !important; }
+
+  /* Print title */
+  .sim-stage-wrap::before {
+    content: "CAPA 8 — Diagrama de red";
+    display: block;
+    font-family: sans-serif;
+    font-size: 14pt;
+    font-weight: bold;
+    padding: 0.5cm 0 0.3cm;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 0.3cm;
+  }
+
+  /* Ensure SVG links are visible on white */
+  .stage-svg line, .stage-svg path { stroke: #555 !important; }
+  .node { background: #f0f0f0 !important; border: 1px solid #999 !important; color: #000 !important; }
 }

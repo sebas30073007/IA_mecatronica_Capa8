@@ -1,0 +1,33 @@
+{
+  "version": 3,
+  "meta": { "name": "Red Universitaria (ejemplo)", "createdAt": 0, "updatedAt": 0 },
+  "nodes": [
+    { "id": "n1",  "type": "cloud",    "label": "Internet",       "x": 400,  "y": 60   },
+    { "id": "n2",  "type": "firewall", "label": "FW-Perimetral",  "x": 400,  "y": 180,  "ip": "200.1.1.1"   },
+    { "id": "n3",  "type": "router",   "label": "Core-Router",    "x": 400,  "y": 300,  "ip": "10.0.0.1"    },
+    { "id": "n4",  "type": "server",   "label": "DNS/Web",        "x": 580,  "y": 220,  "ip": "10.0.10.1"   },
+    { "id": "n5",  "type": "switch",   "label": "SW-Académico",   "x": 180,  "y": 430,  "ip": "10.1.0.1"    },
+    { "id": "n6",  "type": "switch",   "label": "SW-Admin",       "x": 400,  "y": 430,  "ip": "10.2.0.1"    },
+    { "id": "n7",  "type": "switch",   "label": "SW-Laboratorio", "x": 620,  "y": 430,  "ip": "10.3.0.1"    },
+    { "id": "n8",  "type": "ap",       "label": "AP-Aulas",       "x": 80,   "y": 580,  "ip": "10.1.0.50"   },
+    { "id": "n9",  "type": "pc",       "label": "PC-Docente",     "x": 200,  "y": 580,  "ip": "10.1.0.10",  "gateway": "10.1.0.1" },
+    { "id": "n10", "type": "pc",       "label": "PC-Admin",       "x": 360,  "y": 580,  "ip": "10.2.0.10",  "gateway": "10.2.0.1" },
+    { "id": "n11", "type": "server",   "label": "Srv-ERP",        "x": 450,  "y": 580,  "ip": "10.2.0.20",  "gateway": "10.2.0.1" },
+    { "id": "n12", "type": "pc",       "label": "PC-Lab1",        "x": 570,  "y": 580,  "ip": "10.3.0.10",  "gateway": "10.3.0.1" },
+    { "id": "n13", "type": "pc",       "label": "PC-Lab2",        "x": 670,  "y": 580,  "ip": "10.3.0.11",  "gateway": "10.3.0.1" }
+  ],
+  "links": [
+    { "id": "l1",  "source": "n1",  "target": "n2",  "latencyMs": 20,  "bandwidthMbps": 100,  "lossPct": 0.5, "status": "up", "mediaType": "fiber" },
+    { "id": "l2",  "source": "n2",  "target": "n3",  "latencyMs": 1,   "bandwidthMbps": 1000, "lossPct": 0,   "status": "up", "mediaType": "fiber" },
+    { "id": "l3",  "source": "n3",  "target": "n4",  "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0,   "status": "up" },
+    { "id": "l4",  "source": "n3",  "target": "n5",  "latencyMs": 1,   "bandwidthMbps": 1000, "lossPct": 0,   "status": "up", "mediaType": "fiber" },
+    { "id": "l5",  "source": "n3",  "target": "n6",  "latencyMs": 1,   "bandwidthMbps": 1000, "lossPct": 0,   "status": "up", "mediaType": "fiber" },
+    { "id": "l6",  "source": "n3",  "target": "n7",  "latencyMs": 1,   "bandwidthMbps": 1000, "lossPct": 0,   "status": "up", "mediaType": "fiber" },
+    { "id": "l7",  "source": "n5",  "target": "n8",  "latencyMs": 2,   "bandwidthMbps": 300,  "lossPct": 1,   "status": "up", "mediaType": "wifi",  "jitter": 2 },
+    { "id": "l8",  "source": "n5",  "target": "n9",  "latencyMs": 0.5, "bandwidthMbps": 100,  "lossPct": 0,   "status": "up" },
+    { "id": "l9",  "source": "n6",  "target": "n10", "latencyMs": 0.5, "bandwidthMbps": 100,  "lossPct": 0,   "status": "up" },
+    { "id": "l10", "source": "n6",  "target": "n11", "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0,   "status": "up" },
+    { "id": "l11", "source": "n7",  "target": "n12", "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0,   "status": "up" },
+    { "id": "l12", "source": "n7",  "target": "n13", "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0,   "status": "up" }
+  ]
+}

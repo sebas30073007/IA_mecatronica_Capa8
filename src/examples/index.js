@@ -7,7 +7,10 @@ export async function loadExample(name) {
     "data_center":    "src/examples/data_center.json",
     "home_network":   "src/examples/home_network.json",
     "dmz":            "src/examples/dmz.json",
-    "campus":         "src/examples/campus.json",
+    "campus":              "src/examples/campus.json",
+    "mpls_wan":            "src/examples/mpls_wan.json",
+    "red_industrial":      "src/examples/red_industrial.json",
+    "red_universitaria":   "src/examples/red_universitaria.json",
   };
   const path = map[name];
   if (!path) throw new Error("Example not found");

@@ -20,6 +20,10 @@ export function createInspector({ dispatch, ActionTypes, onOpenAdvanced }) {
     const container = overlay();
     if (!container) return;
 
+    // Don't replace DOM while the user is typing inside the inspector —
+    // the dispatch triggered by the input event would destroy the focused element.
+    if (container.contains(document.activeElement)) return;
+
     const sel = state.ui.selection;
     const graph = state.graph;
 
@@ -37,6 +41,10 @@ export function createInspector({ dispatch, ActionTypes, onOpenAdvanced }) {
         return;
       }
 
+      // Check for duplicate IP in graph
+      const dupIp = node.ip && node.ip !== ""
+        && graph.nodes.some(n => n.id !== node.id && n.ip === node.ip);
+
       container.innerHTML = `
         <div class="field">
           <label>Nombre</label>
@@ -44,7 +52,11 @@ export function createInspector({ dispatch, ActionTypes, onOpenAdvanced }) {
         </div>
         <div class="field">
           <label>IP</label>
-          <input id="ins-node-ip" value="${escapeAttr(node.ip || "")}" placeholder="10.0.0.10" />
+          <input id="ins-node-ip" value="${escapeAttr(node.ip || "")}" placeholder="10.0.0.10"
+            class="${node.ip && !isIPv4(node.ip) ? "field-invalid" : dupIp ? "field-warn" : ""}" />
+          <small class="field-error" id="ins-ip-error">${
+            !node.ip ? "" : !isIPv4(node.ip) ? "Formato inválido (ej: 10.0.0.1)" : dupIp ? "IP duplicada en el diagrama" : ""
+          }</small>
         </div>
         <div class="field">
           <label>Tipo</label>
@@ -65,7 +77,11 @@ export function createInspector({ dispatch, ActionTypes, onOpenAdvanced }) {
           <label>Gateway predeterminado</label>
           <input id="ins-node-gw"
             value="${escapeAttr(node.gateway || '')}"
-            placeholder="10.0.0.1" />
+            placeholder="10.0.0.1"
+            class="${node.gateway && !isIPv4(node.gateway) ? "field-invalid" : ""}" />
+          <small class="field-error" id="ins-gw-error">${
+            node.gateway && !isIPv4(node.gateway) ? "Formato inválido (ej: 10.0.0.1)" : ""
+          }</small>
         </div>` : ''}
         <div class="muted" style="font-size:0.78rem;">
           Tip: en PC abre la <strong>Terminal</strong> para hacer <code>ping</code>.
@@ -82,10 +98,19 @@ export function createInspector({ dispatch, ActionTypes, onOpenAdvanced }) {
         dispatch({ type: ActionTypes.UPDATE_NODE, payload: { id: node.id, patch: { label: labelEl.value } } });
       });
 
+      const ipErrorEl = container.querySelector("#ins-ip-error");
       ipEl?.addEventListener("input", () => {
         const ip = ipEl.value.trim();
+        const ipValid = ip === "" || isIPv4(ip);
+        const dup = ip && ipValid && graph.nodes.some(n => n.id !== node.id && n.ip === ip);
+        ipEl.classList.toggle("field-invalid", !ipValid);
+        ipEl.classList.toggle("field-warn", !!(ipValid && dup));
+        if (ipErrorEl) {
+          ipErrorEl.textContent = !ipValid
+            ? "Formato inválido (ej: 10.0.0.1)"
+            : dup ? "IP duplicada en el diagrama" : "";
+        }
         dispatch({ type: ActionTypes.UPDATE_NODE, payload: { id: node.id, patch: { ip } } });
-        ipEl.style.borderColor = (ip === "" || isIPv4(ip)) ? "" : "#d9534f";
       });
 
       const maskEl     = container.querySelector("#ins-node-mask");
@@ -102,10 +127,12 @@ export function createInspector({ dispatch, ActionTypes, onOpenAdvanced }) {
           payload: { id: node.id, patch: { mask: prefix } } });
       });
 
+      const gwErrorEl = container.querySelector("#ins-gw-error");
       gwEl?.addEventListener("input", () => {
         const gw = gwEl.value.trim();
         const valid = gw === "" || isIPv4(gw);
-        gwEl.style.borderColor = valid ? "" : "#d9534f";
+        gwEl.classList.toggle("field-invalid", !valid);
+        if (gwErrorEl) gwErrorEl.textContent = valid ? "" : "Formato inválido (ej: 10.0.0.1)";
         if (valid) dispatch({ type: ActionTypes.UPDATE_NODE,
           payload: { id: node.id, patch: { gateway: gw } } });
       });

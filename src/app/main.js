@@ -14,7 +14,7 @@ import { renderStage, NODE_ICON_FN } from "../render/renderer.js";
 import { hitTestLink } from "../render/hitTest.js";
 
 import { importGraphFromURL, exportGraphToURL } from "../persistence/urlCodec.js";
-import { downloadJson, openJsonFilePicker } from "../persistence/fileIO.js";
+import { downloadJson, openJsonFilePicker, graphToSvg, downloadSvg, downloadPng } from "../persistence/fileIO.js";
 import { normalizeGraph, createDemoGraph } from "../model/schema.js";
 import { suggestIp } from "../model/addressing.js";
 import { analyzeTopology } from "../ai/topology-analyzer.js";
@@ -149,7 +149,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
   engine.start();
 
-  const DIAGRAM_KEY = "capa8_diagram";
+  const DIAGRAM_KEY    = "capa8_diagram";
+  const AUTOSAVE_LS_KEY = "capa8_diagram_ls";
 
   try {
     const raw = importGraphFromURL();
@@ -162,7 +163,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
       showToast("Cargado desde URL ✅");
     } else {
-      const saved = sessionStorage.getItem(DIAGRAM_KEY);
+      const saved = sessionStorage.getItem(DIAGRAM_KEY)
+                 || localStorage.getItem(AUTOSAVE_LS_KEY);
       if (saved) {
         store.dispatch({ type: ActionTypes.LOAD_GRAPH, payload: { graph: JSON.parse(saved) } });
         requestAnimationFrame(() => {
@@ -356,6 +358,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   function openSidebar() {
     aiFabPanel.classList.add("open");
     stageWrap?.classList.add("has-ai-open");
+    document.getElementById("ai-fab-btn")?.setAttribute("aria-expanded", "true");
     if (aiFabIcon) aiFabIcon.className = "fa-solid fa-chevron-right";
     const badge = document.getElementById("ai-tab-badge");
     if (badge) badge.hidden = true;
@@ -369,6 +372,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   function closeSidebar() {
     aiFabPanel.classList.remove("open");
     stageWrap?.classList.remove("has-ai-open");
+    document.getElementById("ai-fab-btn")?.setAttribute("aria-expanded", "false");
     if (aiFabIcon) aiFabIcon.className = "fa-solid fa-chevron-left";
   }
 
@@ -701,10 +705,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ── Keyboard shortcuts ───────────────────────────────────────────────
   window.addEventListener("keydown", e => {
+    // Ctrl+P — toggle presentation mode (works even while typing)
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "p") {
+      e.preventDefault();
+      togglePresentationMode();
+      return;
+    }
+
     const typing = ["input", "textarea", "select"].includes(
       (document.activeElement?.tagName || "").toLowerCase()
     );
     if (typing) return;
+
+    // Esc also exits presentation mode
+    if (e.key === "Escape" && presentationMode) {
+      togglePresentationMode(false);
+      return;
+    }
 
     if (e.key === "Delete" || e.key === "Backspace") {
       const sel = store.getState().ui.selection;
@@ -840,7 +857,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (actionId === "RESET_DEMO") {
       pushHistorySnapshot();
-      try { sessionStorage.removeItem(DIAGRAM_KEY); } catch {}
+      try { sessionStorage.removeItem(DIAGRAM_KEY); localStorage.removeItem(AUTOSAVE_LS_KEY); } catch {}
       store.dispatch({ type: ActionTypes.LOAD_GRAPH, payload: { graph: createDemoGraph() } });
       requestAnimationFrame(() => {
         resolveAndDispatch(store, store.dispatch, ActionTypes, null);
@@ -872,6 +889,24 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    if (actionId === "FILE_EXPORT_SVG") {
+      const svgStr = graphToSvg(snapshotGraph(), { darkMode: document.documentElement.dataset.theme !== "light" });
+      if (!svgStr) { showToast("El diagrama está vacío ❌"); return; }
+      downloadSvg(`capa8_${Date.now()}.svg`, svgStr);
+      showToast("SVG exportado ✅");
+      return;
+    }
+
+    if (actionId === "FILE_EXPORT_PNG") {
+      const svgStr = graphToSvg(snapshotGraph(), { darkMode: document.documentElement.dataset.theme !== "light" });
+      if (!svgStr) { showToast("El diagrama está vacío ❌"); return; }
+      showToast("Generando PNG…");
+      downloadPng(`capa8_${Date.now()}.png`, svgStr)
+        .then(() => showToast("PNG exportado ✅"))
+        .catch(() => showToast("Error al exportar PNG ❌"));
+      return;
+    }
+
     if (actionId === "FILE_IMPORT") {
       const res = await openJsonFilePicker();
       if (!res) return;
@@ -897,20 +932,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (actionId === "FILE_NEW") {
       pushHistorySnapshot();
-      try { sessionStorage.removeItem(DIAGRAM_KEY); } catch {}
+      try { sessionStorage.removeItem(DIAGRAM_KEY); localStorage.removeItem(AUTOSAVE_LS_KEY); } catch {}
       store.dispatch({ type: ActionTypes.NEW_GRAPH });
       showToast("Nuevo ✅");
       return;
     }
 
     const EXAMPLE_MAP = {
-      LOAD_EXAMPLE_SMALL_LAN:    "small_lan",
-      LOAD_EXAMPLE_VLAN_ROUTING: "vlan_routing",
-      LOAD_EXAMPLE_WAN_REDUNDANT:"wan_redundant",
-      LOAD_EXAMPLE_DATA_CENTER:  "data_center",
-      LOAD_EXAMPLE_HOME_NETWORK: "home_network",
-      LOAD_EXAMPLE_DMZ:          "dmz",
-      LOAD_EXAMPLE_CAMPUS:       "campus",
+      LOAD_EXAMPLE_SMALL_LAN:            "small_lan",
+      LOAD_EXAMPLE_VLAN_ROUTING:         "vlan_routing",
+      LOAD_EXAMPLE_WAN_REDUNDANT:        "wan_redundant",
+      LOAD_EXAMPLE_DATA_CENTER:          "data_center",
+      LOAD_EXAMPLE_HOME_NETWORK:         "home_network",
+      LOAD_EXAMPLE_DMZ:                  "dmz",
+      LOAD_EXAMPLE_CAMPUS:               "campus",
+      LOAD_EXAMPLE_MPLS_WAN:             "mpls_wan",
+      LOAD_EXAMPLE_RED_INDUSTRIAL:       "red_industrial",
+      LOAD_EXAMPLE_RED_UNIVERSITARIA:    "red_universitaria",
     };
     if (actionId in EXAMPLE_MAP) {
       try {
@@ -944,6 +982,49 @@ document.addEventListener("DOMContentLoaded", async () => {
       showToast("Diagrama organizado ✨");
       return;
     }
+
+    if (actionId === "TOGGLE_PRESENTATION") {
+      togglePresentationMode();
+      return;
+    }
+  }
+
+  // ── Modo presentación ────────────────────────────────────────────────
+  let presentationMode = false;
+  const presentationHint = document.getElementById("presentation-hint");
+
+  function togglePresentationMode(force) {
+    presentationMode = force !== undefined ? force : !presentationMode;
+    document.body.classList.toggle("presentation-mode", presentationMode);
+    if (presentationMode) {
+      // Reset hint opacity after re-entering
+      if (presentationHint) {
+        presentationHint.style.opacity = "1";
+        presentationHint.style.transition = "opacity 2s ease 3s";
+        // Force reflow to restart animation
+        void presentationHint.offsetWidth;
+        presentationHint.style.opacity = "0";
+      }
+      showToast("Modo presentación activo (Ctrl+P para salir)");
+      // Close open panels
+      setTerminalVisible(false);
+      closeSidebar();
+      store.dispatch({ type: ActionTypes.CLEAR_SELECTION });
+    } else {
+      if (presentationHint) presentationHint.style.opacity = "0";
+    }
+    render();
+  }
+
+  // ── Autosave indicator ───────────────────────────────────────────────
+  let autosaveHideTimer = null;
+  const autosaveEl = document.getElementById("autosave-indicator");
+
+  function flashAutosave() {
+    if (!autosaveEl) return;
+    autosaveEl.classList.add("visible");
+    clearTimeout(autosaveHideTimer);
+    autosaveHideTimer = setTimeout(() => autosaveEl.classList.remove("visible"), 2500);
   }
 
   // ── Status badge ─────────────────────────────────────────────────────
@@ -952,13 +1033,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     const simDot = state.sim.running
       ? ` · <span class="sim-dot"></span>simulando`
       : "";
+    const uc = history.undoCount();
+    const rc = history.redoCount();
+    const undoRedo = (uc > 0 || rc > 0)
+      ? ` · <span title="Pasos deshacer/rehacer" style="opacity:0.65">↩${uc} ↪${rc}</span>`
+      : "";
     document.getElementById("status-badge").innerHTML =
-      `${nodes.length} nodos · ${links.length} enlaces${simDot}`;
+      `${nodes.length} nodos · ${links.length} enlaces${simDot}${undoRedo}`;
   }
 
   // ── Subscribe ────────────────────────────────────────────────────────
-  let autoExportTimer = null;
-  let lastExportedAt  = null;
+  let autoExportTimer  = null;
+  let autoLsTimer      = null;
+  let lastExportedAt   = null;
 
   store.subscribe(() => {
     const st = store.getState();
@@ -971,7 +1058,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       setTerminalVisible(false);
     }
 
-    // Status badge
+    // Status badge (includes undo/redo counts)
     updateStatusBadge(st);
 
     // AI FAB issue badge
@@ -986,7 +1073,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     render();
 
-    // Auto-persist (debounced 600 ms)
+    // Auto-persist: URL + sessionStorage (debounced 600 ms)
     const updatedAt = st.graph?.meta?.updatedAt;
     if (updatedAt && updatedAt !== lastExportedAt) {
       clearTimeout(autoExportTimer);
@@ -996,6 +1083,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         exportGraphToURL(snap);
         try { sessionStorage.setItem(DIAGRAM_KEY, JSON.stringify(snap)); } catch {}
       }, 600);
+
+      // Autosave to localStorage (debounced 30 s) with visual indicator
+      clearTimeout(autoLsTimer);
+      autoLsTimer = setTimeout(() => {
+        const snap = snapshotGraph();
+        try {
+          localStorage.setItem(AUTOSAVE_LS_KEY, JSON.stringify(snap));
+          flashAutosave();
+        } catch {}
+      }, 30_000);
     }
   });
 

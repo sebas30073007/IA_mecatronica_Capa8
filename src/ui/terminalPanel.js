@@ -1,6 +1,12 @@
 // src/ui/terminalPanel.js
-import { findNodeByIp, bfsPath, computeRttMs, linksForNode } from "../model/graph.js";
+import { findNodeByIp, bfsPath, computeRttMs, linksForNode, checkAclPath } from "../model/graph.js";
 import { generateMac, networkAddress, parseMask } from "../model/addressing.js";
+
+const TERMINAL_COMMANDS = [
+  "help", "clear", "ipconfig", "ping", "traceroute",
+  "route print", "show interfaces", "show arp",
+  "show ip route", "show mac-address-table", "ifconfig",
+];
 
 export function createTerminalPanel({ store, dispatch, ActionTypes, onPingRequest, onPingFail }) {
   let currentPcId = null;
@@ -10,6 +16,11 @@ export function createTerminalPanel({ store, dispatch, ActionTypes, onPingReques
   const inputEl  = document.getElementById("terminal-input");
   const sendEl   = document.getElementById("terminal-send");
 
+  // ── Command history (↑ / ↓) ──────────────────────────────────────────
+  const cmdHistory  = [];
+  let historyIndex  = -1;
+  let historyDraft  = "";   // preserves current draft when browsing history
+
   // Wire events once
   const run = () => {
     const state = store.getState();
@@ -18,10 +29,55 @@ export function createTerminalPanel({ store, dispatch, ActionTypes, onPingReques
     const cmd = (inputEl?.value || "").trim();
     if (!cmd) return;
     if (inputEl) inputEl.value = "";
+    // Push to history (avoid duplicates at top)
+    if (cmd && cmdHistory[cmdHistory.length - 1] !== cmd) cmdHistory.push(cmd);
+    if (cmdHistory.length > 100) cmdHistory.shift();
+    historyIndex = -1;
+    historyDraft = "";
     handleCommand(cmd, pc, state.graph);
   };
 
-  inputEl?.addEventListener("keydown", e => { if (e.key === "Enter") run(); });
+  inputEl?.addEventListener("keydown", e => {
+    if (e.key === "Enter") { run(); return; }
+
+    // ↑ / ↓ history navigation
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (cmdHistory.length === 0) return;
+      if (historyIndex === -1) historyDraft = inputEl.value;
+      historyIndex = Math.min(historyIndex + 1, cmdHistory.length - 1);
+      inputEl.value = cmdHistory[cmdHistory.length - 1 - historyIndex];
+      return;
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (historyIndex <= 0) { historyIndex = -1; inputEl.value = historyDraft; return; }
+      historyIndex--;
+      inputEl.value = cmdHistory[cmdHistory.length - 1 - historyIndex];
+      return;
+    }
+
+    // Tab completion
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const val = inputEl.value;
+      if (!val) return;
+      const graph = store.getState().graph;
+      // Build candidate list: static commands + node labels (for ping/traceroute target) + IPs
+      const nodeIps    = graph.nodes.map(n => n.ip).filter(Boolean);
+      const nodeLabels = graph.nodes.map(n => n.label).filter(Boolean);
+      const candidates = [...TERMINAL_COMMANDS, ...nodeIps, ...nodeLabels];
+      const matches = candidates.filter(c => c.startsWith(val) && c !== val);
+      if (matches.length === 1) {
+        inputEl.value = matches[0];
+      } else if (matches.length > 1) {
+        // Show matches as a hint line
+        dispatch({ type: ActionTypes.TERMINAL_APPEND, payload: `\n${matches.join("   ")}\n` });
+      }
+      return;
+    }
+  });
+
   sendEl?.addEventListener("click", run);
 
   document.getElementById("btn-term-clear")?.addEventListener("click", () => {
@@ -97,7 +153,7 @@ export function createTerminalPanel({ store, dispatch, ActionTypes, onPingReques
     const head = parts[0].toLowerCase();
 
     if (head === "help") {
-      append("Comandos disponibles:\n- help\n- ipconfig\n- ping <ip>\n- traceroute <ip>\n- route print\n- show interfaces\n- show arp\n- show ip route [label]\n- show mac-address-table [label]\n- ifconfig <label>\n- clear\n");
+      append("Comandos disponibles:\n- help\n- ipconfig\n- ping <ip>\n- traceroute <ip>\n- route print\n- show interfaces\n- show arp\n- show ip route [label]\n- show mac-address-table [label]\n- ifconfig <label>\n- acl <fw> deny|permit <ip|*>\n- acl <fw> clear\n- show acl [fw]\n- clear\n");
       return;
     }
 
@@ -121,8 +177,15 @@ export function createTerminalPanel({ store, dispatch, ActionTypes, onPingReques
       const path = bfsPath(graph, pc.id, dst.id);
       if (!path.length) { append(`No route to host ${ip}.\n`); onPingFail?.({ pc, ip }); return; }
 
-      const rtt = computeRttMs(graph, path);
+      const rtt = computeRttMs(graph, path, { applyJitter: false });
       if (rtt === null) { append(`No route to host ${ip} (enlace caído en el camino).\n`); onPingFail?.({ pc, ip }); return; }
+
+      const fwBlock = checkAclPath(graph, path, ip);
+      if (fwBlock) {
+        append(`Destination unreachable. Blocked by firewall: ${fwBlock.label} (ACL deny).\n`);
+        onPingFail?.({ pc, ip });
+        return;
+      }
 
       append(`Pinging ${ip} with 32 bytes of data:\n`);
       onPingRequest?.({ fromId: pc.id, toId: dst.id, pathLinkIds: path });
@@ -130,8 +193,13 @@ export function createTerminalPanel({ store, dispatch, ActionTypes, onPingReques
       const linkLoss = estimatePathLossPct(graph, path);
       for (let i = 0; i < 4; i++) {
         const lost = Math.random() < linkLoss / 100;
-        if (lost) append(`Request timed out.\n`);
-        else      append(`Reply from ${ip}: bytes=32 time=${jittered(rtt)}ms TTL=64\n`);
+        if (lost) {
+          append(`Request timed out.\n`);
+        } else {
+          // Apply link-level jitter per packet
+          const rttWithJitter = computeRttMs(graph, path, { applyJitter: true }) ?? rtt;
+          append(`Reply from ${ip}: bytes=32 time=${Math.max(1, Math.round(rttWithJitter))}ms TTL=64\n`);
+        }
       }
       const recv = Math.round(4 * (1 - linkLoss / 100));
       append(`\nPing statistics for ${ip}:\n    Packets: Sent = 4, Received = ${recv}, Lost = ~${Math.round(linkLoss)}%\n`);
@@ -278,6 +346,52 @@ export function createTerminalPanel({ store, dispatch, ActionTypes, onPingReques
       for (const l of links) {
         const peer = graph.nodes.find(n => n.id === (l.source === target.id ? l.target : l.source));
         append(`    ↔ ${peer?.label ?? "?"} [${l.status}] ${l.latencyMs}ms ${l.bandwidthMbps}Mbps\n`);
+      }
+      return;
+    }
+
+    // acl <fw_label> deny|permit <ip|*>   — añade regla ACL
+    // acl <fw_label> clear                 — elimina todas las reglas
+    if (head === "acl") {
+      const fwLabel  = parts[1];
+      const ruleCmd  = parts[2]?.toLowerCase();
+      const ruleIp   = parts[3];
+      if (!fwLabel) { append("Uso: acl <firewall> deny|permit <ip|*>  /  acl <firewall> clear\n"); return; }
+      const fw = graph.nodes.find(n => n.label.toLowerCase() === fwLabel.toLowerCase());
+      if (!fw) { append(`acl: '${fwLabel}' no encontrado.\n`); return; }
+      if (fw.type !== "firewall") { append(`acl: '${fw.label}' no es un firewall.\n`); return; }
+
+      if (ruleCmd === "clear") {
+        dispatch({ type: ActionTypes.UPDATE_NODE, payload: { id: fw.id, patch: { rules: [] } } });
+        append(`ACL en ${fw.label} eliminada.\n`);
+        return;
+      }
+      if (ruleCmd !== "deny" && ruleCmd !== "permit") {
+        append("Acción debe ser 'deny' o 'permit'.\n"); return;
+      }
+      if (!ruleIp) { append("Uso: acl <fw> deny|permit <ip|*>\n"); return; }
+      const newRule = { action: ruleCmd, ip: ruleIp };
+      const updatedRules = [...(fw.rules || []), newRule];
+      dispatch({ type: ActionTypes.UPDATE_NODE, payload: { id: fw.id, patch: { rules: updatedRules } } });
+      append(`Regla añadida en ${fw.label}: ${ruleCmd.toUpperCase()} ${ruleIp}\n`);
+      return;
+    }
+
+    // show acl [fw_label]  — muestra reglas ACL de un firewall (o todos)
+    if (head === "show" && parts[1]?.toLowerCase() === "acl") {
+      const fwLabel = parts[2];
+      const firewalls = fwLabel
+        ? graph.nodes.filter(n => n.label.toLowerCase() === fwLabel.toLowerCase())
+        : graph.nodes.filter(n => n.type === "firewall");
+      if (!firewalls.length) { append(fwLabel ? `'${fwLabel}' no encontrado.\n` : "No hay firewalls en el diagrama.\n"); return; }
+      for (const fw of firewalls) {
+        append(`${fw.label} — ACL\n════════════════════════════════════\n`);
+        if (!fw.rules?.length) { append("  (sin reglas — todo permitido)\n"); }
+        else {
+          fw.rules.forEach((r, i) => append(`  ${i + 1}. ${r.action.toUpperCase().padEnd(7)} ${r.ip}\n`));
+          append("  * Política predeterminada: PERMIT\n");
+        }
+        append("════════════════════════════════════\n");
       }
       return;
     }

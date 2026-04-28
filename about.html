@@ -7,8 +7,90 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./assets/fa/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <style>
+      .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      @media (max-width: 700px) { .about-grid { grid-template-columns: 1fr; } }
+
+      .about-tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+      .about-tag {
+        font-size: 0.72rem;
+        font-family: var(--font-mono, 'DM Mono', monospace);
+        background: rgba(200,16,46,0.12);
+        color: #c8102e;
+        border: 1px solid rgba(200,16,46,0.3);
+        border-radius: 4px;
+        padding: 2px 8px;
+        white-space: nowrap;
+      }
+      .about-tag.neutral {
+        background: rgba(255,255,255,0.05);
+        color: var(--text-muted, #aaa);
+        border-color: rgba(255,255,255,0.12);
+      }
+
+      .check-list {
+        list-style: none;
+        padding: 0;
+        margin: 0.4rem 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+      }
+      .check-list li { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.9rem; line-height: 1.4; }
+      .check-list li .icon { margin-top: 2px; flex-shrink: 0; font-size: 0.8rem; }
+      .check-list li .icon.yes { color: #4ade80; }
+      .check-list li .icon.no  { color: #f87171; }
+
+      .flow-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+        margin-top: 0.4rem;
+      }
+      .flow-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+      .flow-step-num {
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #c8102e;
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2px;
+      }
+      .flow-step p { margin: 0; font-size: 0.88rem; line-height: 1.5; }
+      .flow-step strong { font-weight: 600; }
+
+      .content-block + .content-block { margin-top: 1.5rem; }
+      .content-block p { margin: 0.4rem 0 0; line-height: 1.65; font-size: 0.92rem; }
+      .content-block p + p { margin-top: 0.6rem; }
+    </style>
 </head>
 <body>
+
+    <script>
+      (function() {
+        const saved = localStorage.getItem('capa8_theme');
+        if (saved === 'light') document.documentElement.dataset.theme = 'light';
+      })();
+    </script>
 
     <header class="obsidiana-nav">
         <div class="onav-logo-wrap">
@@ -46,6 +128,7 @@
             <span class="onav-online-text">Online</span>
         </div>
     </header>
+
     <script>
       const btn  = document.getElementById('onav-logo-btn');
       const dd   = document.getElementById('onav-dropdown');
@@ -64,12 +147,10 @@
         }
       });
 
-      // Tema claro / oscuro
       (function() {
-        const saved = localStorage.getItem('capa8_theme');
-        if (saved === 'light') document.documentElement.dataset.theme = 'light';
         const toggleBtn = document.getElementById('theme-toggle');
         const icon = toggleBtn?.querySelector('i');
+        const saved = localStorage.getItem('capa8_theme');
         if (icon && saved === 'light') icon.className = 'fa-solid fa-sun';
         toggleBtn?.addEventListener('click', () => {
           const isLight = document.documentElement.dataset.theme === 'light';
@@ -81,51 +162,149 @@
     </script>
 
     <main class="container">
+
         <section class="page-hero">
-            <h1 class="page-title">¿Qué es CAPA 8?</h1>
+            <h1 class="page-title">Sobre CAPA 8</h1>
             <p class="page-subtitle">
-                CAPA 8 es una IA especializada en soporte y diseño de redes, enfocada en convertir conocimiento técnico
-                en soluciones claras, visuales y accionables.
+                Herramienta educativa de redes: asistente IA conversacional + simulador de topologías interactivo,
+                orientado a estudiantes de ingeniería en mecatrónica y telecomunicaciones.
             </p>
         </section>
 
+        <!-- El problema -->
         <section class="content-card">
             <article class="content-block">
-                <h2 class="section-title">El Problema (Capa 8)</h2>
+                <h2 class="section-title">El problema</h2>
                 <p>
-                    En redes y telecomunicaciones, muchos problemas no son únicamente técnicos: también dependen del contexto humano,
-                    la interpretación del incidente, la documentación incompleta y la experiencia del operador.
+                    Aprender redes implica manejar conceptos abstractos (subnetting, ruteo, VLANs) y herramientas
+                    que suelen ser complejas o poco accesibles para estudiantes. Las simulaciones de escritorio
+                    (Packet Tracer, GNS3) tienen curva de aprendizaje alta; los chatbots genéricos no conocen
+                    el contexto de una topología específica.
                 </p>
                 <p>
-                    A esta capa “humana” se le suele llamar informalmente <strong>Capa 8</strong>. Es donde aparecen dudas como:
-                    “¿qué está fallando realmente?”, “¿cómo explico la topología?”, “¿qué impacto tendrá este cambio?”.
-                </p>
-            </article>
-
-            <article class="content-block">
-                <h2 class="section-title">Nuestra Solución (MVP)</h2>
-                <p>
-                    El MVP de CAPA 8 integra una interfaz de asistencia por IA con modos de uso (resolución de problemas, arquitectura de red
-                    y soporte junior) para responder con un enfoque más contextual.
-                </p>
-                <p>
-                    Además, incorpora una herramienta visual de diagramas para modelar topologías rápidamente y compartirlas mediante URL,
-                    inspirada en un enfoque <em>stateless</em> al estilo Falstad.
-                </p>
-            </article>
-
-            <article class="content-block">
-                <h2 class="section-title">Visión a Futuro (RAG y Telecomunicaciones)</h2>
-                <p>
-                    La evolución natural de CAPA 8 es integrar <strong>RAG (Retrieval-Augmented Generation)</strong> para consultar documentación técnica,
-                    playbooks, estándares, bitácoras y configuraciones reales en tiempo real.
-                </p>
-                <p>
-                    En un escenario de telecomunicaciones, esto permitiría a CAPA 8 sugerir diagnósticos más precisos, comparar diseños,
-                    validar buenas prácticas y asistir en operación, soporte y planeación de infraestructura.
+                    A la capa humana del modelo OSI se le llama informalmente <strong>Capa 8</strong>: donde las dudas son
+                    "¿qué está fallando realmente?", "¿cómo diseño esto?" o "¿por qué no llega el ping?".
+                    Ese gap entre teoría y práctica es lo que CAPA 8 busca reducir.
                 </p>
             </article>
         </section>
+
+        <!-- Inspiración -->
+        <section class="content-card">
+            <article class="content-block">
+                <h2 class="section-title">Inspiración</h2>
+                <p>
+                    El simulador de diagramas está inspirado en
+                    <a href="https://www.falstad.com/circuit/" target="_blank" rel="noopener noreferrer" style="color:#c8102e;">Falstad Circuit Simulator</a>:
+                    una app web minimalista donde arrastras componentes, ves la simulación en tiempo real y puedes
+                    compartir cualquier circuito con una URL. Sin instalación, sin cuenta, sin fricción.
+                </p>
+                <p>
+                    CAPA 8 aplica la misma filosofía a topologías de red: dibuja nodos y enlaces en el canvas,
+                    simula pings con animaciones de paquetes, y comparte el diagrama completo codificado en la URL
+                    (Base64 en el parámetro <code>?g=</code>). El asistente IA tiene acceso al grafo activo,
+                    por lo que las respuestas son contextuales a <em>tu</em> red, no genéricas.
+                </p>
+            </article>
+        </section>
+
+        <!-- Implementación IA -->
+        <section class="content-card">
+            <article class="content-block">
+                <h2 class="section-title">Implementación con IA</h2>
+                <div class="flow-steps">
+                    <div class="flow-step">
+                        <div class="flow-step-num">1</div>
+                        <p><strong>Clasificación de intención</strong> — antes de llamar al LLM, <code>intentRouter</code>
+                        detecta si el mensaje es una consulta conceptual, una pregunta sobre el diagrama activo,
+                        o una acción de modificación. Esto determina temperatura, prompt y si se activa el auto-retry.</p>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-step-num">2</div>
+                        <p><strong>Contexto del grafo</strong> — <code>context-builder</code> serializa el estado actual
+                        (nodos, enlaces, IPs, estado up/down, problemas detectados) y lo inyecta en el prompt.
+                        El LLM ve tu topología real, no un escenario inventado.</p>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-step-num">3</div>
+                        <p><strong>Acciones estructuradas</strong> — cuando la IA propone cambios al diagrama, los devuelve
+                        en bloques <code>[CAPA8_ACTION]&#123;...&#125;[/CAPA8_ACTION]</code>. El frontend los valida
+                        con <code>actionValidator</code> antes de aplicarlos; errores y advertencias se muestran
+                        en el chat.</p>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-step-num">4</div>
+                        <p><strong>Modos adaptativos</strong> — el sistema combina un <em>Nivel</em>
+                        (guiado / balanceado / técnico) con un <em>Enfoque</em> (diseñar / solver),
+                        ajustando el tono y profundidad de cada respuesta sin cambiar de modelo.</p>
+                    </div>
+                </div>
+                <div class="about-tag-row" style="margin-top:1rem;">
+                    <span class="about-tag">Groq API</span>
+                    <span class="about-tag">Llama 3.3 70B</span>
+                    <span class="about-tag">Ollama (local)</span>
+                    <span class="about-tag">Express.js</span>
+                    <span class="about-tag">Vanilla ES6</span>
+                    <span class="about-tag">SVG canvas</span>
+                </div>
+            </article>
+        </section>
+
+        <!-- Qué hace / qué no hace -->
+        <section class="content-card">
+            <h2 class="section-title" style="margin-bottom:1rem;">Alcance del proyecto</h2>
+            <div class="about-grid">
+                <article class="content-block">
+                    <h3 style="font-size:0.95rem; font-weight:600; color:#4ade80; margin:0 0 0.3rem;">Qué hace</h3>
+                    <ul class="check-list">
+                        <li><i class="fa-solid fa-check icon yes"></i><span>Chat IA con contexto de la topología activa</span></li>
+                        <li><i class="fa-solid fa-check icon yes"></i><span>Simulación de ping y traceroute con animación de paquetes</span></li>
+                        <li><i class="fa-solid fa-check icon yes"></i><span>Detección automática de problemas (IPs duplicadas, nodos aislados, sin gateway)</span></li>
+                        <li><i class="fa-solid fa-check icon yes"></i><span>IA puede proponer y aplicar cambios al diagrama directamente</span></li>
+                        <li><i class="fa-solid fa-check icon yes"></i><span>Exportar / importar topologías en JSON o URL compartible</span></li>
+                        <li><i class="fa-solid fa-check icon yes"></i><span>Terminal virtual: <code>ping</code>, <code>traceroute</code>, <code>ipconfig</code>, <code>show arp</code></span></li>
+                        <li><i class="fa-solid fa-check icon yes"></i><span>Nodos: router, switch, PC, firewall, servidor, cloud, AP, PLC, UR3, AGV</span></li>
+                    </ul>
+                </article>
+                <article class="content-block">
+                    <h3 style="font-size:0.95rem; font-weight:600; color:#f87171; margin:0 0 0.3rem;">Qué no hace</h3>
+                    <ul class="check-list">
+                        <li><i class="fa-solid fa-xmark icon no"></i><span>No es un simulador de red real (no hay stack TCP/IP)</span></li>
+                        <li><i class="fa-solid fa-xmark icon no"></i><span>No ejecuta comandos en hardware o equipos físicos</span></li>
+                        <li><i class="fa-solid fa-xmark icon no"></i><span>No tiene RAG sobre documentación técnica (aún)</span></li>
+                        <li><i class="fa-solid fa-xmark icon no"></i><span>No guarda sesiones en la nube ni requiere cuenta</span></li>
+                        <li><i class="fa-solid fa-xmark icon no"></i><span>No reemplaza herramientas de producción (Packet Tracer, GNS3)</span></li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <!-- Estructura -->
+        <section class="content-card">
+            <article class="content-block">
+                <h2 class="section-title">Estructura técnica (resumen)</h2>
+                <p>
+                    El proyecto es una SPA de dos páginas (chat + diagrams) con un backend Express mínimo.
+                    No hay bundler ni framework de UI: todo es HTML/CSS/JS vanilla con módulos ES6.
+                </p>
+                <p>
+                    El estado del diagrama vive en un store Redux-like (<code>store.js</code> + <code>reducer.js</code>).
+                    La conversación se comparte entre páginas a través de <code>sessionStorage</code>
+                    (<code>convStore.js</code>), lo que permite continuar el hilo en la vista de diagramas
+                    sin perder historial. El backend soporta tanto Groq (nube) como Ollama (local) según
+                    la variable <code>LLM_PROVIDER</code>.
+                </p>
+                <div class="about-tag-row">
+                    <span class="about-tag neutral">src/ai/</span>
+                    <span class="about-tag neutral">src/model/</span>
+                    <span class="about-tag neutral">src/core/</span>
+                    <span class="about-tag neutral">src/ui/</span>
+                    <span class="about-tag neutral">src/sim/</span>
+                    <span class="about-tag neutral">server.js</span>
+                </div>
+            </article>
+        </section>
+
     </main>
 
 </body>

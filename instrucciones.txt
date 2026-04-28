@@ -1,0 +1,160 @@
+You are modifying the topology diagram auto-layout engine.
+
+Goal:
+Redesign the layout rules so diagrams remain hierarchical at a global level, but become more organic, clustered, readable, and collision-free at a local level.
+
+Current behavior:
+- The layout is tier-based.
+- Nodes are classified by type and neighbors into tiers (WAN, firewall, core, distribution, access, wireless, service, endpoint, isolated).
+- Fan-out is detected for switches with many endpoint children.
+- Tiers are laid out with dynamic Y gaps.
+- Nodes inside each tier are distributed uniformly around the component centroid.
+- Barycenter sweeps reduce crossings.
+- Fan-out children are placed in compact rectangular blocks.
+- Multiple connected components are packed greedily.
+- Isolated nodes are parked separately.
+- Final normalization prevents cropping.
+
+Problems to solve:
+1. The resulting layout looks too rigid, too vertical, and too centered on one straight backbone.
+2. Sibling nodes do not visually form meaningful families or semantic groups.
+3. Repeated structures (computer lab, PLC lines, multiple UR3 cells, robot fleets, many AGVs, many PCs) are not grouped in a human-friendly way.
+4. The layout should never overlap any node, label, cluster, fan-out block, or reserved edge-label area.
+5. The global hierarchy should remain visible, but local structure should be cluster-based and more organic.
+
+Design target:
+Keep a macro top-to-bottom hierarchy, but introduce local semantic grouping and cluster-based placement.
+
+Implement these new principles:
+
+1. Cluster-first, tier-second
+- Before final positioning, detect semantic/local groups inside each connected component.
+- A group can be based on:
+  - common parent,
+  - common type,
+  - repeated name prefix with numeric suffix (PC1..PC20, UR3-1..UR3-8, AGV-1..AGV-12),
+  - similar neighborhood pattern,
+  - shared role (OT, operator, services, wireless, mobile, robotic cell, classroom, production line).
+- Groups should be represented as layout blocks with their own bounding box.
+
+2. Preserve a macro backbone spine
+- Detect the main backbone path (security/WAN/core/distribution/access/wireless uplink) and keep it visually readable.
+- Backbone should not force all nodes into the same central vertical line.
+- Side groups may branch to the left or right if that improves readability.
+
+3. Add layout modes for groups
+Each detected group must choose one of these internal layouts:
+- chain: for linear infrastructure sequences.
+- fanout: for small child sets.
+- grid: for many homogeneous repeated nodes.
+- arc: for wireless/mobile/endpoints that should feel less rigid.
+- cell: for repeated production/robotic cells.
+- bus-side: for many devices hanging from one switch or PLC.
+- pair-lanes: for dual/redundant repeated structures.
+
+Heuristics:
+- If repeated homogeneous nodes >= 6, prefer grid or bus-side.
+- If mobile/wireless children >= 3, prefer arc.
+- If repeated “cell-like” groups are detected, place them in a balanced matrix of cells.
+- If only 2-4 children, prefer symmetric fanout over grid.
+
+4. Repetition-aware grouping
+- Detect repeated labels using prefix + numeric suffix.
+- Detect repeated subgraphs (for example many UR3 cells, many PLC+HMI+Robot bundles, many PCs under one switch).
+- Group them before positioning.
+- Preserve numeric ordering naturally: PC1, PC2, ..., PC10.
+
+5. Replace purely uniform intra-tier spacing
+- Do not spread nodes in a tier uniformly by default.
+- First place clusters as units.
+- Then distribute individual nodes within each cluster.
+- Cluster spacing should depend on:
+  - cluster width/height,
+  - edge density,
+  - label size,
+  - collision risk,
+  - semantic separation.
+
+6. Strong collision-free layout
+Implement a true bounding-box collision system.
+No overlap is allowed between:
+- node icon boxes,
+- text label boxes,
+- cluster boxes,
+- fanout blocks,
+- reserved edge-label zones,
+- padding zones around important nodes.
+
+Use expanded bounding boxes with configurable margins.
+After initial placement, run iterative collision resolution until all overlaps are removed or a safe max iteration count is reached.
+If needed, expand local spacing or move clusters laterally.
+Readability is more important than perfect centering.
+
+7. Human-readable zones
+Inside a component, try to form visible zones:
+- WAN/security
+- core/backbone
+- OT/industrial
+- operator/HMI/SCADA
+- services/servers
+- wireless/mobile
+- endpoints
+These zones can still respect tiers, but should look like meaningful areas rather than a strict straight-column ladder.
+
+8. Large-network strategies
+Add explicit rules for large repeated sets:
+- Computer lab: place PCs in a grid/matrix near their access switch.
+- Production line: place repeated cells in rows/columns with balanced spacing.
+- Multiple UR3 or robots: place as grid/cell-clusters instead of one long fanout row.
+- Many AGVs under an AP or wireless segment: place in an arc or balanced cluster, not a rigid line.
+- If one cluster becomes too tall, split into multiple balanced sub-clusters.
+
+9. Better component packing
+- Pack connected components by bounding boxes, not only by height.
+- Avoid making the global canvas excessively tall and narrow.
+- Prefer compact rectangular packing while preserving readable padding.
+
+10. Stability
+- Preserve some stability relative to previous positions, but do not let historical X positions force a bad layout.
+- Crossing reduction is important, but readability and grouping are more important.
+
+11. Implementation requirements
+- Refactor code so layout has clear phases:
+  1. classify roles
+  2. detect backbone
+  3. detect semantic groups
+  4. choose group layout modes
+  5. place backbone
+  6. place groups around backbone
+  7. route/position children inside each group
+  8. collision resolution
+  9. connected-component packing
+  10. final normalization
+- Expose constants for:
+  - minimum node gap
+  - minimum cluster gap
+  - label padding
+  - edge-label reserved padding
+  - max grid columns
+  - arc radius
+  - max collision iterations
+  - repeated-group thresholds
+
+12. Acceptance criteria
+- No node or label overlap anywhere.
+- Repeated structures look grouped and balanced.
+- The layout still communicates network hierarchy.
+- The result looks more organic and less like a rigid centered ladder.
+- Works for:
+  - small OT network,
+  - classroom/lab with many PCs,
+  - production line with repeated robot cells,
+  - mixed enterprise + OT topology,
+  - many endpoints under one switch or AP.
+
+Please:
+- modify the existing layout engine instead of rewriting everything from scratch,
+- keep current role/tier classification when useful,
+- add the new grouping/collision logic cleanly,
+- document the new heuristics in comments,
+- and produce readable code with helper functions for group detection, cluster layout selection, and overlap resolution.

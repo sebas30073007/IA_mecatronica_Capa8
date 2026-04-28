@@ -68,6 +68,8 @@ export function normalizeGraph(raw) {
     os:          n.os || "",
     vlan:        (typeof n.vlan === "number" && n.vlan >= 1 && n.vlan <= 4094) ? n.vlan : null,
     mtu:         (typeof n.mtu === "number" && n.mtu >= 68) ? n.mtu : 1500,
+    // ACL rules (firewall nodes only): [{ action: "permit"|"deny", ip: "10.0.0.5"|"*" }]
+    rules:       (n.type === "firewall" && Array.isArray(n.rules)) ? n.rules : [],
   }));
 
   // Normalizar links

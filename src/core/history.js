@@ -34,5 +34,8 @@ export function createHistory({ limit = 50 } = {}) {
     future.length = 0;
   }
 
-  return { push, undo, redo, canUndo, canRedo, clear };
+  function undoCount() { return past.length; }
+  function redoCount() { return future.length; }
+
+  return { push, undo, redo, canUndo, canRedo, clear, undoCount, redoCount };
 }

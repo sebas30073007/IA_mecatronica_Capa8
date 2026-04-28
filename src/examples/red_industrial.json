@@ -1,0 +1,29 @@
+{
+  "version": 3,
+  "meta": { "name": "Red Industrial (ejemplo)", "createdAt": 0, "updatedAt": 0 },
+  "nodes": [
+    { "id": "n1",  "type": "firewall", "label": "FW-Industrial", "x": 400,  "y": 80,   "ip": "192.168.0.1" },
+    { "id": "n2",  "type": "router",   "label": "Router-Piso",   "x": 400,  "y": 220,  "ip": "192.168.1.1" },
+    { "id": "n3",  "type": "switch",   "label": "SW-OT",         "x": 400,  "y": 360,  "ip": "192.168.1.2" },
+    { "id": "n4",  "type": "plc",      "label": "PLC-Linea1",    "x": 200,  "y": 500,  "ip": "192.168.1.10" },
+    { "id": "n5",  "type": "plc",      "label": "PLC-Linea2",    "x": 370,  "y": 500,  "ip": "192.168.1.11" },
+    { "id": "n6",  "type": "ur3",      "label": "Robot-UR3",     "x": 540,  "y": 500,  "ip": "192.168.1.20" },
+    { "id": "n7",  "type": "agv",      "label": "AGV-1",         "x": 650,  "y": 380,  "ip": "192.168.1.30" },
+    { "id": "n8",  "type": "agv",      "label": "AGV-2",         "x": 650,  "y": 480,  "ip": "192.168.1.31" },
+    { "id": "n9",  "type": "server",   "label": "SCADA",         "x": 180,  "y": 220,  "ip": "192.168.2.1"  },
+    { "id": "n10", "type": "pc",       "label": "HMI-Operador",  "x": 620,  "y": 220,  "ip": "192.168.2.10", "gateway": "192.168.1.1" },
+    { "id": "n11", "type": "ap",       "label": "AP-Piso",       "x": 400,  "y": 620,  "ip": "192.168.1.50" }
+  ],
+  "links": [
+    { "id": "l1",  "source": "n1",  "target": "n2",  "latencyMs": 1,   "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l2",  "source": "n2",  "target": "n3",  "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l3",  "source": "n2",  "target": "n9",  "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l4",  "source": "n2",  "target": "n10", "latencyMs": 0.5, "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l5",  "source": "n3",  "target": "n4",  "latencyMs": 2,   "bandwidthMbps": 100,  "lossPct": 0, "status": "up" },
+    { "id": "l6",  "source": "n3",  "target": "n5",  "latencyMs": 2,   "bandwidthMbps": 100,  "lossPct": 0, "status": "up" },
+    { "id": "l7",  "source": "n3",  "target": "n6",  "latencyMs": 1,   "bandwidthMbps": 1000, "lossPct": 0, "status": "up" },
+    { "id": "l8",  "source": "n3",  "target": "n11", "latencyMs": 2,   "bandwidthMbps": 300,  "lossPct": 1, "status": "up", "mediaType": "wifi" },
+    { "id": "l9",  "source": "n11", "target": "n7",  "latencyMs": 3,   "bandwidthMbps": 150,  "lossPct": 2, "status": "up", "mediaType": "wifi", "jitter": 1 },
+    { "id": "l10", "source": "n11", "target": "n8",  "latencyMs": 3,   "bandwidthMbps": 150,  "lossPct": 2, "status": "up", "mediaType": "wifi", "jitter": 1 }
+  ]
+}
