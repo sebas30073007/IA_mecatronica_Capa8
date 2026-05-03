@@ -611,8 +611,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   // ── Touch events — drag de nodos + pan de canvas + pinch-zoom ────────
-  let touchPan = null;    // { sx, sy, px, py } — single finger pan
+  let touchPan   = null;  // { sx, sy, px, py } — single finger pan
   let touchPinch = null;  // { dist, cx, cy } — two finger pinch
+  let touchTapStart    = null; // { x, y, time } — tap origin for gesture detection
+  let lastDrawTapTime  = 0;    // timestamp of previous draw-mode tap (double-tap detection)
+  let lastDrawTapPos   = { x: 0, y: 0 }; // position of previous draw-mode tap
 
   function getTouchDist(t1, t2) {
     return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
@@ -646,9 +649,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       const node = state.graph.nodes.find(n => n.id === nodeId);
       if (node) dragging = { nodeId, offsetX: Math.round(x) - node.x, offsetY: Math.round(y) - node.y };
     } else if (!nodeEl) {
-      // Canvas pan
+      // Canvas pan (may also be a tap — resolved on touchend)
       e.preventDefault();
-      touchPan = { sx: touch.clientX, sy: touch.clientY, px: vp.panX, py: vp.panY };
+      touchPan      = { sx: touch.clientX, sy: touch.clientY, px: vp.panX, py: vp.panY };
+      touchTapStart = { x: touch.clientX, y: touch.clientY, time: Date.now() };
     }
   }, { passive: false });
 
@@ -694,7 +698,44 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.addEventListener("touchend", e => {
     if (e.touches.length < 2) touchPinch = null;
     if (e.touches.length === 0) {
-      touchPan = null;
+      // ── Tap gesture detection ──────────────────────────────────────────
+      const endTouch = e.changedTouches[0];
+      if (touchTapStart && endTouch && !dragging) {
+        const moved    = Math.hypot(endTouch.clientX - touchTapStart.x, endTouch.clientY - touchTapStart.y);
+        const duration = Date.now() - touchTapStart.time;
+        if (moved < 10 && duration < 400) {
+          const state = store.getState();
+          const tool  = state.ui.tool;
+          if (tool === "select" && state.ui.selection) {
+            // Single tap on blank area → dismiss inspector
+            store.dispatch({ type: ActionTypes.CLEAR_SELECTION });
+          } else if (["router","switch","pc","firewall","server","cloud","ap","plc","ur3","agv"].includes(tool)) {
+            // Double-tap in draw mode → place node (prevents accidental drops while scrolling)
+            const now = Date.now();
+            const sameTapSpot = Math.hypot(endTouch.clientX - lastDrawTapPos.x, endTouch.clientY - lastDrawTapPos.y) < 40;
+            if (now - lastDrawTapTime < 350 && sameTapSpot) {
+              const rect  = stageEl.getBoundingClientRect();
+              const { x, y } = toWorld(endTouch.clientX - rect.left, endTouch.clientY - rect.top);
+              const node = {
+                id: uid("n"),
+                type: tool,
+                label: `${tool.toUpperCase()} ${state.graph.nodes.filter(n => n.type === tool).length + 1}`,
+                x: Math.round(x), y: Math.round(y),
+                ip: suggestIp(tool, 10),
+                mask: null, gateway: "", description: "", os: "", vlan: null, mtu: 1500,
+              };
+              pushHistorySnapshot();
+              store.dispatch({ type: ActionTypes.ADD_NODE, payload: { node } });
+              lastDrawTapTime = 0;
+            } else {
+              lastDrawTapTime = now;
+              lastDrawTapPos  = { x: endTouch.clientX, y: endTouch.clientY };
+            }
+          }
+        }
+      }
+      touchTapStart = null;
+      touchPan      = null;
       if (dragging) {
         const releasedId = dragging.nodeId;
         dragging = null;
@@ -949,6 +990,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       LOAD_EXAMPLE_MPLS_WAN:             "mpls_wan",
       LOAD_EXAMPLE_RED_INDUSTRIAL:       "red_industrial",
       LOAD_EXAMPLE_RED_UNIVERSITARIA:    "red_universitaria",
+      LOAD_EXAMPLE_ESTE_PROYECTO:        "este_proyecto",
     };
     if (actionId in EXAMPLE_MAP) {
       try {

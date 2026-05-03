@@ -8,79 +8,262 @@
     <link rel="stylesheet" href="./assets/fa/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-      .about-grid {
+      /* ─── About-page local styles ─────────────────────────────────── */
+      .about-wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      /* Hero */
+      .ab-hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 2.8rem 1rem 2rem;
+        gap: 0.75rem;
+      }
+      .ab-hero-badge {
+        font-size: 0.72rem;
+        font-family: var(--font-mono);
+        color: #c8102e;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        border: 1px solid rgba(200,16,46,0.3);
+        border-radius: 20px;
+        padding: 3px 12px;
+        background: rgba(200,16,46,0.07);
+      }
+      .ab-hero h1 {
+        font-size: clamp(1.9rem, 5vw, 3rem);
+        font-weight: 700;
+        line-height: 1.15;
+        color: var(--text-primary);
+        margin: 0;
+      }
+      .ab-hero h1 em { font-style: normal; color: #c8102e; }
+      .ab-hero p {
+        font-size: 1rem;
+        color: var(--text-muted);
+        max-width: 520px;
+        line-height: 1.65;
+        margin: 0;
+      }
+      .ab-hero-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; margin-top: 0.5rem; }
+      .ab-btn {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        padding: 0.6rem 1.3rem;
+        border-radius: var(--radius-md);
+        font-size: 0.88rem; font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+        border: none;
+      }
+      button.ab-btn { cursor: pointer; font-family: inherit; font-size: 0.88rem; }
+      .ab-btn-primary {
+        background: #c8102e; color: #fff;
+        border: 1px solid #c8102e;
+      }
+      .ab-btn-primary:hover { background: #e01535; }
+      .ab-btn-outline {
+        background: transparent;
+        color: var(--text-soft);
+        border: 1px solid rgba(255,255,255,0.18);
+      }
+      .ab-btn-outline:hover { background: rgba(255,255,255,0.06); color: var(--text-primary); }
+      [data-theme="light"] .ab-btn-outline { border-color: rgba(0,0,0,0.18); }
+      [data-theme="light"] .ab-btn-outline:hover { background: rgba(0,0,0,0.04); }
+
+      /* Stat strip */
+      .ab-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+      }
+      @media (max-width: 600px) { .ab-stats { grid-template-columns: repeat(2, 1fr); } }
+      .ab-stat {
+        background: var(--bg-glass);
+        border: var(--glass-border);
+        border-radius: var(--radius-md);
+        padding: 1rem 0.75rem;
+        text-align: center;
+        display: flex; flex-direction: column; gap: 0.25rem;
+      }
+      .ab-stat-num {
+        font-size: 1.6rem; font-weight: 700; color: #c8102e;
+        font-family: var(--font-mono);
+        line-height: 1;
+      }
+      .ab-stat-label { font-size: 0.72rem; color: var(--text-muted); }
+
+      /* Generic card */
+      .ab-card {
+        background: var(--bg-glass);
+        border: var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 1.75rem;
+        backdrop-filter: blur(12px);
+      }
+      .ab-card-title {
+        font-size: 0.72rem;
+        font-family: var(--font-mono);
+        color: #c8102e;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
+      .ab-card h2 {
+        font-size: 1.25rem; font-weight: 600;
+        color: var(--text-primary); margin: 0 0 1rem;
+      }
+      .ab-card p { color: var(--text-soft); line-height: 1.65; font-size: 0.92rem; margin: 0; }
+      .ab-card p + p { margin-top: 0.6rem; }
+
+      /* 2-col layout */
+      .ab-2col {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 1rem;
       }
-      @media (max-width: 700px) { .about-grid { grid-template-columns: 1fr; } }
+      @media (max-width: 640px) { .ab-2col { grid-template-columns: 1fr; } }
 
-      .about-tag-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 0.5rem;
+      /* Icon section header */
+      .ab-icon-header {
+        display: flex; align-items: center; gap: 0.75rem;
+        margin-bottom: 1rem;
       }
-      .about-tag {
-        font-size: 0.72rem;
-        font-family: var(--font-mono, 'DM Mono', monospace);
+      .ab-icon-box {
+        width: 40px; height: 40px; flex-shrink: 0;
+        border-radius: 10px;
         background: rgba(200,16,46,0.12);
+        border: 1px solid rgba(200,16,46,0.25);
+        display: flex; align-items: center; justify-content: center;
         color: #c8102e;
+        font-size: 1rem;
+      }
+      .ab-icon-box svg { width: 20px; height: 20px; }
+
+      /* Feature grid */
+      .ab-features {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.9rem;
+      }
+      @media (max-width: 640px) { .ab-features { grid-template-columns: 1fr 1fr; } }
+      @media (max-width: 400px) { .ab-features { grid-template-columns: 1fr; } }
+      .ab-feature {
+        background: var(--bg-glass);
+        border: var(--glass-border);
+        border-radius: var(--radius-md);
+        padding: 1.1rem;
+        display: flex; flex-direction: column; gap: 0.5rem;
+      }
+      .ab-feature-icon { font-size: 1.25rem; color: #c8102e; }
+      .ab-feature h3 { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin: 0; }
+      .ab-feature p  { font-size: 0.8rem; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+      /* Tags */
+      .ab-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.9rem; }
+      .ab-tag {
+        font-size: 0.72rem; font-family: var(--font-mono);
+        padding: 3px 9px; border-radius: 4px;
         border: 1px solid rgba(200,16,46,0.3);
-        border-radius: 4px;
-        padding: 2px 8px;
-        white-space: nowrap;
+        background: rgba(200,16,46,0.08);
+        color: #c8102e; white-space: nowrap;
       }
-      .about-tag.neutral {
-        background: rgba(255,255,255,0.05);
-        color: var(--text-muted, #aaa);
-        border-color: rgba(255,255,255,0.12);
+      .ab-tag.neutral {
+        border-color: rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.04);
+        color: var(--text-muted);
+      }
+      [data-theme="light"] .ab-tag.neutral {
+        border-color: rgba(0,0,0,0.1);
+        background: rgba(0,0,0,0.04);
       }
 
-      .check-list {
-        list-style: none;
-        padding: 0;
-        margin: 0.4rem 0 0;
+      /* ─── How-it-works icon flow ─────────────────────────────────── */
+      .ab-how-flow {
         display: flex;
-        flex-direction: column;
-        gap: 0.45rem;
-      }
-      .check-list li { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.9rem; line-height: 1.4; }
-      .check-list li .icon { margin-top: 2px; flex-shrink: 0; font-size: 0.8rem; }
-      .check-list li .icon.yes { color: #4ade80; }
-      .check-list li .icon.no  { color: #f87171; }
-
-      .flow-steps {
-        display: flex;
-        flex-direction: column;
-        gap: 0.7rem;
-        margin-top: 0.4rem;
-      }
-      .flow-step {
-        display: flex;
+        flex-direction: row;
         align-items: flex-start;
-        gap: 0.75rem;
-      }
-      .flow-step-num {
-        flex-shrink: 0;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background: #c8102e;
-        color: #fff;
-        font-size: 0.72rem;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
         justify-content: center;
-        margin-top: 2px;
+        margin-top: 1.5rem;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
       }
-      .flow-step p { margin: 0; font-size: 0.88rem; line-height: 1.5; }
-      .flow-step strong { font-weight: 600; }
+      .ab-how-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.55rem;
+        min-width: 82px;
+        max-width: 92px;
+        flex-shrink: 0;
+      }
+      .ab-how-icon {
+        width: 50px; height: 50px;
+        border-radius: 13px;
+        background: rgba(200,16,46,0.12);
+        border: 1px solid rgba(200,16,46,0.28);
+        display: flex; align-items: center; justify-content: center;
+        color: #c8102e;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+      }
+      .ab-how-label {
+        font-size: 0.72rem;
+        color: var(--text-soft);
+        line-height: 1.35;
+      }
+      .ab-how-arrow {
+        color: rgba(200,16,46,0.45);
+        font-size: 0.8rem;
+        flex-shrink: 0;
+        padding: 0 0.3rem;
+        margin-top: 18px;
+      }
+      @media (max-width: 640px) {
+        .ab-how-flow {
+          flex-direction: column;
+          align-items: center;
+          gap: 0.4rem;
+          overflow-x: visible;
+        }
+        .ab-how-arrow { margin-top: 0; transform: rotate(90deg); }
+        .ab-how-step { max-width: 200px; }
+      }
 
-      .content-block + .content-block { margin-top: 1.5rem; }
-      .content-block p { margin: 0.4rem 0 0; line-height: 1.65; font-size: 0.92rem; }
-      .content-block p + p { margin-top: 0.6rem; }
+      /* ─── Bottom CTA ─────────────────────────────────────────────── */
+      .ab-cta-bottom {
+        background: var(--bg-glass);
+        border: var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem 1.75rem;
+        text-align: center;
+        backdrop-filter: blur(12px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .ab-cta-bottom h2 {
+        font-size: 1.4rem; font-weight: 700;
+        color: var(--text-primary); margin: 0;
+      }
+      .ab-cta-bottom p {
+        font-size: 0.9rem; color: var(--text-muted);
+        margin: 0 0 0.75rem;
+      }
+      .ab-btn-lg {
+        padding: 0.75rem 1.5rem !important;
+        font-size: 0.93rem !important;
+      }
+      button.ab-btn-lg { font-size: 0.93rem !important; }
     </style>
 </head>
 <body>
@@ -107,7 +290,7 @@
                 </a>
                 <a href="about.html" class="onav-dropdown-item active">
                     <span class="onav-dropdown-item-title">Sobre el Proyecto</span>
-                    <span class="onav-dropdown-item-sub">Sobre el proyecto</span>
+                    <span class="onav-dropdown-item-sub">Arquitectura y fases</span>
                 </a>
                 <a href="diagrams.html" class="onav-dropdown-item">
                     <span class="onav-dropdown-item-title">Diagramas</span>
@@ -120,7 +303,7 @@
             </div>
         </div>
         <div class="onav-spacer"></div>
-        <button id="theme-toggle" class="theme-toggle-btn" title="Cambiar tema (claro/oscuro)">
+        <button id="theme-toggle" class="theme-toggle-btn" title="Cambiar tema">
             <i class="fa-solid fa-moon"></i>
         </button>
         <div class="onav-online">
@@ -133,179 +316,282 @@
       const btn  = document.getElementById('onav-logo-btn');
       const dd   = document.getElementById('onav-dropdown');
       const wrap = btn.closest('.onav-logo-wrap');
-      btn.addEventListener('click', e => {
-        e.stopPropagation();
-        dd.hidden = !dd.hidden;
-        btn.classList.toggle('open', !dd.hidden);
-      });
+      btn.addEventListener('click', e => { e.stopPropagation(); dd.hidden = !dd.hidden; btn.classList.toggle('open', !dd.hidden); });
       wrap.addEventListener('mouseenter', () => { dd.hidden = false; btn.classList.add('open'); });
       wrap.addEventListener('mouseleave', () => { dd.hidden = true;  btn.classList.remove('open'); });
       document.addEventListener('click', e => {
-        if (!btn.contains(e.target) && !dd.contains(e.target)) {
-          dd.hidden = true;
-          btn.classList.remove('open');
-        }
+        if (!btn.contains(e.target) && !dd.contains(e.target)) { dd.hidden = true; btn.classList.remove('open'); }
       });
-
       (function() {
-        const toggleBtn = document.getElementById('theme-toggle');
-        const icon = toggleBtn?.querySelector('i');
-        const saved = localStorage.getItem('capa8_theme');
-        if (icon && saved === 'light') icon.className = 'fa-solid fa-sun';
-        toggleBtn?.addEventListener('click', () => {
-          const isLight = document.documentElement.dataset.theme === 'light';
-          document.documentElement.dataset.theme = isLight ? '' : 'light';
-          localStorage.setItem('capa8_theme', isLight ? '' : 'light');
-          if (icon) icon.className = isLight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+        const tb = document.getElementById('theme-toggle');
+        const ic = tb?.querySelector('i');
+        if (ic && localStorage.getItem('capa8_theme') === 'light') ic.className = 'fa-solid fa-sun';
+        tb?.addEventListener('click', () => {
+          const isL = document.documentElement.dataset.theme === 'light';
+          document.documentElement.dataset.theme = isL ? '' : 'light';
+          localStorage.setItem('capa8_theme', isL ? '' : 'light');
+          if (ic) ic.className = isL ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
         });
       })();
     </script>
 
-    <main class="container">
+    <div class="about-wrap">
 
-        <section class="page-hero">
-            <h1 class="page-title">Sobre CAPA 8</h1>
-            <p class="page-subtitle">
-                Herramienta educativa de redes: asistente IA conversacional + simulador de topologías interactivo,
-                orientado a estudiantes de ingeniería en mecatrónica y telecomunicaciones.
-            </p>
-        </section>
-
-        <!-- El problema -->
-        <section class="content-card">
-            <article class="content-block">
-                <h2 class="section-title">El problema</h2>
-                <p>
-                    Aprender redes implica manejar conceptos abstractos (subnetting, ruteo, VLANs) y herramientas
-                    que suelen ser complejas o poco accesibles para estudiantes. Las simulaciones de escritorio
-                    (Packet Tracer, GNS3) tienen curva de aprendizaje alta; los chatbots genéricos no conocen
-                    el contexto de una topología específica.
-                </p>
-                <p>
-                    A la capa humana del modelo OSI se le llama informalmente <strong>Capa 8</strong>: donde las dudas son
-                    "¿qué está fallando realmente?", "¿cómo diseño esto?" o "¿por qué no llega el ping?".
-                    Ese gap entre teoría y práctica es lo que CAPA 8 busca reducir.
-                </p>
-            </article>
-        </section>
-
-        <!-- Inspiración -->
-        <section class="content-card">
-            <article class="content-block">
-                <h2 class="section-title">Inspiración</h2>
-                <p>
-                    El simulador de diagramas está inspirado en
-                    <a href="https://www.falstad.com/circuit/" target="_blank" rel="noopener noreferrer" style="color:#c8102e;">Falstad Circuit Simulator</a>:
-                    una app web minimalista donde arrastras componentes, ves la simulación en tiempo real y puedes
-                    compartir cualquier circuito con una URL. Sin instalación, sin cuenta, sin fricción.
-                </p>
-                <p>
-                    CAPA 8 aplica la misma filosofía a topologías de red: dibuja nodos y enlaces en el canvas,
-                    simula pings con animaciones de paquetes, y comparte el diagrama completo codificado en la URL
-                    (Base64 en el parámetro <code>?g=</code>). El asistente IA tiene acceso al grafo activo,
-                    por lo que las respuestas son contextuales a <em>tu</em> red, no genéricas.
-                </p>
-            </article>
-        </section>
-
-        <!-- Implementación IA -->
-        <section class="content-card">
-            <article class="content-block">
-                <h2 class="section-title">Implementación con IA</h2>
-                <div class="flow-steps">
-                    <div class="flow-step">
-                        <div class="flow-step-num">1</div>
-                        <p><strong>Clasificación de intención</strong> — antes de llamar al LLM, <code>intentRouter</code>
-                        detecta si el mensaje es una consulta conceptual, una pregunta sobre el diagrama activo,
-                        o una acción de modificación. Esto determina temperatura, prompt y si se activa el auto-retry.</p>
-                    </div>
-                    <div class="flow-step">
-                        <div class="flow-step-num">2</div>
-                        <p><strong>Contexto del grafo</strong> — <code>context-builder</code> serializa el estado actual
-                        (nodos, enlaces, IPs, estado up/down, problemas detectados) y lo inyecta en el prompt.
-                        El LLM ve tu topología real, no un escenario inventado.</p>
-                    </div>
-                    <div class="flow-step">
-                        <div class="flow-step-num">3</div>
-                        <p><strong>Acciones estructuradas</strong> — cuando la IA propone cambios al diagrama, los devuelve
-                        en bloques <code>[CAPA8_ACTION]&#123;...&#125;[/CAPA8_ACTION]</code>. El frontend los valida
-                        con <code>actionValidator</code> antes de aplicarlos; errores y advertencias se muestran
-                        en el chat.</p>
-                    </div>
-                    <div class="flow-step">
-                        <div class="flow-step-num">4</div>
-                        <p><strong>Modos adaptativos</strong> — el sistema combina un <em>Nivel</em>
-                        (guiado / balanceado / técnico) con un <em>Enfoque</em> (diseñar / solver),
-                        ajustando el tono y profundidad de cada respuesta sin cambiar de modelo.</p>
-                    </div>
-                </div>
-                <div class="about-tag-row" style="margin-top:1rem;">
-                    <span class="about-tag">Groq API</span>
-                    <span class="about-tag">Llama 3.3 70B</span>
-                    <span class="about-tag">Ollama (local)</span>
-                    <span class="about-tag">Express.js</span>
-                    <span class="about-tag">Vanilla ES6</span>
-                    <span class="about-tag">SVG canvas</span>
-                </div>
-            </article>
-        </section>
-
-        <!-- Qué hace / qué no hace -->
-        <section class="content-card">
-            <h2 class="section-title" style="margin-bottom:1rem;">Alcance del proyecto</h2>
-            <div class="about-grid">
-                <article class="content-block">
-                    <h3 style="font-size:0.95rem; font-weight:600; color:#4ade80; margin:0 0 0.3rem;">Qué hace</h3>
-                    <ul class="check-list">
-                        <li><i class="fa-solid fa-check icon yes"></i><span>Chat IA con contexto de la topología activa</span></li>
-                        <li><i class="fa-solid fa-check icon yes"></i><span>Simulación de ping y traceroute con animación de paquetes</span></li>
-                        <li><i class="fa-solid fa-check icon yes"></i><span>Detección automática de problemas (IPs duplicadas, nodos aislados, sin gateway)</span></li>
-                        <li><i class="fa-solid fa-check icon yes"></i><span>IA puede proponer y aplicar cambios al diagrama directamente</span></li>
-                        <li><i class="fa-solid fa-check icon yes"></i><span>Exportar / importar topologías en JSON o URL compartible</span></li>
-                        <li><i class="fa-solid fa-check icon yes"></i><span>Terminal virtual: <code>ping</code>, <code>traceroute</code>, <code>ipconfig</code>, <code>show arp</code></span></li>
-                        <li><i class="fa-solid fa-check icon yes"></i><span>Nodos: router, switch, PC, firewall, servidor, cloud, AP, PLC, UR3, AGV</span></li>
-                    </ul>
-                </article>
-                <article class="content-block">
-                    <h3 style="font-size:0.95rem; font-weight:600; color:#f87171; margin:0 0 0.3rem;">Qué no hace</h3>
-                    <ul class="check-list">
-                        <li><i class="fa-solid fa-xmark icon no"></i><span>No es un simulador de red real (no hay stack TCP/IP)</span></li>
-                        <li><i class="fa-solid fa-xmark icon no"></i><span>No ejecuta comandos en hardware o equipos físicos</span></li>
-                        <li><i class="fa-solid fa-xmark icon no"></i><span>No tiene RAG sobre documentación técnica (aún)</span></li>
-                        <li><i class="fa-solid fa-xmark icon no"></i><span>No guarda sesiones en la nube ni requiere cuenta</span></li>
-                        <li><i class="fa-solid fa-xmark icon no"></i><span>No reemplaza herramientas de producción (Packet Tracer, GNS3)</span></li>
-                    </ul>
-                </article>
+        <!-- ─── SECCIÓN 1: HERO ──────────────────────────────────────────────── -->
+        <section class="ab-hero">
+            <div class="ab-hero-badge">CAPA 8 · v3.0 · IBERO Puebla</div>
+            <h1>Redes con <em>IA contextual</em><br>y simulación en tiempo real</h1>
+            <p>Aprende redes diseñando topologías, simulando comandos y consultando una IA que conoce tu diagrama activo. Sin instalaciones, todo en el navegador.</p>
+            <div class="ab-hero-btns">
+                <a href="index.html" class="ab-btn ab-btn-primary ab-btn-lg"><i class="fa-solid fa-comments"></i> Abrir IA</a>
+                <a href="diagrams.html" class="ab-btn ab-btn-outline ab-btn-lg"><i class="fa-solid fa-share-nodes"></i> Abrir simulador</a>
+                <button class="ab-btn ab-btn-outline ab-btn-lg" onclick="openEsteProyecto()"><i class="fa-solid fa-diagram-project"></i> Ver topología de ejemplo</button>
+                <a href="https://github.com/sebas30073007/IA_mecatronica_Capa8" target="_blank" rel="noopener noreferrer" class="ab-btn ab-btn-outline ab-btn-lg"><i class="fa-brands fa-github"></i> Ver repositorio</a>
             </div>
         </section>
 
-        <!-- Estructura -->
-        <section class="content-card">
-            <article class="content-block">
-                <h2 class="section-title">Estructura técnica (resumen)</h2>
-                <p>
-                    El proyecto es una SPA de dos páginas (chat + diagrams) con un backend Express mínimo.
-                    No hay bundler ni framework de UI: todo es HTML/CSS/JS vanilla con módulos ES6.
-                </p>
-                <p>
-                    El estado del diagrama vive en un store Redux-like (<code>store.js</code> + <code>reducer.js</code>).
-                    La conversación se comparte entre páginas a través de <code>sessionStorage</code>
-                    (<code>convStore.js</code>), lo que permite continuar el hilo en la vista de diagramas
-                    sin perder historial. El backend soporta tanto Groq (nube) como Ollama (local) según
-                    la variable <code>LLM_PROVIDER</code>.
-                </p>
-                <div class="about-tag-row">
-                    <span class="about-tag neutral">src/ai/</span>
-                    <span class="about-tag neutral">src/model/</span>
-                    <span class="about-tag neutral">src/core/</span>
-                    <span class="about-tag neutral">src/ui/</span>
-                    <span class="about-tag neutral">src/sim/</span>
-                    <span class="about-tag neutral">server.js</span>
+        <!-- ─── STATS ─────────────────────────────────────────────────────────── -->
+        <div class="ab-stats">
+            <div class="ab-stat">
+                <div class="ab-stat-num">10</div>
+                <div class="ab-stat-label">Tipos de nodo</div>
+            </div>
+            <div class="ab-stat">
+                <div class="ab-stat-num">3×2</div>
+                <div class="ab-stat-label">Modos IA (nivel × enfoque)</div>
+            </div>
+            <div class="ab-stat">
+                <div class="ab-stat-num">8</div>
+                <div class="ab-stat-label">Sesiones de desarrollo</div>
+            </div>
+            <div class="ab-stat">
+                <div class="ab-stat-num">∞</div>
+                <div class="ab-stat-label">Topologías por URL</div>
+            </div>
+        </div>
+
+        <!-- ─── ¿QUÉ ES CAPA 8? ───────────────────────────────────────────────── -->
+        <div class="ab-card">
+            <div class="ab-icon-header">
+                <div class="ab-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4M12 8h.01"/>
+                    </svg>
                 </div>
-            </article>
+                <div>
+                    <div class="ab-card-title">¿Qué es?</div>
+                    <h2 style="margin:0;font-size:1.05rem;">CAPA 8</h2>
+                </div>
+            </div>
+            <p>CAPA 8 es una herramienta educativa para aprender redes mediante una IA conversacional que entiende la topología activa y un simulador visual de diagramas. Permite diseñar redes, consultar errores, simular comandos y compartir topologías desde el navegador.</p>
+        </div>
+
+        <!-- ─── SECCIÓN 2 + 3: PROBLEMA / SOLUCIÓN ────────────────────────────── -->
+        <div class="ab-2col">
+            <div class="ab-card">
+                <div class="ab-icon-header">
+                    <div class="ab-icon-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="ab-card-title">Contexto</div>
+                        <h2 style="margin:0;font-size:1.05rem;">El problema</h2>
+                    </div>
+                </div>
+                <p>Aprender redes suele ser complejo porque los conceptos son abstractos y las herramientas tradicionales requieren instalación, configuración y conocimientos previos. Packet Tracer y GNS3 tienen una curva de entrada alta.</p>
+                <p>Además, los chatbots genéricos no entienden el diagrama específico que el estudiante está construyendo: responden de forma genérica, sin contexto de tu topología.</p>
+            </div>
+            <div class="ab-card">
+                <div class="ab-icon-header">
+                    <div class="ab-icon-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <path d="M9 11l3 3L22 4"/>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="ab-card-title">Propuesta</div>
+                        <h2 style="margin:0;font-size:1.05rem;">La solución</h2>
+                    </div>
+                </div>
+                <p>CAPA 8 combina un editor visual de topologías con una IA que recibe el contexto del grafo activo: nodos, enlaces, IPs, estados y problemas detectados.</p>
+                <p>El asistente serializa el estado del diagrama y lo inyecta al prompt — el LLM ve la topología real del usuario, no un escenario inventado. Sin instalación, comparte con una URL.</p>
+            </div>
+        </div>
+
+        <!-- ─── SECCIÓN 4: CÓMO FUNCIONA ─────────────────────────────────────── -->
+        <div class="ab-card">
+            <div class="ab-icon-header">
+                <div class="ab-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="ab-card-title">Flujo</div>
+                    <h2 style="margin:0;font-size:1.05rem;">¿Cómo funciona?</h2>
+                </div>
+            </div>
+            <div class="ab-how-flow">
+                <div class="ab-how-step">
+                    <div class="ab-how-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+                    <div class="ab-how-label">Usuario diseña la red</div>
+                </div>
+                <div class="ab-how-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                <div class="ab-how-step">
+                    <div class="ab-how-icon"><i class="fa-solid fa-share-nodes"></i></div>
+                    <div class="ab-how-label">La app construye el grafo</div>
+                </div>
+                <div class="ab-how-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                <div class="ab-how-step">
+                    <div class="ab-how-icon"><i class="fa-solid fa-robot"></i></div>
+                    <div class="ab-how-label">La IA recibe contexto de nodos, enlaces e IPs</div>
+                </div>
+                <div class="ab-how-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                <div class="ab-how-step">
+                    <div class="ab-how-icon"><i class="fa-solid fa-code-branch"></i></div>
+                    <div class="ab-how-label">El sistema clasifica la intención</div>
+                </div>
+                <div class="ab-how-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                <div class="ab-how-step">
+                    <div class="ab-how-icon"><i class="fa-solid fa-comments"></i></div>
+                    <div class="ab-how-label">La IA responde, diagnostica o propone acciones</div>
+                </div>
+                <div class="ab-how-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                <div class="ab-how-step">
+                    <div class="ab-how-icon"><i class="fa-solid fa-circle-check"></i></div>
+                    <div class="ab-how-label">La app valida y aplica los cambios</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── CAPACIDADES ────────────────────────────────────────────────────── -->
+        <div>
+            <p class="ab-card-title" style="margin-bottom:0.75rem;">Capacidades del sistema</p>
+            <div class="ab-features">
+                <div class="ab-feature">
+                    <div class="ab-feature-icon"><i class="fa-solid fa-comments"></i></div>
+                    <h3>Chat contextual</h3>
+                    <p>La IA conoce tu topología activa y responde en función de ella, no de forma genérica.</p>
+                </div>
+                <div class="ab-feature">
+                    <div class="ab-feature-icon"><i class="fa-solid fa-circle-nodes"></i></div>
+                    <h3>Editor de diagramas</h3>
+                    <p>Canvas SVG interactivo. Arrastra nodos, dibuja enlaces, zoom y pan. 10 tipos de dispositivo.</p>
+                </div>
+                <div class="ab-feature">
+                    <div class="ab-feature-icon"><i class="fa-solid fa-terminal"></i></div>
+                    <h3>Terminal virtual</h3>
+                    <p><code>ping</code>, <code>traceroute</code>, <code>ipconfig</code>, <code>show arp</code>, <code>show interfaces</code>.</p>
+                </div>
+                <div class="ab-feature">
+                    <div class="ab-feature-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <h3>Pretty layout</h3>
+                    <p>Organización jerárquica automática con scoring para elegir la mejor variante visual.</p>
+                </div>
+                <div class="ab-feature">
+                    <div class="ab-feature-icon"><i class="fa-solid fa-link"></i></div>
+                    <h3>Exportar por URL</h3>
+                    <p>Cualquier topología se codifica en Base64 en el parámetro <code>?g=</code>. Compartir es copiar el link.</p>
+                </div>
+                <div class="ab-feature">
+                    <div class="ab-feature-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <h3>Análisis automático</h3>
+                    <p>Detecta IPs duplicadas, nodos aislados, falta de gateway y otros tipos de problema.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── TECNOLOGÍAS ───────────────────────────────────────────────────── -->
+        <div class="ab-card">
+            <div class="ab-icon-header">
+                <div class="ab-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="ab-card-title">Stack</div>
+                    <h2 style="margin:0;font-size:1.05rem;">Tecnologías utilizadas</h2>
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.5rem;">
+                <div class="ab-feature" style="gap:0.35rem;">
+                    <div class="ab-feature-icon"><i class="fa-brands fa-node-js"></i></div>
+                    <h3>Node.js + Express</h3>
+                    <p>Backend mínimo: rutas <code>/api/chat</code> y <code>/api/health</code>. Sin base de datos.</p>
+                </div>
+                <div class="ab-feature" style="gap:0.35rem;">
+                    <div class="ab-feature-icon" style="color:#f7df1e;"><i class="fa-brands fa-js"></i></div>
+                    <h3>Vanilla ES6</h3>
+                    <p>Módulos nativos, sin bundler ni framework de UI. Todo el estado vive en un store Redux-like.</p>
+                </div>
+                <div class="ab-feature" style="gap:0.35rem;">
+                    <div class="ab-feature-icon" style="color:#ff6b6b;"><i class="fa-solid fa-brain"></i></div>
+                    <h3>Groq API</h3>
+                    <p>LLM en la nube. Modelo Llama 3.3 70B. Latencia baja, respuestas en español.</p>
+                </div>
+                <div class="ab-feature" style="gap:0.35rem;">
+                    <div class="ab-feature-icon" style="color:#4ade80;"><i class="fa-solid fa-server"></i></div>
+                    <h3>Ollama (local)</h3>
+                    <p>Alternativa sin internet. Soporta Qwen3, Gemma3 y otros modelos locales.</p>
+                </div>
+                <div class="ab-feature" style="gap:0.35rem;">
+                    <div class="ab-feature-icon" style="color:#38bdf8;"><i class="fa-brands fa-github"></i></div>
+                    <h3>GitHub Pages</h3>
+                    <p>Frontend estático desplegado. El backend corre separado en Render.com.</p>
+                </div>
+                <div class="ab-feature" style="gap:0.35rem;">
+                    <div class="ab-feature-icon" style="color:#fb923c;"><i class="fa-solid fa-draw-polygon"></i></div>
+                    <h3>SVG Canvas</h3>
+                    <p>Nodos como divs absolutos, enlaces como líneas SVG. Zoom/pan con CSS transform.</p>
+                </div>
+            </div>
+            <div class="ab-tags" style="margin-top:1rem;">
+                <span class="ab-tag neutral">marked.js</span>
+                <span class="ab-tag neutral">Font Awesome 6</span>
+                <span class="ab-tag neutral">CSS glassmorphism</span>
+                <span class="ab-tag neutral">sessionStorage</span>
+                <span class="ab-tag neutral">Base64 URL codec</span>
+                <span class="ab-tag neutral">requestAnimationFrame</span>
+            </div>
+        </div>
+
+        <!-- ─── SECCIÓN 5: DEMO RÁPIDA (CTA BOTTOM) ──────────────────────────── -->
+        <section class="ab-cta-bottom">
+            <div class="ab-card-title">Demo rápida</div>
+            <h2>¿Listo para explorar?</h2>
+            <p>Prueba la IA, diseña una topología o carga un ejemplo en segundos.</p>
+            <div class="ab-hero-btns">
+                <a href="index.html" class="ab-btn ab-btn-primary ab-btn-lg"><i class="fa-solid fa-comments"></i> Abrir IA</a>
+                <a href="diagrams.html" class="ab-btn ab-btn-outline ab-btn-lg"><i class="fa-solid fa-share-nodes"></i> Abrir simulador</a>
+                <button class="ab-btn ab-btn-outline ab-btn-lg" onclick="openEsteProyecto()"><i class="fa-solid fa-diagram-project"></i> Ver topología de ejemplo</button>
+                <a href="https://github.com/sebas30073007/IA_mecatronica_Capa8" target="_blank" rel="noopener noreferrer" class="ab-btn ab-btn-outline ab-btn-lg"><i class="fa-brands fa-github"></i> Ver repositorio</a>
+            </div>
         </section>
 
-    </main>
+    </div><!-- /about-wrap -->
+
+    <script>
+      async function openEsteProyecto() {
+        try {
+          const res   = await fetch('src/examples/este_proyecto.json');
+          const graph = await res.json();
+          const json  = JSON.stringify(graph);
+          const bytes = new TextEncoder().encode(json);
+          let binary  = "";
+          for (const b of bytes) binary += String.fromCharCode(b);
+          const encoded = btoa(binary);
+          window.open('diagrams.html?g=' + encoded, '_blank');
+        } catch(e) {
+          alert('No se pudo cargar la topología.');
+        }
+      }
+    </script>
 
 </body>
 </html>

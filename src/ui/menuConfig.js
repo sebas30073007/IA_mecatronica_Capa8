@@ -68,6 +68,8 @@ export const MENUS = [
       { key: "exMpls",    label: "WAN MPLS",             icon: "fa-solid fa-globe",           shortcut: "", action: "LOAD_EXAMPLE_MPLS_WAN",          status: "Ejemplo: WAN MPLS." },
       { key: "exIndus",   label: "Red Industrial",       icon: "fa-solid fa-industry",        shortcut: "", action: "LOAD_EXAMPLE_RED_INDUSTRIAL",     status: "Ejemplo: Red Industrial." },
       { key: "exUni",     label: "Red Universitaria",    icon: "fa-solid fa-graduation-cap",  shortcut: "", action: "LOAD_EXAMPLE_RED_UNIVERSITARIA",  status: "Ejemplo: Red Universitaria." },
+      { sep: true },
+      { key: "exEste",    label: "Este Proyecto",        icon: "fa-solid fa-laptop-code",     shortcut: "", action: "LOAD_EXAMPLE_ESTE_PROYECTO",       status: "Ejemplo: Este Proyecto." },
     ],
   },
 ];

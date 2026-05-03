@@ -11,7 +11,7 @@
 //  7. Place group children  → apply chosen layout mode per group
 //  8. Collision resolution  → iterative circle push-apart (backbone fixed)
 //  9. Pack components       → bounding-box greedy packing
-// 10. Normalize             → shift to ensure minX/minY >= 150
+// 10. Normalize + snap      → shift to minX/minY >= 150, then snap to grid
 
 // ─── Exported layout constants (configurable) ────────────────────────────────
 export const MIN_NODE_GAP       = 110;  // minimum center-to-center distance
@@ -23,6 +23,7 @@ export const ARC_RADIUS         = 130;  // radius for arc layout
 export const MAX_COLLISION_ITER =  35;  // max collision-resolution passes
 export const REPEAT_GROUP_MIN   =   3;  // min nodes with same prefix to form a named group
 export const FANOUT_THRESHOLD   =   4;  // min leaf children to activate group layout
+export const GRID_SIZE          =  20;  // snap-to-grid resolution in pixels
 
 // ─── Internal spacing constants ──────────────────────────────────────────────
 const BASE_HGAP         = 170;  // horizontal gap between backbone nodes per tier
@@ -110,6 +111,15 @@ function inferRole(node, adj, nodeMap) {
   }
 }
 
+// ─── Server zone inference ────────────────────────────────────────────────────
+// Returns "dmz" when adjacent to a firewall, "services" otherwise.
+// Used to give servers a dedicated visual zone to the right of their anchor.
+function inferZone(node, adj, nodeMap) {
+  if (node.type !== "server") return null;
+  const nbs = (adj.get(node.id) || []).map(id => nodeMap.get(id)).filter(Boolean);
+  return nbs.some(n => n.type === "firewall") ? "dmz" : "services";
+}
+
 // ─── Component detection ─────────────────────────────────────────────────────
 function detectComponents(nodes, adj) {
   const visited    = new Set();
@@ -149,6 +159,143 @@ function adaptiveHGap(ids, nodeMap) {
   return Math.max(BASE_HGAP, 60 + maxLen * 7);
 }
 
+// ─── Layout scoring ───────────────────────────────────────────────────────────
+// Evaluates a set of node positions and returns a penalty score (lower = better).
+// Used to compare layout variants and select the least cluttered result.
+
+function segmentsIntersect(p1, p2, p3, p4) {
+  const d1x = p2.x - p1.x, d1y = p2.y - p1.y;
+  const d2x = p4.x - p3.x, d2y = p4.y - p3.y;
+  const cross = d1x * d2y - d1y * d2x;
+  if (Math.abs(cross) < 1e-8) return false;
+  const t = ((p3.x - p1.x) * d2y - (p3.y - p1.y) * d2x) / cross;
+  const u = ((p3.x - p1.x) * d1y - (p3.y - p1.y) * d1x) / cross;
+  return t > 0.01 && t < 0.99 && u > 0.01 && u < 0.99;
+}
+
+function distPointToSegment(px, py, ax, ay, bx, by) {
+  const dx = bx - ax, dy = by - ay;
+  const lenSq = dx * dx + dy * dy;
+  if (lenSq === 0) return Math.hypot(px - ax, py - ay);
+  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / lenSq));
+  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+}
+
+export function scoreLayout(positions, links, roles) {
+  let score = 0;
+  const ids = [...positions.keys()];
+  const R   = MIN_NODE_GAP;
+
+  // Overlapping nodes (most critical — each overlap adds up to 1000 pts proportionally)
+  for (let i = 0; i < ids.length; i++) {
+    for (let j = i + 1; j < ids.length; j++) {
+      const pa = positions.get(ids[i]), pb = positions.get(ids[j]);
+      const d  = Math.hypot(pb.x - pa.x, pb.y - pa.y);
+      if (d < R) score += 1000 * (1 - d / R);
+    }
+  }
+
+  const edges = (links || []).filter(l => positions.has(l.source) && positions.has(l.target));
+
+  // Link crossings
+  for (let i = 0; i < edges.length; i++) {
+    const p1 = positions.get(edges[i].source), p2 = positions.get(edges[i].target);
+    for (let j = i + 1; j < edges.length; j++) {
+      if (edges[i].source === edges[j].source || edges[i].source === edges[j].target ||
+          edges[i].target === edges[j].source || edges[i].target === edges[j].target) continue;
+      const p3 = positions.get(edges[j].source), p4 = positions.get(edges[j].target);
+      if (segmentsIntersect(p1, p2, p3, p4)) score += 1000;
+    }
+  }
+
+  // Links passing through non-endpoint nodes
+  for (const link of edges) {
+    const p1 = positions.get(link.source), p2 = positions.get(link.target);
+    for (const id of ids) {
+      if (id === link.source || id === link.target) continue;
+      if (distPointToSegment(positions.get(id).x, positions.get(id).y, p1.x, p1.y, p2.x, p2.y) < 38) score += 700;
+    }
+  }
+
+  // Tier violations: a higher-tier node should be visually below a lower-tier one
+  if (roles) {
+    for (const link of edges) {
+      const tA = ROLE_TIER[roles.get(link.source)] ?? 7;
+      const tB = ROLE_TIER[roles.get(link.target)] ?? 7;
+      if (tA === tB) continue;
+      const pa = positions.get(link.source), pb = positions.get(link.target);
+      if (tA < tB && pa.y > pb.y + 40) score += 800;
+      if (tB < tA && pb.y > pa.y + 40) score += 800;
+    }
+  }
+
+  // Link length variance (prefer uniform-length links)
+  if (edges.length > 1) {
+    const lengths = edges.map(l => {
+      const p1 = positions.get(l.source), p2 = positions.get(l.target);
+      return Math.hypot(p2.x - p1.x, p2.y - p1.y);
+    });
+    const avg = lengths.reduce((s, l) => s + l, 0) / lengths.length;
+    const variance = lengths.reduce((s, l) => s + (l - avg) ** 2, 0) / lengths.length;
+    score += Math.sqrt(variance) * 0.2;
+  }
+
+  return score;
+}
+
+// ─── Redundancy detection by topology ────────────────────────────────────────
+
+// Strip trailing numeric/alpha suffix to get a base name for similarity.
+// FW1→"fw"  FW-2→"fw"  Router-1→"router"  SW-A→"sw"  SW-B→"sw"
+function nameStem(label) {
+  return label
+    .replace(/[-_\s]?[A-Za-z]?\d+$/, "")
+    .replace(/[-_\s]?[A-Za-z]$/, "")
+    .toLowerCase()
+    .trim();
+}
+
+// Two nodes are a redundant pair when they share:
+//   • same device type
+//   • same name stem (FW1/FW2, Router-A/Router-B)
+//   • at least one upstream neighbor (lower tier) in common
+//   • at least one downstream neighbor (higher tier) in common
+// This correctly rejects two PCs on the same switch (no downstream neighbors).
+function isLikelyRedundantPair(idA, idB, adj, nodeMap, roles) {
+  const nodeA = nodeMap.get(idA);
+  const nodeB = nodeMap.get(idB);
+  if (!nodeA || !nodeB || nodeA.type !== nodeB.type) return false;
+
+  const stemA = nameStem(nodeA.label || "");
+  const stemB = nameStem(nodeB.label || "");
+  if (stemA !== stemB || stemA === "") return false;
+
+  const tierA  = ROLE_TIER[roles.get(idA)] ?? 7;
+  const adjA   = new Set(adj.get(idA) || []);
+  const adjB   = new Set(adj.get(idB) || []);
+  const shared = [...adjA].filter(id => adjB.has(id));
+
+  const sharedUpstream   = shared.some(id => (ROLE_TIER[roles.get(id)] ?? 7) < tierA);
+  const sharedDownstream = shared.some(id => (ROLE_TIER[roles.get(id)] ?? 7) > tierA);
+  return sharedUpstream && sharedDownstream;
+}
+
+// True when a group of 2 or 4 same-type nodes forms a topological redundancy cluster.
+// For 4 nodes, requires at least 3 of 6 pairs to satisfy the redundancy test.
+function isRedundantGroup(ids, adj, nodeMap, roles) {
+  if (ids.length === 2) return isLikelyRedundantPair(ids[0], ids[1], adj, nodeMap, roles);
+  if (ids.length === 4) {
+    let redundantPairs = 0;
+    for (let i = 0; i < ids.length - 1; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        if (isLikelyRedundantPair(ids[i], ids[j], adj, nodeMap, roles)) redundantPairs++;
+      }
+    }
+    return redundantPairs >= 3;
+  }
+  return false;
+}
+
 // ─── Phase 3: Semantic group detection ───────────────────────────────────────
 
 // Extract subgroups sharing a label prefix + numeric suffix (PC1..PCn, UR3-1..UR3-8).
@@ -171,7 +318,7 @@ function extractPrefixGroups(ids, nodeMap) {
 
 // Heuristic: pick layout mode for a set of children under a parent.
 // Modes: 'grid' | 'arc' | 'fanout' | 'chain' | 'bus-side' | 'pair-lanes'
-function chooseLayoutMode(childIds, parentId, nodeMap, roles) {
+function chooseLayoutMode(childIds, parentId, nodeMap, roles, adj = new Map()) {
   const count = childIds.length;
   const types = childIds.map(id => nodeMap.get(id)?.type || "pc");
   const allSameType = new Set(types).size === 1;
@@ -186,14 +333,14 @@ function chooseLayoutMode(childIds, parentId, nodeMap, roles) {
   if (count >= 6 && allSameType) return "grid";
   if (count >= 8) return "grid";
 
-  // Industrial/OT nodes in line → bus-side
-  if (count >= 4 && types.every(t => ["plc","ur3","agv","server"].includes(t))) return "bus-side";
+  // Industrial/OT nodes in line → bus-side (servers excluded: they go below like endpoints)
+  if (count >= 4 && types.every(t => ["plc","ur3","agv"].includes(t))) return "bus-side";
 
   // Infrastructure chain (e.g. daisy-chain of routers/switches)
   if (allSameType && ["router","switch"].includes(types[0]) && count >= 3) return "chain";
 
-  // Redundant pair
-  if ([2, 4].includes(count) && allSameType) return "pair-lanes";
+  // Topologically redundant pair/quad: same type + same name stem + shared upstream + shared downstream
+  if ([2, 4].includes(count) && allSameType && isRedundantGroup(childIds, adj, nodeMap, roles)) return "pair-lanes";
 
   // Default: compact symmetric fanout
   return "fanout";
@@ -202,12 +349,23 @@ function chooseLayoutMode(childIds, parentId, nodeMap, roles) {
 // Detect all semantic groups in a component.
 // Strategy: for each backbone node, collect its non-backbone children,
 // split into prefix subgroups first, then by type.
-// Returns { groups: [{nodeIds, mode, anchorId, label?}], ungrouped: Set<id> }
-function detectSemanticGroups(compIds, adj, nodeMap, roles) {
+// Returns { groups: [{nodeIds, mode, anchorId, label?, zone?, preferredSide?}], ungrouped: Set<id> }
+function detectSemanticGroups(compIds, adj, nodeMap, roles, zones) {
   const groups          = [];
   const assignedToGroup = new Set();
 
   const isBackbone = id => (ROLE_TIER[roles.get(id)] ?? 7) <= 5;
+
+  // Tags server-only groups with zone metadata (dmz/services).
+  // No forced side — servers use the same default side assignment as other endpoints.
+  const tagGroup = (group) => {
+    const allServers = group.nodeIds.every(id => nodeMap.get(id)?.type === "server");
+    if (allServers) {
+      const isDmz = group.nodeIds.some(id => zones.get(id) === "dmz");
+      group.zone = isDmz ? "dmz" : "services";
+    }
+    return group;
+  };
 
   for (const parentId of compIds) {
     if (!isBackbone(parentId)) continue;
@@ -222,8 +380,8 @@ function detectSemanticGroups(compIds, adj, nodeMap, roles) {
     const usedInPrefix = new Set(prefixGroups.flatMap(g => g.ids));
 
     for (const pg of prefixGroups) {
-      const mode = chooseLayoutMode(pg.ids, parentId, nodeMap, roles);
-      groups.push({ nodeIds: pg.ids, mode, anchorId: parentId, label: pg.prefix });
+      const mode = chooseLayoutMode(pg.ids, parentId, nodeMap, roles, adj);
+      groups.push(tagGroup({ nodeIds: pg.ids, mode, anchorId: parentId, label: pg.prefix }));
       pg.ids.forEach(id => assignedToGroup.add(id));
     }
 
@@ -241,7 +399,7 @@ function detectSemanticGroups(compIds, adj, nodeMap, roles) {
     if (byType.size === 1) {
       // All same type — one group
       const allIds = sortByLabel(remaining, nodeMap);
-      groups.push({ nodeIds: allIds, mode: chooseLayoutMode(allIds, parentId, nodeMap, roles), anchorId: parentId });
+      groups.push(tagGroup({ nodeIds: allIds, mode: chooseLayoutMode(allIds, parentId, nodeMap, roles, adj), anchorId: parentId }));
       allIds.forEach(id => assignedToGroup.add(id));
     } else {
       // Mixed types: separate each type if it reaches threshold, else one mixed group
@@ -249,14 +407,14 @@ function detectSemanticGroups(compIds, adj, nodeMap, roles) {
       for (const [, typeIds] of byType) {
         if (typeIds.length >= REPEAT_GROUP_MIN) {
           const sids = sortByLabel(typeIds, nodeMap);
-          groups.push({ nodeIds: sids, mode: chooseLayoutMode(sids, parentId, nodeMap, roles), anchorId: parentId });
+          groups.push(tagGroup({ nodeIds: sids, mode: chooseLayoutMode(sids, parentId, nodeMap, roles, adj), anchorId: parentId }));
           sids.forEach(id => assignedToGroup.add(id));
         } else {
           mixedGroup = mixedGroup.concat(typeIds);
         }
       }
       if (mixedGroup.length > 0) {
-        groups.push({ nodeIds: mixedGroup, mode: chooseLayoutMode(mixedGroup, parentId, nodeMap, roles), anchorId: parentId });
+        groups.push(tagGroup({ nodeIds: mixedGroup, mode: chooseLayoutMode(mixedGroup, parentId, nodeMap, roles, adj), anchorId: parentId }));
         mixedGroup.forEach(id => assignedToGroup.add(id));
       }
     }
@@ -457,13 +615,15 @@ function estimateGroupWidth(group) {
 }
 
 // Assign placement sides to multiple groups under the same anchor.
-// Prefers: below (single), left+right (2), left+below+right (3), then wrap.
-function assignGroupSides(count) {
+// Receives the full groups array so it can respect group.preferredSide.
+// Assumes groups are pre-sorted so preferredSide groups come last.
+// Prefers: below (1), left+right (2), left+below+right (3), then wrap.
+function assignGroupSides(groups) {
+  const count = groups.length;
   if (count === 0) return [];
-  if (count === 1) return ["below"];
+  if (count === 1) return [groups[0].preferredSide || "below"];
   if (count === 2) return ["left", "right"];
   if (count === 3) return ["left", "below", "right"];
-  // For 4+, use below + right columns (avoid making layout too wide)
   const sides = ["left", "below", "right"];
   const result = [];
   for (let i = 0; i < count; i++) result.push(sides[i % sides.length]);
@@ -512,24 +672,35 @@ function resolveCollisions(positions, fixedIds = new Set()) {
 }
 
 // ─── Main per-component layout ────────────────────────────────────────────────
-function layoutComponent({ compIds, adj, nodeMap, roles }) {
+function layoutComponent({ compIds, adj, nodeMap, roles, compLinks = [] }) {
   // Fixed canonical center — never derived from current node positions so the
   // layout is idempotent (pressing O twice gives the same result).
   const cx = 700;
   const cy = 400;
+
+  // ── Build zone map for server nodes in this component ─────────────────
+  const zones = new Map();
+  for (const id of compIds) {
+    const n = nodeMap.get(id);
+    if (n) zones.set(id, inferZone(n, adj, nodeMap));
+  }
 
   // ── Phase 2: separate backbone from leaf nodes ────────────────────────
   const isBackbone = id => (ROLE_TIER[roles.get(id)] ?? 7) <= 5;
   const backboneIds = compIds.filter(isBackbone);
 
   // ── Phase 3 & 4: detect semantic groups ──────────────────────────────
-  const { groups, ungrouped } = detectSemanticGroups(compIds, adj, nodeMap, roles);
+  const { groups, ungrouped } = detectSemanticGroups(compIds, adj, nodeMap, roles, zones);
 
-  // Index groups by anchor
-  const groupsByAnchor = new Map(); // anchorId → [group, ...]
+  // Index groups by anchor. Sort each anchor's list so preferredSide groups
+  // come last — assignGroupSides then naturally places them on the right.
+  const groupsByAnchor = new Map();
   for (const g of groups) {
     if (!groupsByAnchor.has(g.anchorId)) groupsByAnchor.set(g.anchorId, []);
     groupsByAnchor.get(g.anchorId).push(g);
+  }
+  for (const [, gs] of groupsByAnchor) {
+    gs.sort((a, b) => (a.preferredSide ? 1 : 0) - (b.preferredSide ? 1 : 0));
   }
 
   // ── Phase 5: backbone tier layout ────────────────────────────────────
@@ -566,8 +737,8 @@ function layoutComponent({ compIds, adj, nodeMap, roles }) {
     const t = sortedTiers[ri];
     let maxBelowH = 0;
     for (const id of (byTier.get(t) || [])) {
-      const gs = (groupsByAnchor.get(id) || []);
-      const sides = assignGroupSides(gs.length);
+      const gs    = (groupsByAnchor.get(id) || []);
+      const sides = assignGroupSides(gs);
       gs.forEach((g, gi) => {
         if (sides[gi] === "below") {
           maxBelowH = Math.max(maxBelowH, estimateGroupBelowHeight(g));
@@ -639,11 +810,11 @@ function layoutComponent({ compIds, adj, nodeMap, roles }) {
     const anchorPos = finalPos.get(anchorId);
     if (!anchorPos) continue;
 
-    const sides = assignGroupSides(anchorGroups.length);
+    const sides = assignGroupSides(anchorGroups);
 
     if (anchorGroups.length === 1) {
-      // Single group — place directly below
-      const gPos = applyGroupLayout(anchorGroups[0], anchorPos, "below");
+      // Single group — side already respects preferredSide via assignGroupSides
+      const gPos = applyGroupLayout(anchorGroups[0], anchorPos, sides[0]);
       for (const [id, p] of gPos) finalPos.set(id, p);
     } else {
       // Multiple groups — spread them. For 'below' groups with width competition,
@@ -691,6 +862,21 @@ function layoutComponent({ compIds, adj, nodeMap, roles }) {
   // Backbone nodes are fixed; only leaf/group nodes get pushed apart.
   const fixedIds = new Set(backboneIds);
   resolveCollisions(finalPos, fixedIds);
+
+  // ── Variant scoring: compare standard layout vs horizontal mirror ──────
+  // Mirror all X coordinates around cx and pick the lower-scoring layout.
+  // Only switches if the mirrored version is meaningfully better (>10%).
+  if (compLinks.length > 0 || compIds.length > 3) {
+    const mirroredPos = new Map();
+    for (const [id, p] of finalPos) {
+      mirroredPos.set(id, { x: Math.round(2 * cx - p.x), y: p.y });
+    }
+    const scoreA = scoreLayout(finalPos, compLinks, roles);
+    const scoreB = scoreLayout(mirroredPos, compLinks, roles);
+    if (scoreB < scoreA * 0.90) {
+      for (const [id, p] of mirroredPos) finalPos.set(id, p);
+    }
+  }
 
   // Bounding box with icon+label padding for component packing
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
@@ -770,10 +956,10 @@ export function prettyLayout({ graph, pushHistorySnapshot, dispatch, ActionTypes
   const connected = nodes.filter(n => (adj.get(n.id) || []).length >  0);
   const compIdGroups = detectComponents(connected, adj);
 
-  const compResults = compIdGroups.map(ids => ({
-    ids,
-    ...layoutComponent({ compIds: ids, adj, nodeMap, roles }),
-  }));
+  const compResults = compIdGroups.map(ids => {
+    const compLinks = links.filter(l => ids.includes(l.source) && ids.includes(l.target));
+    return { ids, ...layoutComponent({ compIds: ids, adj, nodeMap, roles, compLinks }) };
+  });
 
   let newPositions;
 
@@ -816,6 +1002,14 @@ export function prettyLayout({ graph, pushHistorySnapshot, dispatch, ActionTypes
         newPositions.set(id, { x: p.x + shiftX, y: p.y + shiftY });
       }
     }
+  }
+
+  // ── Snap all positions to the invisible grid ──────────────────────────
+  for (const [id, p] of newPositions) {
+    newPositions.set(id, {
+      x: Math.round(p.x / GRID_SIZE) * GRID_SIZE,
+      y: Math.round(p.y / GRID_SIZE) * GRID_SIZE,
+    });
   }
 
   // Dispatch only nodes that actually moved

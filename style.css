@@ -89,14 +89,18 @@ body {
   padding-top: 48px; /* compensate for fixed navbar */
 }
 
-/* Chat page: constrain to viewport so input stays anchored */
+/* Chat page: constrain to viewport so input stays anchored at the bottom.
+   Priority order: svh > dvh > fill-available > vh */
 body:has(.chat-page) {
   height: 100vh;
+  height: -webkit-fill-available;
   overflow: hidden;
 }
-
 @supports (height: 100dvh) {
   body:has(.chat-page) { height: 100dvh; }
+}
+@supports (height: 100svh) {
+  body:has(.chat-page) { height: 100svh; }
 }
 
 /* ── Keyframes ───────────────────────────────────────────── */
@@ -309,8 +313,8 @@ body:has(.chat-page) {
   top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(20,20,25,0.96);
-  color: var(--text-primary);
+  background: rgba(18,18,26,0.97);
+  color: #e2e8f0;
   font-size: 0.72rem;
   font-weight: 400;
   padding: 5px 10px;
@@ -318,7 +322,7 @@ body:has(.chat-page) {
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
-  border: 1px solid rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.12);
   box-shadow: 0 4px 12px rgba(0,0,0,0.4);
   z-index: 9000;
   transition: opacity 0.2s ease;

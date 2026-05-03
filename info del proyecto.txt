@@ -1,0 +1,131 @@
+CAPA 8: ASISTENTE IA PARA EL DISEÑO, ANÁLISIS Y SIMULACIÓN DE TOPOLOGÍAS DE RED
+
+S.M. Villegas
+Feria de Ingenierías — Universidad Iberoamericana
+
+INTRODUCCIÓN
+
+El aprendizaje de redes de comunicación suele implicar conceptos abstractos como direccionamiento IP, subnetting, ruteo, VLANs y diagnóstico de fallas. Aunque existen simuladores profesionales como Packet Tracer o GNS3, estas herramientas pueden tener una curva de aprendizaje alta, requerir instalación y no siempre ofrecen acompañamiento conceptual personalizado.
+
+CAPA 8 surge como una herramienta educativa web que integra un asistente conversacional con inteligencia artificial y un simulador interactivo de topologías de red. Su propósito es reducir la distancia entre la teoría y la práctica, permitiendo que el estudiante diseñe, modifique, analice y diagnostique redes desde una misma interfaz.
+
+El nombre hace referencia a la “capa humana” del modelo OSI: aquella donde aparecen las dudas reales del aprendizaje, como: ¿por qué no llega el ping?, ¿qué está mal conectado? o ¿cómo debería diseñar esta red?
+
+PROBLEMA
+
+Los estudiantes que aprenden redes suelen enfrentarse a tres barreras principales:
+
+La teoría no siempre se conecta con una topología visible.
+Se explican conceptos como gateways, subredes o rutas, pero el estudiante no siempre ve cómo estos afectan una red concreta.
+Los simuladores tradicionales pueden ser complejos o pesados.
+Muchas herramientas requieren instalación, configuración previa o conocimiento técnico avanzado.
+Los chatbots genéricos no conocen el diagrama del estudiante.
+Pueden explicar qué es un router o una VLAN, pero no saben qué nodos, enlaces, IPs o errores existen en la topología activa.
+
+CAPA 8 atiende este problema combinando simulación visual, diagnóstico automático y respuestas de IA contextualizadas al grafo de red actual.
+
+OBJETIVOS
+Desarrollar una aplicación web educativa para crear, editar y compartir topologías de red sin instalación ni cuenta de usuario.
+Integrar un asistente IA capaz de responder preguntas conceptuales y técnicas usando como contexto la topología activa.
+Implementar simulaciones básicas de conectividad, como ping y traceroute, mediante animaciones de paquetes sobre el diagrama.
+Detectar automáticamente problemas comunes de configuración, como IPs duplicadas, nodos aislados, ausencia de gateway o enlaces caídos.
+Permitir que la IA proponga y aplique cambios estructurados al diagrama, validando cada acción antes de modificar la topología.
+Evaluar la utilidad del sistema como herramienta de apoyo para estudiantes de ingeniería en mecatrónica, telecomunicaciones y áreas afines.
+METODOLOGÍA
+1. Diseño de la interfaz y simulador
+
+Se desarrolló una aplicación web tipo SPA utilizando HTML, CSS y JavaScript vanilla con módulos ES6. El sistema permite crear nodos, conectarlos mediante enlaces, asignar direcciones IP y visualizar la topología en un canvas SVG.
+
+La filosofía de diseño está inspirada en simuladores minimalistas como Falstad: una herramienta ligera, accesible desde navegador y capaz de compartir el estado completo mediante una URL.
+
+2. Representación de la topología
+
+El diagrama se almacena como un grafo compuesto por nodos y enlaces. Cada nodo puede representar dispositivos como:
+
+Router
+Switch
+PC
+Firewall
+Servidor
+Cloud
+Access Point
+PLC
+UR3
+AGV
+
+El estado del grafo se conserva en un store tipo Redux y puede exportarse o importarse en formato JSON. Además, la topología puede codificarse en la URL mediante Base64, permitiendo compartir diagramas sin servidor ni base de datos.
+
+3. Integración con inteligencia artificial
+
+CAPA 8 no utiliza la IA como un chatbot aislado. Antes de enviar una pregunta al modelo, el sistema revisa qué está pidiendo el usuario y qué información existe en la topología activa.
+
+Por ejemplo, si el usuario pregunta “¿por qué no llega el ping?”, el sistema no manda solo esa frase a la IA. Primero recopila el estado actual del diagrama: qué dispositivos existen, cómo están conectados, qué direcciones IP tienen, si hay enlaces apagados, si hay nodos aislados o si falta un gateway. Con esa información, la IA puede responder sobre la red que el estudiante está viendo, no sobre un caso genérico.
+
+El proceso funciona en tres pasos:
+
+Identificar la intención del usuario.
+El sistema detecta si la persona quiere una explicación teórica, ayuda para diagnosticar un error, o una modificación directa en el diagrama.
+Leer el estado de la topología.
+CAPA 8 convierte el diagrama en una descripción entendible para la IA, incluyendo nodos, enlaces, IPs y posibles problemas.
+Generar una respuesta contextual.
+La IA responde considerando el diagrama real del usuario. Esto permite explicar fallas, sugerir cambios o guiar el diseño de la red paso a paso.
+
+De esta manera, CAPA 8 funciona como un asistente que “ve” la topología y acompaña al estudiante durante el proceso de diseño y solución de problemas.
+
+4. Acciones estructuradas y seguras
+
+Cuando el usuario le pide a la IA modificar la red, CAPA 8 no permite que el modelo cambie el diagrama de forma libre o descontrolada. En lugar de eso, la IA debe devolver instrucciones en un formato específico, como si llenara una orden de trabajo.
+
+Por ejemplo, si el usuario escribe: “agrega una PC conectada al switch y asígnale una IP válida”, la IA puede proponer una acción como:
+
+Crear un nuevo nodo tipo PC.
+Conectarlo al switch existente.
+Asignarle una dirección IP dentro de la misma red.
+Actualizar el diagrama.
+
+Antes de aplicar esos cambios, el sistema revisa si la acción tiene sentido. Valida que el dispositivo exista, que el enlace sea posible, que no se duplique una IP y que la modificación no rompa la estructura del grafo.
+
+Esto hace que la IA no sea solo un generador de texto, sino un asistente capaz de proponer cambios reales al diagrama, pero con una capa de seguridad que evita errores o modificaciones inválidas.
+
+RESULTADOS
+
+CAPA 8 logró integrar en una sola herramienta web las funciones principales de diseño, simulación, diagnóstico y asistencia contextual mediante IA.
+
+Entre las capacidades implementadas se encuentran:
+
+Creación visual de topologías de red.
+Simulación de ping y traceroute con animación de paquetes.
+Detección automática de problemas comunes.
+Chat IA con contexto del diagrama activo.
+Propuesta y aplicación de cambios al grafo mediante acciones validadas.
+Exportación e importación de topologías en JSON.
+Compartición de diagramas mediante URL codificada.
+
+La principal ventaja del sistema es que el estudiante no solo recibe una explicación, sino que puede verla reflejada directamente en una topología. Por ejemplo, si una PC no alcanza un servidor, CAPA 8 puede analizar las IPs, enlaces y gateways del diagrama, explicar la causa probable y sugerir una corrección.
+
+CONCLUSIÓN
+
+CAPA 8 demuestra que la inteligencia artificial puede integrarse de forma práctica en herramientas educativas de ingeniería, no solo como generador de texto, sino como asistente contextual capaz de analizar, diagnosticar y modificar sistemas visuales.
+
+El proyecto reduce la fricción de entrada al aprendizaje de redes al funcionar desde navegador, sin instalación ni cuenta, y al permitir compartir topologías mediante una URL. Su valor principal está en conectar la explicación conceptual con una representación visual activa, ayudando al estudiante a entender no solo qué es una red, sino cómo se comporta y cómo corregirla.
+
+La principal limitación actual es que el sistema no implementa un stack de red real ni sustituye simuladores profesionales. Sin embargo, como laboratorio educativo ligero y asistido por IA, CAPA 8 ofrece una alternativa accesible, flexible y escalable para fortalecer el aprendizaje práctico de redes.
+
+CAPA 8 no busca reemplazar al estudiante ni al profesor; busca hacer visible el razonamiento que normalmente ocurre entre la duda y la solución.
+
+TRABAJO FUTURO
+Integrar RAG con documentación técnica de redes.
+Agregar escenarios guiados por nivel de dificultad.
+Implementar VLANs, tablas de ruteo y NAT de forma visual.
+Añadir rúbricas o ejercicios evaluables para clase.
+Crear modo colaborativo para que profesor y estudiantes compartan topologías.
+Incorporar métricas de aprendizaje, como tiempo de resolución, errores frecuentes y rutas de ayuda usadas.
+TECNOLOGÍAS UTILIZADAS
+JavaScript ES6
+HTML / CSS
+SVG Canvas
+Express.js
+Groq API
+Llama 3.3 70B
+Ollama local
+JSON / Base64 URL Encoding

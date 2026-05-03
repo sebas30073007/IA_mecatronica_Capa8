@@ -11,6 +11,7 @@ export async function loadExample(name) {
     "mpls_wan":            "src/examples/mpls_wan.json",
     "red_industrial":      "src/examples/red_industrial.json",
     "red_universitaria":   "src/examples/red_universitaria.json",
+    "este_proyecto":       "src/examples/este_proyecto.json",
   };
   const path = map[name];
   if (!path) throw new Error("Example not found");
