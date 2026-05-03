@@ -356,6 +356,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const aiFabPanel = document.getElementById("ai-fab-panel");
 
   function openSidebar() {
+    // Reset to CSS default height (50dvh) each time the panel opens on mobile
+    if (window.innerWidth <= 768) aiFabPanel.style.height = "";
     aiFabPanel.classList.add("open");
     stageWrap?.classList.add("has-ai-open");
     document.getElementById("ai-fab-btn")?.setAttribute("aria-expanded", "true");
@@ -385,17 +387,52 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (e.target.closest("#fab-panel-close")) closeSidebar();
   });
 
+  // ── Mobile: drag-to-resize handle for AI bottom sheet ────────────────
+  if ("ontouchstart" in window) {
+    const dragHandle = document.createElement("div");
+    dragHandle.className = "ai-drag-handle";
+    dragHandle.innerHTML = `<i class="fa-solid fa-grip-lines"></i>`;
+    aiFabPanel.prepend(dragHandle);
+
+    let phStartY = 0, phStartH = 0;
+    dragHandle.addEventListener("touchstart", ev => {
+      ev.preventDefault();
+      phStartY = ev.touches[0].clientY;
+      phStartH = aiFabPanel.getBoundingClientRect().height;
+    }, { passive: false });
+
+    dragHandle.addEventListener("touchmove", ev => {
+      ev.preventDefault();
+      const dy = phStartY - ev.touches[0].clientY; // positive = drag up = expand
+      const vh = window.innerHeight;
+      const newH = Math.max(vh * 0.22, Math.min(vh * 0.88, phStartH + dy));
+      aiFabPanel.style.height = newH + "px";
+    }, { passive: false });
+  }
+
   // ── Context menu ─────────────────────────────────────────────────────
   const ctxMenu = document.getElementById("node-ctx-menu");
 
   function showContextMenu(clientX, clientY, nodeId) {
     const rect = stageWrap.getBoundingClientRect();
-    ctxMenu.style.left = (clientX - rect.left) + "px";
-    ctxMenu.style.top  = (clientY - rect.top)  + "px";
+    const node = store.getState().graph.nodes.find(n => n.id === nodeId);
+    const isTerminalNode = ["pc", "agv", "plc", "ur3"].includes(node?.type);
+
+    // Position inside the stage, clamped so it doesn't overflow the right/bottom edge
+    const menuW = 210, menuH = isTerminalNode ? 160 : 130;
+    const stageW = rect.width, stageH = rect.height;
+    const rawLeft = clientX - rect.left;
+    const rawTop  = clientY - rect.top;
+    ctxMenu.style.left = Math.min(rawLeft, stageW - menuW) + "px";
+    ctxMenu.style.top  = Math.min(rawTop,  stageH - menuH) + "px";
+
     ctxMenu.innerHTML = `
       <div class="ctx-item" data-action="inspect">
         <i class="fa-solid fa-pen-to-square"></i> Editar propiedades
       </div>
+      ${isTerminalNode ? `<div class="ctx-item" data-action="terminal">
+        <i class="fa-solid fa-terminal"></i> Abrir terminal
+      </div>` : ""}
       <div class="ctx-item" data-action="ping">
         <i class="fa-solid fa-signal"></i> Ping desde aquí
       </div>
@@ -413,10 +450,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (action === "inspect") {
         store.dispatch({ type: ActionTypes.SET_SELECTION, payload: { selection: { kind: "node", id: nodeId } } });
         inspector.show();
+      } else if (action === "terminal") {
+        terminalPanel.setPc(nodeId);
+        setTerminalVisible(true);
       } else if (action === "ping") {
         const st = store.getState();
-        const node = st.graph.nodes.find(n => n.id === nodeId);
-        if (["pc", "agv", "plc", "ur3"].includes(node?.type)) {
+        const n  = st.graph.nodes.find(n => n.id === nodeId);
+        if (["pc", "agv", "plc", "ur3"].includes(n?.type)) {
           terminalPanel.setPc(nodeId);
           setTerminalVisible(true);
         } else {
@@ -616,6 +656,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   let touchTapStart    = null; // { x, y, time } — tap origin for gesture detection
   let lastDrawTapTime  = 0;    // timestamp of previous draw-mode tap (double-tap detection)
   let lastDrawTapPos   = { x: 0, y: 0 }; // position of previous draw-mode tap
+  let longPressTimer   = null; // setTimeout handle for long-press context menu
+  let longPressTouchPos = null; // { x, y } — where the long-press started
 
   function getTouchDist(t1, t2) {
     return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
@@ -648,6 +690,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       const { x, y } = toWorld(touch.clientX - rect.left, touch.clientY - rect.top);
       const node = state.graph.nodes.find(n => n.id === nodeId);
       if (node) dragging = { nodeId, offsetX: Math.round(x) - node.x, offsetY: Math.round(y) - node.y };
+
+      // Long-press: show context menu after 550ms if finger doesn't move
+      longPressTouchPos = { x: touch.clientX, y: touch.clientY };
+      longPressTimer = setTimeout(() => {
+        longPressTimer = null;
+        dragging = null; // cancel drag so the menu feels intentional
+        showContextMenu(longPressTouchPos.x, longPressTouchPos.y, nodeId);
+      }, 550);
     } else if (!nodeEl) {
       // Canvas pan (may also be a tap — resolved on touchend)
       e.preventDefault();
@@ -657,6 +707,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   }, { passive: false });
 
   window.addEventListener("touchmove", e => {
+    // Cancel long-press if finger moved significantly
+    if (longPressTimer && e.touches.length === 1) {
+      const t = e.touches[0];
+      if (Math.hypot(t.clientX - longPressTouchPos.x, t.clientY - longPressTouchPos.y) > 8) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+    }
     if (e.touches.length === 2 && touchPinch) {
       e.preventDefault();
       const [t1, t2] = [e.touches[0], e.touches[1]];
@@ -696,6 +754,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }, { passive: false });
 
   window.addEventListener("touchend", e => {
+    clearTimeout(longPressTimer);
+    longPressTimer = null;
     if (e.touches.length < 2) touchPinch = null;
     if (e.touches.length === 0) {
       // ── Tap gesture detection ──────────────────────────────────────────

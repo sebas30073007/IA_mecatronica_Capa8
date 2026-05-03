@@ -884,9 +884,18 @@ a.pill-btn { text-decoration: none; }
   .onav-tools { display: none; }
   .onav-hamburger { display: flex; }
 
-  /* Chat mobile */
-  .chat-page-messages { padding: 12px; }
-  .chat-page-input { padding: 8px 12px calc(12px + env(safe-area-inset-bottom)); }
+  /* Chat mobile — input fixed at bottom so it's never cut off by browser chrome */
+  body:has(.chat-page) .chat-page-input {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 8px 12px calc(10px + env(safe-area-inset-bottom));
+  }
+  body:has(.chat-page) .chat-page-messages {
+    padding: 12px 12px calc(80px + env(safe-area-inset-bottom));
+  }
   .chat-page .ai-message,
   .chat-page .message.ai-message,
   .chat-page .user-message,
@@ -896,13 +905,15 @@ a.pill-btn { text-decoration: none; }
   .page-title { font-size: 1.55rem; }
   .container { padding: 1rem; }
 
-  /* Diagrams */
+  /* Diagrams — navbar compacta para que quepan todos los iconos */
   .status-badge { font-size: 0.6rem; padding: 2px 6px; }
   .onav-menus { display: none; }
   #sim-menubar { display: none; }
-  /* Action buttons stay visible on mobile (Run/Terminal/Link) */
+  .autosave-indicator { display: none; }
   .onav-diag-actions { gap: 2px; }
-  .onav-diag-actions .cnav-btn { font-size: 0.7rem; padding: 0 8px; height: 26px; }
+  .onav-diag-actions .cnav-btn { font-size: 0.62rem; padding: 0 6px; height: 24px; gap: 3px; }
+  .onav-diag-actions .cnav-icon-btn { width: 24px; height: 24px; font-size: 0.68rem; }
+  .onav-icon-btn, .theme-toggle-btn { width: 32px; height: 32px; font-size: 0.8rem; }
 }
 
 /* ── Mobile sim menu (inside hamburger) ──────────────────── */
@@ -2708,7 +2719,7 @@ a.pill-btn { text-decoration: none; }
 }
 
 @media (max-width: 768px) {
-  /* AI panel: full-width bottom sheet, fixed to viewport */
+  /* AI panel: bottom sheet at 50% viewport height, resizable by drag */
   .ai-fab-panel {
     position: fixed;
     width: 100%;
@@ -2716,7 +2727,8 @@ a.pill-btn { text-decoration: none; }
     right: 0;
     bottom: 0;
     top: auto;
-    max-height: 82dvh;
+    height: 50dvh;
+    max-height: 88dvh;
     border-radius: 20px 20px 0 0;
     border-left: none;
     border-top: 1px solid var(--bg-glass-border);
@@ -2726,18 +2738,8 @@ a.pill-btn { text-decoration: none; }
   .ai-fab-panel.open {
     transform: translateY(0);
   }
-  /* Drag-handle visual */
-  .ai-fab-panel::before {
-    content: "";
-    display: block;
-    width: 40px;
-    height: 4px;
-    border-radius: 2px;
-    background: rgba(255,255,255,0.25);
-    margin: 8px auto 0;
-    flex-shrink: 0;
-    align-self: center;
-  }
+  /* Remove pseudo-element pill — replaced by .ai-drag-handle */
+  .ai-fab-panel::before { display: none; }
   .sim-stage-wrap.has-ai-open {
     padding-right: 0;
   }
@@ -2766,6 +2768,28 @@ a.pill-btn { text-decoration: none; }
     opacity: 0;
     pointer-events: none;
   }
+}
+
+/* ── AI panel drag handle (mobile only) ── */
+.ai-drag-handle {
+  display: none; /* hidden on desktop */
+}
+@media (max-width: 768px) {
+  .ai-drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    flex-shrink: 0;
+    touch-action: none;
+    cursor: ns-resize;
+    color: rgba(255,255,255,0.28);
+    font-size: 1rem;
+    letter-spacing: 2px;
+    border-radius: 20px 20px 0 0;
+  }
+  .ai-drag-handle:active { color: rgba(255,255,255,0.55); }
+  [data-theme="light"] .ai-drag-handle { color: rgba(0,0,0,0.2); }
 }
 
 /* ── FAB panel header ── */
