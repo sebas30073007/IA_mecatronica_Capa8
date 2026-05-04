@@ -21,6 +21,7 @@ const TYPE_ALIASES = {
 };
 const VALID_ACTIONS  = new Set([
   "add_node", "add_link", "delete_node", "delete_link", "set_link_status", "apply_graph",
+  "update_node",
 ]);
 
 /**
@@ -160,6 +161,26 @@ export function validateAction(action, graph) {
     );
     if (!link) {
       return { valid: false, error: `Enlace entre "${src.label}" y "${tgt.label}" no encontrado.` };
+    }
+    return { valid: true, warnings };
+  }
+
+  if (action.action === "update_node") {
+    if (!action.label && !action.id) {
+      return { valid: false, error: "update_node requiere 'label' o 'id' del nodo a modificar." };
+    }
+    const node = findNode(action.label, action.id);
+    if (!node) {
+      return { valid: false, error: `Nodo no encontrado: "${action.label || action.id}".` };
+    }
+    if (!action.patch || typeof action.patch !== "object") {
+      return { valid: false, error: "update_node requiere un campo 'patch' con los campos a modificar." };
+    }
+    if (action.patch.ip && action.patch.ip.trim()) {
+      const dupIp = nodes.find(n => n.ip === action.patch.ip.trim() && n.id !== node.id);
+      if (dupIp) {
+        warnings.push(`IP "${action.patch.ip}" ya está en uso por "${dupIp.label}".`);
+      }
     }
     return { valid: true, warnings };
   }

@@ -21,9 +21,9 @@ export function analyzeTopology(graph) {
     }
   }
 
-  // 2. Nodos sin IP
+  // 2. Nodos sin IP (cloud nodes are exempt — they represent external services)
   for (const n of nodes) {
-    if (!n.ip) {
+    if (!n.ip && n.type !== "cloud") {
       issues.push({ id: `no-ip-${n.id}`, severity: "warning", message: `Nodo "${n.label}" no tiene IP asignada.` });
     }
   }

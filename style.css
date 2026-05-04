@@ -2521,6 +2521,28 @@ a.pill-btn { text-decoration: none; }
   flex-direction: column;
 }
 
+/* ── Terminal drag handle (mobile only) ── */
+.term-drag-handle {
+  display: none;
+}
+@media (max-width: 768px) {
+  .term-drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    flex-shrink: 0;
+    touch-action: none;
+    cursor: ns-resize;
+    color: rgba(255,255,255,0.28);
+    font-size: 1rem;
+    letter-spacing: 2px;
+    border-radius: 20px 20px 0 0;
+  }
+  .term-drag-handle:active { color: rgba(255,255,255,0.55); }
+  [data-theme="light"] .term-drag-handle { color: rgba(0,0,0,0.2); }
+}
+
 .terminal-bottom--hidden { transform: translateY(100%); }
 
 .terminal-bottom-header {
@@ -3647,8 +3669,11 @@ a.pill-btn { text-decoration: none; }
     height: 38px;
   }
 
-  /* Terminal: z-index 250 on mobile (below inspector 300, above canvas) */
+  /* Terminal: bottom sheet at 33dvh on mobile, resizable by drag */
   .terminal-bottom {
+    position: fixed;
+    height: 33dvh;
+    border-radius: 20px 20px 0 0;
     z-index: 250;
   }
 

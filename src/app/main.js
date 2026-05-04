@@ -294,6 +294,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   function setTerminalVisible(visible, pcId = null) {
     showTerminal = visible;
     if (visible && window.innerWidth <= 768) {
+      // Reset to CSS default height (33dvh) each time the panel opens on mobile
+      terminalBottom.style.height = "";
       // On mobile: clear selection so inspector bottom sheet hides.
       // This triggers store.subscribe which resets terminalPanel.setPc(null),
       // so pcId must be re-applied AFTER the dispatch returns.
@@ -311,9 +313,36 @@ document.addEventListener("DOMContentLoaded", async () => {
   btnTerminal.addEventListener("click", () => setTerminalVisible(!showTerminal));
   document.getElementById("btn-term-close").addEventListener("click", () => setTerminalVisible(false));
 
+  // ── Mobile: drag-to-resize handle for terminal bottom sheet ──────────
+  if ("ontouchstart" in window) {
+    const termDragHandle = document.createElement("div");
+    termDragHandle.className = "term-drag-handle";
+    termDragHandle.innerHTML = `<i class="fa-solid fa-grip-lines"></i>`;
+    terminalBottom.prepend(termDragHandle);
+
+    let thStartY = 0, thStartH = 0;
+    termDragHandle.addEventListener("touchstart", ev => {
+      ev.preventDefault();
+      thStartY = ev.touches[0].clientY;
+      thStartH = terminalBottom.getBoundingClientRect().height;
+    }, { passive: false });
+
+    termDragHandle.addEventListener("touchmove", ev => {
+      ev.preventDefault();
+      const dy   = thStartY - ev.touches[0].clientY; // positive = drag up = expand
+      const vh   = window.innerHeight;
+      const newH = Math.max(vh * 0.15, Math.min(vh * 0.75, thStartH + dy));
+      terminalBottom.style.height = newH + "px";
+    }, { passive: false });
+  }
+
   function updateBottomElements() {
-    const offset = showTerminal ? "183px" : "";
-    document.getElementById("status-badge").style.bottom = offset;
+    if (!showTerminal) {
+      document.getElementById("status-badge").style.bottom = "";
+      return;
+    }
+    const termH = terminalBottom.offsetHeight || 175;
+    document.getElementById("status-badge").style.bottom = (termH + 8) + "px";
   }
 
   // ── Copy link button ─────────────────────────────────────────────────

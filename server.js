@@ -136,6 +136,26 @@ AVAILABLE ACTIONS:
 - delete_node: {"action":"delete_node","label":"NAME"}
 - delete_link: {"action":"delete_link","sourceLabel":"NAME","targetLabel":"NAME"}
 - set_link_status: {"action":"set_link_status","sourceLabel":"NAME","targetLabel":"NAME","status":"up"|"down"}
+- update_node: {"action":"update_node","label":"NAME","patch":{"ip":"x.x.x.x","gateway":"x.x.x.x","description":"..."}}
+  Use to modify properties (ip, gateway, description, etc.) of nodes that ALREADY EXIST in the diagram.
+
+CRITICAL RULES (violations cause duplicate nodes and broken topologies):
+- RULE: To FIX or CONFIGURE a node that already exists, use update_node — NEVER delete+re-create it, NEVER add_node with the same label.
+- RULE: To fix a missing gateway on a PC, use update_node with patch.gateway — NEVER add a link between the PC and the router.
+- RULE: cloud nodes do NOT need IP addresses — they represent external services. Never flag or fix missing IPs on cloud nodes.
+
+EXAMPLES for update_node:
+User: "PC 1 necesita gateway"
+Assistant: Configurando gateway de PC 1.
+[CAPA8_ACTION]
+{"action":"update_node","label":"PC 1","patch":{"gateway":"192.168.1.1"}}
+[/CAPA8_ACTION]
+
+User: "asigna IPs a todos los routers"
+Assistant: Asignando IPs a los routers.
+[CAPA8_ACTION]
+{"action":"update_node","label":"Router1","patch":{"ip":"192.168.1.1"}}
+[/CAPA8_ACTION]
 
 For technical questions that do NOT modify the diagram, answer normally without [CAPA8_ACTION] blocks.`;
 

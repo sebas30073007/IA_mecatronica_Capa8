@@ -92,6 +92,14 @@ export function createActionDispatcher({
       return {};
     }
 
+    if (action.action === "update_node") {
+      const graph2 = store.getState().graph;
+      const node   = graph2.nodes.find(n => n.label === action.label || n.id === action.id);
+      dispatch({ type: ActionTypes.UPDATE_NODE, payload: { id: node.id, patch: action.patch } });
+      showToast(`Nodo "${node.label}" actualizado ✅`);
+      return {};
+    }
+
     if (action.action === "apply_graph") {
       dispatch({ type: ActionTypes.LOAD_GRAPH, payload: { graph: action.graph } });
       // Resolver colisiones tras apply_graph (los nodos pueden llegar sin coordenadas)

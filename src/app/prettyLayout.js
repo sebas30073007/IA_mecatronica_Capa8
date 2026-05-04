@@ -805,6 +805,57 @@ function layoutComponent({ compIds, adj, nodeMap, roles, compLinks = [] }) {
     }
   }
 
+  // ── Chain-sort: reorder tiers whose nodes form a path graph ────────────
+  // Eliminates edge crossings when backbone nodes at the same tier are
+  // interconnected as a chain (e.g. cloud services wired in series).
+  for (let ri = 0; ri < sortedTiers.length; ri++) {
+    const t   = sortedTiers[ri];
+    const ids = byTier.get(t);
+    if (ids.length < 3) continue;
+
+    const tierSet     = new Set(ids);
+    const sameTierNbs = id => (adj.get(id) || []).filter(nb => tierSet.has(nb));
+    if (!ids.every(id => sameTierNbs(id).length <= 2)) continue; // not a simple path
+    const endpoints   = ids.filter(id => sameTierNbs(id).length <= 1);
+    if (!endpoints.length) continue; // cycle — skip
+
+    // DFS traversal from one endpoint
+    const visited = new Set();
+    const chain   = [];
+    let   cur     = endpoints[0];
+    while (cur != null) {
+      visited.add(cur); chain.push(cur);
+      cur = sameTierNbs(cur).find(nb => !visited.has(nb));
+    }
+    if (chain.length !== ids.length) continue; // disconnected sub-graph
+
+    // Choose direction: endpoint with cross-tier connections should sit
+    // closest to the centroid of those connections.
+    const crossAvgX = ep => {
+      const nbs = (adj.get(ep) || []).filter(nb => !tierSet.has(nb) && finalPos.has(nb));
+      return nbs.length ? nbs.reduce((s, nb) => s + finalPos.get(nb).x, 0) / nbs.length : null;
+    };
+    const ep0x = crossAvgX(chain[0]);
+    const ep1x = crossAvgX(chain[chain.length - 1]);
+    // If ep1 has cross-tier neighbors and ep0 doesn't, reverse so ep1 is
+    // at the end closer to center (or whichever side its neighbors are on).
+    if (ep1x !== null && ep0x === null) chain.reverse();
+    else if (ep0x !== null && ep1x !== null) {
+      // Both ends have cross-tier neighbors: orient so ep0 is on the left
+      // side relative to its neighbors' centroid vs ep1's centroid.
+      if (ep1x < ep0x) chain.reverse();
+    }
+
+    byTier.set(t, chain);
+    const hgap = adaptiveHGap(chain, nodeMap);
+    const rowW = (chain.length - 1) * hgap;
+    chain.forEach((id, i) => {
+      const pos = { x: Math.round(cx - rowW / 2 + i * hgap), y: tierYArr[ri] };
+      tempPos.set(id, pos);
+      finalPos.set(id, pos);
+    });
+  }
+
   // ── Phase 6 & 7: place groups around backbone ─────────────────────────
   for (const [anchorId, anchorGroups] of groupsByAnchor) {
     const anchorPos = finalPos.get(anchorId);
