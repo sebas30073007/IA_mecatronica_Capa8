@@ -66,7 +66,18 @@ export function createMenuBar({ container, onAction, onStatus }) {
     const dropdown = el("div", "menu-dropdown");
     menuDef.items.forEach(item => dropdown.appendChild(buildItem(item, onAction, onStatus)));
 
-    // ── Click: toggle open/close ─────────────────────────────────────────
+    // ── Touch: toggle on first tap (prevents mouseenter interference) ────
+    btn.addEventListener("touchstart", (e) => {
+      e.preventDefault(); // block the synthesized mouseenter + click
+      const isOpen = menu.classList.contains("open");
+      closeAll(container);
+      if (!isOpen) {
+        menu.classList.add("open");
+        btn.classList.add("active");
+      }
+    }, { passive: false });
+
+    // ── Click: toggle open/close (desktop) ──────────────────────────────
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       const isOpen = menu.classList.contains("open");
@@ -77,13 +88,13 @@ export function createMenuBar({ container, onAction, onStatus }) {
       }
     });
 
-    // ── Hover: open on enter, schedule close on leave ────────────────────
+    // ── Hover: open on enter (desktop only — skip on touch devices) ──────
     menu.addEventListener("mouseenter", () => {
+      // On touch devices mouseenter fires on first tap and then click closes
+      // the dropdown immediately, requiring a second tap. Skip on touch.
+      if (window.matchMedia("(hover: none)").matches) return;
       cancelClose();
-      // If this menu is already open, do nothing — avoid restarting the
-      // slideDown animation which causes visible flickering.
       if (menu.classList.contains("open")) return;
-      // Close OTHER menus
       container.querySelectorAll(".menu").forEach(m => {
         if (m !== menu) {
           m.classList.remove("open");

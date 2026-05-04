@@ -291,16 +291,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   const terminalBottom = document.getElementById("terminal-bottom");
   const btnTerminal    = document.getElementById("btn-terminal");
 
-  function setTerminalVisible(visible) {
+  function setTerminalVisible(visible, pcId = null) {
     showTerminal = visible;
     if (visible && window.innerWidth <= 768) {
-      // On mobile: clear selection so inspector bottom sheet hides
+      // On mobile: clear selection so inspector bottom sheet hides.
+      // This triggers store.subscribe which resets terminalPanel.setPc(null),
+      // so pcId must be re-applied AFTER the dispatch returns.
       store.dispatch({ type: ActionTypes.CLEAR_SELECTION });
     }
     terminalBottom.classList.toggle("terminal-bottom--hidden", !showTerminal);
     btnTerminal.classList.toggle("active", showTerminal);
     updateBottomElements();
-    if (showTerminal) terminalPanel.render();
+    if (showTerminal) {
+      if (pcId) terminalPanel.setPc(pcId); // override after subscriber reset
+      terminalPanel.render();
+    }
   }
 
   btnTerminal.addEventListener("click", () => setTerminalVisible(!showTerminal));
@@ -451,8 +456,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         store.dispatch({ type: ActionTypes.SET_SELECTION, payload: { selection: { kind: "node", id: nodeId } } });
         inspector.show();
       } else if (action === "terminal") {
-        terminalPanel.setPc(nodeId);
-        setTerminalVisible(true);
+        setTerminalVisible(true, nodeId); // pcId re-applied after CLEAR_SELECTION subscriber
       } else if (action === "ping") {
         const st = store.getState();
         const n  = st.graph.nodes.find(n => n.id === nodeId);
@@ -470,6 +474,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   document.addEventListener("click", () => { ctxMenu.hidden = true; });
+  // On mobile, dismiss context menu immediately on touchstart (no 300ms click delay)
+  document.addEventListener("touchstart", (e) => {
+    if (!ctxMenu.hidden && !ctxMenu.contains(e.target)) ctxMenu.hidden = true;
+  }, { passive: true });
 
   stageEl.addEventListener("contextmenu", e => {
     e.preventDefault();

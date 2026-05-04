@@ -2538,7 +2538,7 @@ a.pill-btn { text-decoration: none; }
 .term-hdr-btn {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.65);
   font-size: 0.72rem;
   cursor: pointer;
   padding: 2px 6px;
@@ -2846,9 +2846,9 @@ a.pill-btn { text-decoration: none; }
 }
 
 .fab-panel-close {
-  background: none;
-  border: none;
-  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.9);
   cursor: pointer;
   font-size: 0.9rem;
   padding: 4px;
@@ -3253,6 +3253,12 @@ a.pill-btn { text-decoration: none; }
   color: #1a1a1a;
 }
 [data-theme="light"] .terminal-bottom .terminal-input::placeholder { color: rgba(0,0,0,0.3); }
+[data-theme="light"] .terminal-bottom-header { color: rgba(0,0,0,0.55); }
+[data-theme="light"] .term-hdr-btn {
+  color: rgba(0,0,0,0.55);
+  border-color: rgba(0,0,0,0.12);
+}
+[data-theme="light"] .term-hdr-btn:hover { color: #000; background: rgba(0,0,0,0.07); }
 
 /* Context menu */
 [data-theme="light"] .node-ctx-menu {
@@ -3667,6 +3673,43 @@ a.pill-btn { text-decoration: none; }
     left: 0.75rem;
     text-align: center;
     z-index: 600;
+  }
+}
+
+/* ── Touch devices (phone + tablet): chat input always visible ───────
+   Uses hover:none + pointer:coarse instead of max-width so tablets
+   (>768px) get the same fix as phones on iOS/Android Safari. */
+@media (hover: none) and (pointer: coarse) {
+  body:has(.chat-page) .chat-page-input {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 8px 20px calc(10px + env(safe-area-inset-bottom));
+  }
+  body:has(.chat-page) .chat-page-messages {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+
+  /* Close buttons: larger + bordered so they're obvious on touch */
+  #btn-term-close {
+    min-width: 32px;
+    height: 28px;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+    border-radius: 6px;
+    color: rgba(255,255,255,0.9) !important;
+    font-size: 0.85rem;
+  }
+  [data-theme="light"] #btn-term-close {
+    border-color: rgba(0,0,0,0.2) !important;
+    color: rgba(0,0,0,0.75) !important;
+  }
+  .fab-panel-close {
+    min-width: 32px;
+    height: 28px;
+    border-radius: 6px;
+    font-size: 0.85rem;
   }
 }
 
