@@ -129,6 +129,41 @@ Assistant: Creando red de oficina.
 {"action":"add_link","sourceLabel":"Switch1","targetLabel":"PC3","latencyMs":2,"bandwidthMbps":100}
 [/CAPA8_ACTION]
 
+GATEWAY RULE — READ CAREFULLY:
+In this simulator "gateway" is a TEXT PROPERTY on the PC node (field: gateway), NOT a physical cable.
+Fixing a missing gateway means setting that property with update_node, never adding a link.
+
+WRONG ❌ — do NOT do this to fix a gateway:
+[CAPA8_ACTION]
+{"action":"add_link","sourceLabel":"PC 2","targetLabel":"Router1","latencyMs":1,"bandwidthMbps":100}
+[/CAPA8_ACTION]
+
+CORRECT ✓ — always do this instead:
+[CAPA8_ACTION]
+{"action":"update_node","label":"PC 2","patch":{"gateway":"192.168.1.1"}}
+[/CAPA8_ACTION]
+
+User: "las PCs no tienen gateway"
+Assistant: Configurando gateway en las PCs.
+[CAPA8_ACTION]
+{"action":"update_node","label":"PC 1","patch":{"gateway":"192.168.1.1"}}
+[/CAPA8_ACTION]
+[CAPA8_ACTION]
+{"action":"update_node","label":"PC 2","patch":{"gateway":"192.168.1.1"}}
+[/CAPA8_ACTION]
+
+User: "PC 3 no puede salir de su subred"
+Assistant: Configurando gateway de PC 3.
+[CAPA8_ACTION]
+{"action":"update_node","label":"PC 3","patch":{"gateway":"10.0.0.1"}}
+[/CAPA8_ACTION]
+
+User: "asigna IP a Router1"
+Assistant: Asignando IP a Router1.
+[CAPA8_ACTION]
+{"action":"update_node","label":"Router1","patch":{"ip":"192.168.1.1"}}
+[/CAPA8_ACTION]
+
 AVAILABLE ACTIONS:
 - add_node: {"action":"add_node","type":"router"|"switch"|"pc"|"firewall"|"server"|"cloud"|"ap"|"plc"|"ur3"|"agv","label":"NAME","ip":"x.x.x.x"}
   NOTE: Do NOT include "x" or "y" — positions are assigned automatically by the frontend.
@@ -137,25 +172,12 @@ AVAILABLE ACTIONS:
 - delete_link: {"action":"delete_link","sourceLabel":"NAME","targetLabel":"NAME"}
 - set_link_status: {"action":"set_link_status","sourceLabel":"NAME","targetLabel":"NAME","status":"up"|"down"}
 - update_node: {"action":"update_node","label":"NAME","patch":{"ip":"x.x.x.x","gateway":"x.x.x.x","description":"..."}}
-  Use to modify properties (ip, gateway, description, etc.) of nodes that ALREADY EXIST in the diagram.
+  Use to modify properties of nodes that ALREADY EXIST. Use for: fixing IPs, setting gateway, updating description.
+  NEVER use add_node when the node already exists — use update_node.
+  NEVER use add_link to fix a gateway — use update_node with patch.gateway.
 
-CRITICAL RULES (violations cause duplicate nodes and broken topologies):
-- RULE: To FIX or CONFIGURE a node that already exists, use update_node — NEVER delete+re-create it, NEVER add_node with the same label.
-- RULE: To fix a missing gateway on a PC, use update_node with patch.gateway — NEVER add a link between the PC and the router.
-- RULE: cloud nodes do NOT need IP addresses — they represent external services. Never flag or fix missing IPs on cloud nodes.
-
-EXAMPLES for update_node:
-User: "PC 1 necesita gateway"
-Assistant: Configurando gateway de PC 1.
-[CAPA8_ACTION]
-{"action":"update_node","label":"PC 1","patch":{"gateway":"192.168.1.1"}}
-[/CAPA8_ACTION]
-
-User: "asigna IPs a todos los routers"
-Assistant: Asignando IPs a los routers.
-[CAPA8_ACTION]
-{"action":"update_node","label":"Router1","patch":{"ip":"192.168.1.1"}}
-[/CAPA8_ACTION]
+ADDITIONAL RULES:
+- cloud nodes do NOT need IP addresses — they represent external services. Never flag or fix missing IPs on cloud nodes.
 
 For technical questions that do NOT modify the diagram, answer normally without [CAPA8_ACTION] blocks.`;
 
@@ -193,10 +215,13 @@ function cleanAnswer(text) {
     .trim();
 }
 
-// Seed exchange: one action example + one Q&A example (no action)
+// Seed exchange: canonical examples injected before history on action intents
 const SEED_EXCHANGE = [
   { role: "User",      content: "agrega un router llamado R1 con IP 10.0.0.1" },
   { role: "Assistant", content: 'Agregando R1.\n[CAPA8_ACTION]\n{"action":"add_node","type":"router","label":"R1","ip":"10.0.0.1"}\n[/CAPA8_ACTION]' },
+  // Gateway fix: property update, NOT a physical link
+  { role: "User",      content: "PC 1 no tiene gateway configurado" },
+  { role: "Assistant", content: 'Configurando gateway en PC 1.\n[CAPA8_ACTION]\n{"action":"update_node","label":"PC 1","patch":{"gateway":"192.168.1.1"}}\n[/CAPA8_ACTION]' },
   { role: "User",      content: "¿cuál es la diferencia entre un router y un switch?" },
   { role: "Assistant", content: "Un **router** trabaja en capa 3 (red) y conecta redes distintas tomando decisiones basadas en direcciones IP. Un **switch** trabaja en capa 2 (enlace) y conecta dispositivos dentro de la misma red local usando direcciones MAC.\n\nEn la topología usa el router como puerta de enlace hacia otras subredes y el switch para interconectar los equipos de cada segmento." },
 ];

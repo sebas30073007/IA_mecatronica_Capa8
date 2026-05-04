@@ -25,7 +25,13 @@ export function buildGraphContext(graph, selection = null) {
     byType[n.type].push(n);
   }
   for (const [type, list] of Object.entries(byType)) {
-    lines.push(`  ${type.toUpperCase()}s: ${list.map(n => `${n.label} [id:${n.id}, pos:${Math.round(n.x)},${Math.round(n.y)}] (${n.ip || "sin IP"})`).join(", ")}`);
+    lines.push(`  ${type.toUpperCase()}s: ${list.map(n => {
+      let info = `${n.label} [id:${n.id}] ip:${n.ip || "sin IP"}`;
+      if (n.type === "pc" || n.type === "server") {
+        info += ` gateway:${n.gateway || "sin gateway"}`;
+      }
+      return info;
+    }).join(", ")}`);
   }
 
   // Enlaces con propiedades
