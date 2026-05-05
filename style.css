@@ -191,6 +191,14 @@ body:has(.chat-page) {
 .onav-logo-btn:hover { background: rgba(255,255,255,0.16); }
 .onav-logo-wrap { position: relative; }
 
+.onav-logo-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+  flex-shrink: 0;
+}
+
 .onav-logo-img {
   height: 30px;
   width: auto;
