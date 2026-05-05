@@ -26,7 +26,7 @@ export function buildGraphContext(graph, selection = null) {
   }
   for (const [type, list] of Object.entries(byType)) {
     lines.push(`  ${type.toUpperCase()}s: ${list.map(n => {
-      let info = `${n.label} [id:${n.id}] ip:${n.ip || "sin IP"}`;
+      let info = `${n.label} [id:${n.id}] ip:${n.ip || (n.type === "cloud" ? "(N/A)" : "sin IP")}`;
       if (n.type === "pc" || n.type === "server") {
         info += ` gateway:${n.gateway || "sin gateway"}`;
       }

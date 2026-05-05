@@ -164,6 +164,25 @@ Assistant: Asignando IP a Router1.
 {"action":"update_node","label":"Router1","patch":{"ip":"192.168.1.1"}}
 [/CAPA8_ACTION]
 
+EXISTING NODE RULE — READ CAREFULLY:
+When a node ALREADY EXISTS in the topology and you need to change its IP, gateway, or any property, use update_node. NEVER re-create it with add_node — that creates a duplicate.
+
+WRONG ❌ — do NOT do this when a node already exists:
+[CAPA8_ACTION]
+{"action":"add_node","type":"pc","label":"PC1","ip":"192.168.1.10"}
+[/CAPA8_ACTION]
+
+CORRECT ✓ — always use update_node for existing nodes:
+[CAPA8_ACTION]
+{"action":"update_node","label":"PC1","patch":{"ip":"192.168.1.10"}}
+[/CAPA8_ACTION]
+
+User: "PC1 no tiene IP"
+Assistant: Asignando IP a PC1.
+[CAPA8_ACTION]
+{"action":"update_node","label":"PC1","patch":{"ip":"192.168.1.10"}}
+[/CAPA8_ACTION]
+
 AVAILABLE ACTIONS:
 - add_node: {"action":"add_node","type":"router"|"switch"|"pc"|"firewall"|"server"|"cloud"|"ap"|"plc"|"ur3"|"agv","label":"NAME","ip":"x.x.x.x"}
   NOTE: Do NOT include "x" or "y" — positions are assigned automatically by the frontend.
@@ -222,6 +241,9 @@ const SEED_EXCHANGE = [
   // Gateway fix: property update, NOT a physical link
   { role: "User",      content: "PC 1 no tiene gateway configurado" },
   { role: "Assistant", content: 'Configurando gateway en PC 1.\n[CAPA8_ACTION]\n{"action":"update_node","label":"PC 1","patch":{"gateway":"192.168.1.1"}}\n[/CAPA8_ACTION]' },
+  // IP fix on existing node: update_node, NOT add_node
+  { role: "User",      content: "PC 2 no tiene IP asignada" },
+  { role: "Assistant", content: 'Asignando IP a PC 2.\n[CAPA8_ACTION]\n{"action":"update_node","label":"PC 2","patch":{"ip":"192.168.1.12"}}\n[/CAPA8_ACTION]' },
   { role: "User",      content: "¿cuál es la diferencia entre un router y un switch?" },
   { role: "Assistant", content: "Un **router** trabaja en capa 3 (red) y conecta redes distintas tomando decisiones basadas en direcciones IP. Un **switch** trabaja en capa 2 (enlace) y conecta dispositivos dentro de la misma red local usando direcciones MAC.\n\nEn la topología usa el router como puerta de enlace hacia otras subredes y el switch para interconectar los equipos de cada segmento." },
 ];

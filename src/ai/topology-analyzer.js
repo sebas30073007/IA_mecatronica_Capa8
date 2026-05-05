@@ -77,7 +77,7 @@ export function analyzeTopology(graph) {
   const hasRouter = nodes.some(n => n.type === "router");
   if (hasRouter) {
     for (const n of nodes.filter(n => n.type === "pc" && n.ip && !n.gateway)) {
-      issues.push({ id: `no-gw-${n.id}`, severity: "warning", message: `"${n.label}" tiene IP pero sin gateway. No puede salir de su subred.` });
+      issues.push({ id: `no-gw-${n.id}`, severity: "warning", message: `"${n.label}" propiedad gateway vacía — corregir con update_node+patch.gateway (no agregar enlace físico).` });
     }
   }
 

@@ -73,7 +73,14 @@ export function validateAction(action, graph) {
       };
     }
     if (nodes.some(n => n.label === action.label)) {
-      warnings.push(`Ya existe un nodo con label "${action.label}". Se creará de todas formas.`);
+      // Mutar la acción a update_node para evitar duplicados (igual que TYPE_ALIASES)
+      const patch = {};
+      if (action.ip)      patch.ip      = action.ip;
+      if (action.gateway) patch.gateway = action.gateway;
+      action.action = "update_node";
+      action.patch  = patch;
+      warnings.push(`Nodo "${action.label}" ya existe — convertido automáticamente a update_node.`);
+      return { valid: true, warnings };
     }
     // Warn on duplicate IP
     if (action.ip && action.ip.trim()) {
