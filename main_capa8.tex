@@ -1,0 +1,84 @@
+\documentclass[12pt,letterpaper]{article}
+
+% Arial (Helvetica como equivalente portable para pdflatex)
+\usepackage[scaled=1.0]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+% Idioma español (México)
+\usepackage[spanish,mexico]{babel}
+
+% Márgenes compactos para cumplir 1--2 cuartillas
+\usepackage[letterpaper,margin=1.75cm]{geometry}
+
+% Formato general
+\usepackage{setspace}
+\usepackage[hidelinks]{hyperref}
+\singlespacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+
+\begin{document}
+
+\begin{center}
+\textbf{CAPA8: Plataforma educativa web con inteligencia artificial para el aprendizaje interactivo de redes de computadoras}\\[2pt]
+Sebastián Méndez Villegas$^{1}$\\[1pt]
+$^{1}$Departamento de Estudios en Ingeniería para la Innovación, Universidad Iberoamericana Ciudad de México\\[1pt]
+\texttt{A2229332@correo.uia.mx}
+\end{center}
+
+\begin{center}\rule{0.55\textwidth}{0.4pt}\end{center}
+
+\textbf{Introducción}
+
+El aprendizaje de redes de computadoras plantea retos particulares: los conceptos de enrutamiento, direccionamiento, topologías y protocolos son abstractos, y su comprensión se consolida con la práctica. Las herramientas de simulación más difundidas —como Cisco Packet Tracer o GNS3— tienen curvas de aprendizaje pronunciadas y no ofrecen orientación contextual cuando el estudiante comete un error o tiene una duda conceptual durante el diseño de una red. Al mismo tiempo, el auge de los modelos de lenguaje de gran escala (LLMs) ha demostrado su potencial como tutores conversacionales capaces de explicar temas técnicos de forma adaptativa, ajustando el nivel de detalle según el perfil del usuario.
+
+Este proyecto propone CAPA8, una plataforma educativa web de acceso abierto que integra dos experiencias complementarias: un asistente conversacional con inteligencia artificial y un simulador interactivo de topologías de red sobre el que el propio asistente puede operar. El nombre alude intencionalmente a la \textit{Capa~8}, término coloquial en ingeniería de redes que refiere al factor humano como la capa superior al modelo OSI, reconociendo que la comprensión del usuario es el eje del proceso educativo. A diferencia de otras herramientas, CAPA8 no depende de software propietario, funciona desde cualquier navegador moderno con un servidor local y es extensible hacia nuevos tipos de nodo, protocolos y comportamientos simulados.
+
+\textbf{Objetivo}
+
+Diseñar y desarrollar una plataforma web educativa de código abierto que integre un asistente conversacional con IA y un simulador interactivo de topologías de red, capaz de adaptar sus respuestas al nivel y enfoque del usuario y de aplicar modificaciones al diagrama directamente desde el flujo de conversación.
+
+\textbf{Métodos}
+
+El desarrollo siguió una metodología iterativa de ocho fases: definición de arquitectura y modelo de datos; implementación del backend con soporte dual de LLM; diseño del pipeline de IA (clasificación de intención, construcción de contexto, validación de acciones y despacho); desarrollo del simulador SVG; integración bidireccional entre el asistente y el diagrama; mejoras de interfaz y experiencia de usuario; refactorización y pruebas de integración; y ajuste del sistema de modos y conversación compartida entre páginas.
+
+La plataforma es una aplicación web sin paso de compilación, construida con módulos ES6 nativos y servida por un servidor Express en Node.js. El frontend se organiza en dos páginas principales: el chat con IA (\texttt{index.html}) y el simulador de diagramas (\texttt{diagrams.html}). Ambas comparten el historial de conversación mediante un almacén en \texttt{sessionStorage} (\texttt{convStore.js}), lo que permite continuidad al alternar entre páginas.
+
+El pipeline de inteligencia artificial opera en cinco etapas. Primero, un clasificador de intención (\texttt{intentRouter.js}) determina el tipo de solicitud —conceptual, consulta del grafo, modificación clara, modificación ambigua, diagnóstico o aplicación de grafo— sin necesidad de invocar al LLM. Segundo, un constructor de contexto (\texttt{context-builder.js}) serializa el estado actual del diagrama para incluirlo en el prompt. Tercero, el backend (\texttt{server.js}) compone el prompt completo y lo envía al proveedor configurado: Groq (nube) u Ollama (local), con temperatura variable según el tipo de intención. Cuarto, la respuesta se analiza con \texttt{responseParser.js} para extraer bloques de acción \texttt{[CAPA8\_ACTION]} separados del texto explicativo. Quinto, las acciones se validan con \texttt{actionValidator.js} antes de despacharse al estado del simulador, impidiendo que comandos malformados corrompan el grafo.
+
+El simulador emplea un patrón de estado similar a Redux (\texttt{store.js} + \texttt{reducer.js}) con historial de deshacer de 60 estados. Los nodos se renderizan como elementos DOM con iconos de FontAwesome; los enlaces y paquetes animados se renderizan como SVG. La simulación de paquetes ICMP usa un bucle \texttt{requestAnimationFrame}. El sistema de modos Nivel~×~Enfoque (tres niveles: guiado, balanceado, técnico; dos enfoques: diseñar, solver) ofrece seis combinaciones que modulan el tono, la profundidad y el formato de las respuestas del LLM.
+
+\textbf{Resultados}
+
+Se obtuvo una plataforma web funcional con las dos experiencias integradas. El asistente opera con seis modos de interacción resultantes de la combinación Nivel~×~Enfoque, y el clasificador de intención reconoce correctamente seis tipos de solicitud. Para intenciones de modificación ambigua, el sistema activa un flujo de clarificación sin invocar al LLM, reduciendo latencia y consumo. Para intenciones de acción, el backend ejecuta un reintento automático si la respuesta no contiene bloques \texttt{[CAPA8\_ACTION]}, lo que mejora la confiabilidad con modelos de menor capacidad (p.~ej., Gemma3 en Ollama).
+
+El simulador soporta diez tipos de nodo (router, switch, PC, firewall, servidor, nube, punto de acceso inalámbrico, PLC, robot UR3 y AGV), con sugerencia automática de dirección IP por tipo y detección de ocho clases de problemas topológicos: IPs duplicadas, nodos aislados, ausencia de gateway, entre otros. La terminal virtual integrada soporta los comandos \texttt{ping}, \texttt{traceroute}, \texttt{ipconfig}, \texttt{show interfaces}, \texttt{show arp} y \texttt{route print}, operando sobre la topología mediante búsqueda en anchura (BFS).
+
+El asistente puede generar acciones aplicadas directamente al diagrama —agregar o eliminar nodos y enlaces, modificar propiedades de enlace y reemplazar el grafo completo desde una descripción textual—, todas sujetas a validación previa. Para lotes de tres o más acciones se presenta una vista previa antes de confirmar. El historial de conversación se comparte entre páginas, de modo que el contexto del diagrama puede continuarse desde el chat y viceversa. El código fuente del proyecto está disponible en: \href{https://github.com/sebas30073007/capa8-app}{\textcolor{blue}{https://github.com/sebas30073007/capa8-app}}.
+
+\textbf{Conclusiones}
+
+CAPA8 demuestra que es posible construir una herramienta educativa interactiva de redes, abierta y potenciada por IA, sin depender de software propietario ni de un proceso de compilación complejo. La integración bidireccional entre el asistente y el simulador —donde la IA puede leer el grafo, razonar sobre él y modificarlo— representa una forma de combinar la explicación conceptual con la práctica guiada en un mismo entorno. La arquitectura modular, basada en estándares web nativos y en una separación clara de responsabilidades, facilita la extensión hacia nuevos protocolos de simulación, tipos de nodo adicionales, soporte multiusuario y adaptación curricular.
+
+Como trabajo futuro se plantea implementar simulación de protocolos de enrutamiento dinámico (OSPF, BGP), integrar evaluación automática de topologías diseñadas por estudiantes, desarrollar una versión progresiva para móvil y realizar pruebas de usabilidad con estudiantes de ingeniería para medir el impacto en comprensión conceptual y tiempo de resolución de ejercicios prácticos.
+
+\textbf{Agradecimientos}
+
+Agradecemos a la Universidad Iberoamericana Ciudad de México por los espacios y recursos de laboratorio brindados durante el desarrollo del proyecto. Asimismo, agradecemos al Dr. Huber Girón por la supervisión y guía académica a lo largo del diseño, implementación y documentación de la plataforma.
+
+\textbf{Bibliografía}
+
+Tanenbaum, A. S., \& Wetherall, D. J. (2011). \textit{Computer Networks} (5.ª~ed.). Pearson Education.
+
+Kasneci, E., Seßler, K., Küchemann, S., Bannert, M., Dementieva, D., Fischer, F., \& Kasneci, G. (2023). ChatGPT for good? On opportunities and challenges of large language models for education. \textit{Learning and Individual Differences}, 103, 102274.
+
+Kurose, J. F., \& Ross, K. W. (2021). \textit{Computer Networking: A Top-Down Approach} (8.ª~ed.). Pearson.
+
+Cisco Systems. (2023). \textit{Cisco Packet Tracer: Network simulation tool for learning and teaching} [Software]. \url{https://www.netacad.com/courses/packet-tracer}
+
+Méndez Villegas, S. (2026). \textit{CAPA8: Plataforma educativa web con IA para redes de computadoras} [Repositorio de código fuente]. GitHub. \url{https://github.com/sebas30073007/capa8-app}
+
+\end{document}

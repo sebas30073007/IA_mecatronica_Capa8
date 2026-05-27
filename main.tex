@@ -1,0 +1,82 @@
+\documentclass[12pt,letterpaper]{article}
+
+% Arial (Helvetica como equivalente portable para pdflatex)
+\usepackage[scaled=1.0]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+% Idioma español (México)
+\usepackage[spanish,mexico]{babel}
+
+% Márgenes compactos para cumplir 1--2 cuartillas
+\usepackage[letterpaper,margin=1.75cm]{geometry}
+
+% Formato general
+\usepackage{setspace}
+\usepackage[hidelinks]{hyperref}
+\singlespacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+
+\begin{document}
+
+\begin{center}
+\textbf{Desarrollo de un sistema robótico de operación remota orientado a tareas logísticas, para el teletrabajo de personas con discapacidad motriz}\\[2pt]
+Sebastián Méndez Villegas$^{1}$, Santiago Cuesta Machuca$^{1}$\\[1pt]
+$^{1}$Departamento de Estudios en Ingeniería para la Innovación, Universidad Iberoamericana Ciudad de México\\[1pt]
+\texttt{A2229332@correo.uia.mx}, \texttt{A217027A@correo.uia.mx}
+\end{center}
+
+\begin{center}\rule{0.55\textwidth}{0.4pt}\end{center}
+
+\textbf{Introducción}
+
+El crecimiento del comercio electrónico no solo ha transformado a las grandes cadenas logísticas, sino también al comercio minorista, a los almacenes locales y a los pequeños centros de distribución que operan cerca del consumidor final. En estos espacios, próximos a la última milla, las tareas de surtido, traslado interno, revisión de inventario, preparación de pedidos y manipulación de paquetes suelen realizarse de forma manual, con recursos limitados y en entornos menos automatizados que los grandes centros de distribución. Esta realidad abre una oportunidad para desarrollar soluciones robóticas más accesibles, flexibles y adaptadas a operaciones de menor escala.
+
+Al mismo tiempo, muchas de estas actividades dependen de la presencia física del operador, lo que puede limitar la participación laboral de personas con discapacidad motriz en miembros inferiores. Sin embargo, estas personas pueden aportar capacidades de supervisión, atención, toma de decisiones y control operativo en tareas que no necesariamente requieren esfuerzo físico directo, sino una interfaz adecuada entre el usuario y el entorno.
+
+Desde esta problemática, el proyecto no busca competir con la automatización industrial de gran escala, sino explorar una alternativa tecnológica para pequeños centros de distribución, comercios minoristas y operaciones locales de logística. En este contexto, la teleoperación robótica con interfaces de realidad mixta representa una forma de conectar la intención de un operador remoto con acciones físicas en el entorno. Este proyecto presenta el diseño e integración de un robot móvil con manipulador, operado desde Meta Quest mediante una interfaz XR, con el propósito de habilitar tareas logísticas inclusivas en escenarios cercanos a la última milla.
+
+\textbf{Objetivo}
+
+Diseñar, construir e integrar un sistema robótico móvil-manipulador teleoperado mediante realidad mixta, capaz de ejecutar tareas logísticas básicas de desplazamiento, percepción del entorno, manipulación y agarre, con una arquitectura modular orientada a facilitar el trabajo remoto de personas con discapacidad motriz en miembros inferiores.
+
+\textbf{Métodos}
+
+El desarrollo siguió una metodología de ingeniería basada en cuatro fases: análisis del problema y selección de tareas logísticas candidatas; definición de requerimientos funcionales, operativos y de accesibilidad; implementación incremental de subsistemas; e integración técnica con pruebas de funcionamiento por módulo. La plataforma física consiste en un AGV diferencial rehabilitado, con estructura metálica, dos motores DC de tracción y cuatro ruedas locas. Sobre esta base se integró un manipulador de 3 grados de libertad diseñado en Autodesk Inventor y fabricado en acero cortado a láser. El brazo emplea motores NEMA 17 con reductores planetarios y transmisión por banda; además, se incorporó una pinza de tipo piñón-cremallera impresa en 3D, accionada por un motor con encoder.
+
+La electrónica fue desarrollada alrededor de módulos ESP32-C3 con firmware en MicroPython. Se diseñó una PCB propia de puente H para control de motores de tracción, con comunicación USB/UART e I$^2$C, optoacopladores para aislamiento y selección de modo mediante DIP switch. La red embebida incluye un puente H maestro, un puente H esclavo, un controlador de drivers CL57T para los motores del manipulador y un controlador independiente para el gripper. El cómputo local está dado por una Intel NUC i7 que funciona como coordinador general: recibe comandos, administra sensores y comunica la interfaz XR con los controladores de bajo nivel. La comunicación entre la NUC y Meta Quest se implementó mediante ZeroMQ sobre Wi-Fi, separando el flujo de video, sensores/telemetría y comandos de control. Para percepción se integraron una cámara Intel RealSense RGB-D y un RPLiDAR C1; la interfaz en Unity muestra video, información espacial del LiDAR, estado del sistema y controles de teleoperación.
+
+\textbf{Resultados}
+
+Se obtuvo un prototipo funcional integrado con robot móvil, manipulador, pinza, electrónica embebida, servidor Python/ZMQ y aplicación XR en Meta Quest. A nivel de subsistemas, la PCB de puente H fue fabricada, ensamblada y probada bajo carga durante una prueba continua de 60 minutos. El manipulador alcanzó los siguientes rangos de movimiento para sus articulaciones: base $\pm$80°, codo 0°--136.5° y muñeca -220°--0°, sin pérdida de pasos en pruebas estáticas. También cumplió exitosamente con el criterio de diseño principal: sostener cargas de 1 kg a 50 cm, correspondiente a la distancia de máxima extensión del manipulador. La pinza completó un recorrido máximo aproximado de 80 mm.
+
+El sistema de comunicación permitió integrar video, telemetría, lectura de LiDAR y comandos desde la interfaz XR, manteniendo una separación clara entre datos de percepción y órdenes de movimiento. En pruebas de integración se verificó la operación extremo a extremo: el usuario envía instrucciones desde Meta Quest, la NUC interpreta los comandos, los módulos ESP32-C3 ejecutan el control de bajo nivel y el operador recibe retroalimentación visual del entorno.
+
+Como resultado adicional, el proyecto quedó documentado en un repositorio académico de acceso público, donde se integran la arquitectura general del sistema, la descripción de subsistemas y la puesta en marcha. Este material puede consultarse en: \href{https://github.com/sebas30073007/teleop-mobile-manipulator}{\textcolor{blue}{https://github.com/sebas30073007/teleop-mobile-manipulator}}. El estado actual demuestra integración funcional y validación técnica preliminar por subsistema.
+
+\textbf{Conclusiones}
+
+El proyecto demuestra la viabilidad técnica de una plataforma de teleoperación inmersiva para tareas logísticas inclusivas. La principal aportación no se limita a construir un robot, sino a integrar de forma modular una cadena completa operador--interfaz XR--comunicación--NUC--electrónica embebida--actuadores--sensores. Esta división de responsabilidades permite mantener simple la interacción del usuario y delegar la complejidad eléctrica y mecánica al robot. La arquitectura basada en ZeroMQ, Unity, Python y ESP32-C3 facilita el crecimiento del sistema hacia nuevas funciones, como SLAM, transmisión RGB-D completa, asistencia semiautónoma y retroalimentación háptica más avanzada. Como siguientes pasos se plantea ejecutar pruebas con usuarios objetivo, medir tiempo de tarea, errores, carga cognitiva y usabilidad, y comparar el desempeño contra procedimientos logísticos convencionales.
+
+\textbf{Agradecimientos}
+
+Agradecemos a la Universidad Iberoamericana Ciudad de México por los espacios, recursos de laboratorio y acompañamiento académico brindados durante el desarrollo del proyecto. Asimismo, agradecemos al Dr. Huber Girón por la supervisión, guía técnica y acompañamiento durante el diseño, integración y documentación del sistema.
+
+\textbf{Bibliografía}
+
+INEGI. (2023). \textit{Encuesta Nacional sobre Discriminación 2022 (ENADIS)}. Instituto Nacional de Estadística y Geografía.
+
+Lipton, J. I., Fay, A. J., \& Rus, D. (2018). Baxter's Homunculus: Virtual Reality Spaces for Teleoperation Learning. \textit{IEEE Robotics and Automation Letters}, 3(3), 2344--2351.
+
+Sheridan, T. B. (1992). \textit{Telerobotics, Automation, and Human Supervisory Control}. MIT Press.
+
+Siciliano, B., Sciavicco, L., Villani, L., \& Oriolo, G. (2010). \textit{Robotics: Modelling, Planning and Control}. Springer.
+
+Siegwart, R., Nourbakhsh, I. R., \& Scaramuzza, D. (2011). \textit{Introduction to Autonomous Mobile Robots} (2nd ed.). MIT Press.
+
+Méndez Villegas, S., \& Cuesta Machuca, S. (2026). \textit{Teleoperación móvil-manipulador para logística inclusiva} [Repositorio de documentación académica]. GitHub. \url{https://github.com/sebas30073007/teleop-mobile-manipulator}
+
+\end{document}
