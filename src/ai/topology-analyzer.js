@@ -1,9 +1,33 @@
 // src/ai/topology-analyzer.js
 // Analiza el grafo y detecta problemas comunes de red (didáctico).
+//
+// Estos issues tienen DOS públicos y no quieren el mismo texto:
+//
+//   - El estudiante, que los lee en el panel de diagnóstico. Necesita
+//     una frase en español que diga qué está mal, sin jerga interna.
+//   - El LLM, al que context-builder le inyecta la lista para que pueda
+//     corregir. Necesita saber con qué acción se arregla.
+//
+// Por eso `message` es humano y `llmHint` es opcional y técnico. Antes
+// iban mezclados en `message`, lo que se notaba en cuanto alguien
+// mostraba los issues en pantalla.
+//
+// `nodeId` / `linkId` permiten saltar al elemento culpable desde el panel;
+// `kind` es el identificador estable de la regla, para agrupar o filtrar
+// sin parsear el texto.
 
 /**
  * @param {object} graph - Grafo v3 del store
- * @returns {{ id: string, severity: "error"|"warning"|"info", message: string }[]}
+ * @returns {{
+ *   id: string,
+ *   kind: string,
+ *   severity: "error"|"warning"|"info",
+ *   message: string,
+ *   llmHint?: string,
+ *   nodeId?: string,
+ *   linkId?: string,
+ *   nodeIds?: string[]
+ * }[]}
  */
 export function analyzeTopology(graph) {
   const issues = [];
@@ -17,15 +41,50 @@ export function analyzeTopology(graph) {
   }
   for (const [ip, count] of ipCount) {
     if (count > 1) {
-      issues.push({ id: `dup-ip-${ip}`, severity: "error", message: `IP duplicada: ${ip} aparece en ${count} nodos.` });
+      const culpables = nodes.filter(n => n.ip === ip);
+      issues.push({
+        id: `dup-ip-${ip}`,
+        kind: "dup-ip",
+        severity: "error",
+        message: `IP duplicada: ${ip} está en ${count} dispositivos (${culpables.map(n => n.label).join(", ")}).`,
+        // Se salta al primero; el panel puede recorrer el resto con nodeIds
+        nodeId: culpables[0]?.id,
+        nodeIds: culpables.map(n => n.id),
+      });
     }
   }
 
   // 2. Nodos sin IP (cloud nodes are exempt — they represent external services)
   for (const n of nodes) {
     if (!n.ip && n.type !== "cloud") {
-      issues.push({ id: `no-ip-${n.id}`, severity: "warning", message: `Nodo "${n.label}" no tiene IP asignada.` });
+      issues.push({
+        id: `no-ip-${n.id}`,
+        kind: "no-ip",
+        severity: "warning",
+        message: `"${n.label}" no tiene IP asignada.`,
+        nodeId: n.id,
+      });
     }
+  }
+
+  // 2b. Nodos con IP pero sin máscara.
+  //
+  // La alcanzabilidad asume /24 cuando falta (ver effectivePrefix), así que
+  // la red funciona — pero el alumno debe saber que está operando sobre un
+  // supuesto. Se agrega en UN solo aviso: hay topologías con 15 nodos sin
+  // máscara y quince filas idénticas serían ruido, no información.
+  const sinMascara = nodes.filter(n => n.ip && n.mask == null);
+  if (sinMascara.length) {
+    issues.push({
+      id: "no-mask",
+      kind: "no-mask",
+      severity: "info",
+      message: sinMascara.length === 1
+        ? `"${sinMascara[0].label}" no tiene máscara de subred; se asume /24.`
+        : `${sinMascara.length} dispositivos no tienen máscara de subred; se asume /24 para todos.`,
+      nodeId: sinMascara[0].id,
+      nodeIds: sinMascara.map(n => n.id),
+    });
   }
 
   // 3. Nodos sin enlaces (aislados)
@@ -36,7 +95,13 @@ export function analyzeTopology(graph) {
   }
   for (const n of nodes) {
     if (!connectedIds.has(n.id)) {
-      issues.push({ id: `isolated-${n.id}`, severity: "warning", message: `Nodo "${n.label}" está aislado (sin enlaces).` });
+      issues.push({
+        id: `isolated-${n.id}`,
+        kind: "isolated",
+        severity: "warning",
+        message: `"${n.label}" está suelto: no tiene ningún cable conectado.`,
+        nodeId: n.id,
+      });
     }
   }
 
@@ -50,7 +115,13 @@ export function analyzeTopology(graph) {
       return neighbor && (neighbor.type === "router" || neighbor.type === "switch");
     });
     if (!hasRouterOrSwitch && neighbors.length > 0) {
-      issues.push({ id: `pc-no-infra-${n.id}`, severity: "info", message: `PC "${n.label}" no está conectada a ningún switch/router.` });
+      issues.push({
+        id: `pc-no-infra-${n.id}`,
+        kind: "pc-no-infra",
+        severity: "info",
+        message: `"${n.label}" no llega a ningún switch ni router, así que solo puede hablar con sus vecinos directos.`,
+        nodeId: n.id,
+      });
     }
   }
 
@@ -60,7 +131,13 @@ export function analyzeTopology(graph) {
     const a = nodes.find(n => n.id === l.source);
     const b = nodes.find(n => n.id === l.target);
     if (a && b) {
-      issues.push({ id: `down-link-${l.id}`, severity: "info", message: `Enlace entre "${a.label}" y "${b.label}" está DOWN.` });
+      issues.push({
+        id: `down-link-${l.id}`,
+        kind: "down-link",
+        severity: "info",
+        message: `El enlace entre "${a.label}" y "${b.label}" está caído.`,
+        linkId: l.id,
+      });
     }
   }
 
@@ -69,7 +146,13 @@ export function analyzeTopology(graph) {
     const a = nodes.find(n => n.id === l.source);
     const b = nodes.find(n => n.id === l.target);
     if (a && b) {
-      issues.push({ id: `high-loss-${l.id}`, severity: "warning", message: `Enlace "${a.label}"↔"${b.label}" tiene ${l.lossPct}% de pérdida de paquetes.` });
+      issues.push({
+        id: `high-loss-${l.id}`,
+        kind: "high-loss",
+        severity: "warning",
+        message: `El enlace "${a.label}"↔"${b.label}" pierde ${l.lossPct}% de los paquetes.`,
+        linkId: l.id,
+      });
     }
   }
 
@@ -77,7 +160,16 @@ export function analyzeTopology(graph) {
   const hasRouter = nodes.some(n => n.type === "router");
   if (hasRouter) {
     for (const n of nodes.filter(n => n.type === "pc" && n.ip && !n.gateway)) {
-      issues.push({ id: `no-gw-${n.id}`, severity: "warning", message: `"${n.label}" propiedad gateway vacía — corregir con update_node+patch.gateway (no agregar enlace físico).` });
+      issues.push({
+        id: `no-gw-${n.id}`,
+        kind: "no-gateway",
+        severity: "warning",
+        message: `"${n.label}" no tiene puerta de enlace, así que no puede salir de su propia subred.`,
+        // El LLM confundía esto con un problema de cableado y añadía un
+        // enlace físico. Es una propiedad del nodo, no un cable.
+        llmHint: "corregir con update_node + patch.gateway (NO agregar enlace físico)",
+        nodeId: n.id,
+      });
     }
   }
 
@@ -102,9 +194,19 @@ export function analyzeTopology(graph) {
     };
     bfs(nodes[0].id);
     for (const n of nodes) {
-      if (!visited.has(n.id)) {
-        issues.push({ id: `disconnected-${n.id}`, severity: "warning", message: `"${n.label}" no está conectado al resto de la topología (componente aislada).` });
-      }
+      if (visited.has(n.id)) continue;
+      // Un nodo sin ningún enlace ya lo reportó la regla 3, y "está suelto"
+      // es más accionable que "está en una isla". Sin este descarte, cada
+      // nodo huérfano generaba DOS avisos que dicen casi lo mismo — ruido
+      // que en el panel de diagnóstico se nota de inmediato.
+      if (!connectedIds.has(n.id)) continue;
+      issues.push({
+        id: `disconnected-${n.id}`,
+        kind: "disconnected",
+        severity: "warning",
+        message: `"${n.label}" está en una isla aparte: no hay camino hasta el resto de la red.`,
+        nodeId: n.id,
+      });
     }
   }
 

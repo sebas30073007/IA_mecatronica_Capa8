@@ -210,7 +210,7 @@ const INTENT_TEMPS = {
   apply_graph: 0.0,
 };
 
-// Injected in chat mode (index.html) when user asks to design a topology
+// Injected in chat mode when user asks to design a topology
 const TOPOLOGY_GUIDE = `
 REGLA OBLIGATORIA — GENERACIÓN DE TOPOLOGÍAS:
 Cuando el usuario pida diseñar, crear, generar, construir o armar una red o topología, DEBES responder ÚNICAMENTE con un bloque [CAPA8_ACTION] de tipo apply_graph que contenga el grafo completo. NUNCA describas la red en texto corrido. NUNCA preguntes "¿necesitas algo más?" antes de generar. Genera primero, comenta brevemente después si hace falta.
@@ -316,7 +316,7 @@ function buildPrompt({ nivel, enfoque, intentType, history, message, graphContex
       : "Assistant:");
 
   } else {
-    // Chat mode (index.html): build system from nivel + enfoque + topology format rules
+    // Chat mode: build system from nivel + enfoque + topology format rules
     system = getSystemPrompt(nivelKey, enfoqueKey) + "\n\n" + TOPOLOGY_GUIDE;
     lines.push("\nConversación (reciente):");
     for (const h of (history || [])) {
@@ -416,7 +416,7 @@ app.post("/api/chat", async (req, res) => {
       } catch (_) { /* retry failed — keep original answer */ }
     }
 
-    // Auto-retry: modo chat (index.html) — si pidió topología pero no generó bloque
+    // Auto-retry: modo chat — si pidió topología pero no generó bloque
     const TOPOLOGY_KEYWORDS = /\b(diseña|diseñar|crea|crear|genera|generar|haz|hacer|construye|construir|arma|armar|topolog[ií]a|red\s+de|red\s+con|una\s+red)\b/i;
     if (!isDiagramMode && TOPOLOGY_KEYWORDS.test(message) && !(/\[CAPA8_ACTION\]/.test(answer))) {
       const retryPrompt = `${prompt}\n\nRECUERDA: Debes responder con un bloque [CAPA8_ACTION] apply_graph completo con el grafo JSON. NO describas la red en texto. Emite el bloque directamente.`;

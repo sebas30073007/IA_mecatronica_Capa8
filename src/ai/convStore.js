@@ -1,5 +1,11 @@
 // src/ai/convStore.js
-// Almacén compartido de conversación entre Home y Diagramas (sessionStorage).
+// Almacén de conversación en sessionStorage.
+//
+// Nació para compartir el hilo entre la página de chat y la de diagramas.
+// Al fusionarse ambas en una sola, ese uso desapareció — pero el almacén
+// se conserva porque sigue haciendo algo útil: la conversación sobrevive
+// a una recarga, que en una herramienta que se comparte por URL pasa
+// seguido. No hace falta que sea cross-page para justificarse.
 
 const STORAGE_KEY = "capa8_shared_conv";
 const MAX_MESSAGES = 40;

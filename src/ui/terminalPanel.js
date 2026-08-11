@@ -1,6 +1,10 @@
 // src/ui/terminalPanel.js
-import { findNodeByIp, bfsPath, computeRttMs, linksForNode, checkAclPath } from "../model/graph.js";
+import {
+  findNodeByIp, bfsPath, computeRttMs, linksForNode, checkAclPath,
+  buildAdjacency, resolveReachability, findBlockingDownLink,
+} from "../model/graph.js";
 import { generateMac, networkAddress, parseMask } from "../model/addressing.js";
+import { TYPE_ORDER } from "../render/typePalette.js";
 
 const TERMINAL_COMMANDS = [
   "help", "clear", "ipconfig", "ping", "traceroute",
@@ -8,10 +12,44 @@ const TERMINAL_COMMANDS = [
   "show ip route", "show mac-address-table", "ifconfig",
 ];
 
-export function createTerminalPanel({ store, dispatch, ActionTypes, onPingRequest, onPingFail }) {
+/** IDs de los nodos que toca un camino de enlaces. */
+function nodesOfPath(graph, linkIds) {
+  const ids = new Set();
+  for (const id of linkIds) {
+    const l = graph.links.find(x => x.id === id);
+    if (l) { ids.add(l.source); ids.add(l.target); }
+  }
+  return [...ids];
+}
+
+/**
+ * Todo lo alcanzable físicamente desde un nodo.
+ * Se usa para que "No route to host" muestre hasta dónde SÍ llega la red,
+ * en vez de dejar al alumno sin ninguna pista de dónde está el corte.
+ */
+function reachableFrom(graph, startId) {
+  const adj = buildAdjacency(graph);
+  const seen = new Set([startId]);
+  const q = [startId];
+  while (q.length) {
+    for (const e of adj.get(q.shift()) || []) {
+      if (!seen.has(e.neighbor)) { seen.add(e.neighbor); q.push(e.neighbor); }
+    }
+  }
+  return [...seen];
+}
+
+export function createTerminalPanel({ store, dispatch, ActionTypes, onPingRequest, onPingFail, onTraceProbe }) {
   let currentPcId = null;
 
-  // Fixed DOM elements in diagrams.html
+  /** Resalta algo en el lienzo. Sin argumentos, limpia. */
+  function highlight(payload) {
+    dispatch(payload
+      ? { type: ActionTypes.SET_HIGHLIGHT, payload }
+      : { type: ActionTypes.CLEAR_HIGHLIGHT });
+  }
+
+  // Fixed DOM elements in the simulator page (index.html)
   const outputEl = document.getElementById("terminal-output");
   const inputEl  = document.getElementById("terminal-input");
   const sendEl   = document.getElementById("terminal-send");
@@ -122,7 +160,15 @@ export function createTerminalPanel({ store, dispatch, ActionTypes, onPingReques
       // Section headers (lines with ════ or ────): green
       .replace(/([═─]{4,})/g, '<span class="t-green">$1</span>')
       // Success indicators
-      .replace(/(Reply from|bytes=\d+|TTL=\d+)/g, '<span class="t-success">$1</span>');
+      .replace(/(Reply from|bytes=\d+|TTL=\d+)/g, '<span class="t-success">$1</span>')
+      // Tipo de dispositivo entre corchetes -> color del espectro.
+      // `show interfaces` e `ifconfig` ya imprimen "[router]", "[plc]"…
+      // así que basta teñirlo: el corchete sigue ahí, el color no es
+      // la única señal.
+      .replace(
+        new RegExp(`\\[(${TYPE_ORDER.join("|")})\\]`, "g"),
+        '<span class="type-ink" data-type="$1">[$1]</span>'
+      );
 
     outputEl.innerHTML = colored;
     outputEl.scrollTop = outputEl.scrollHeight;
@@ -149,6 +195,10 @@ export function createTerminalPanel({ store, dispatch, ActionTypes, onPingReques
   function handleCommand(cmd, pc, graph) {
     append(`> ${cmd}\n`);
 
+    // Cada comando parte de un lienzo limpio: el resaltado del comando
+    // anterior no debe mezclarse con el nuevo.
+    highlight(null);
+
     const parts = cmd.split(/\s+/);
     const head = parts[0].toLowerCase();
 
@@ -174,35 +224,67 @@ export function createTerminalPanel({ store, dispatch, ActionTypes, onPingReques
       const dst = findNodeByIp(graph, ip);
       if (!dst) { append(`Ping request could not find host ${ip}.\n`); return; }
 
-      const path = bfsPath(graph, pc.id, dst.id);
-      if (!path.length) { append(`No route to host ${ip}.\n`); onPingFail?.({ pc, ip }); return; }
+      // La alcanzabilidad ya no es solo "¿hay cable?": aplica subred y gateway.
+      const r = resolveReachability(graph, pc, ip);
+      if (!r.ok) {
+        // Un enlace caído se manifiesta como "no hay ruta" porque el BFS los
+        // descarta. Se comprueba aparte para poder señalar cuál.
+        const downId = r.reason === "no-path"
+          ? findBlockingDownLink(graph, pc.id, dst.id)
+          : null;
 
-      const rtt = computeRttMs(graph, path, { applyJitter: false });
-      if (rtt === null) { append(`No route to host ${ip} (enlace caído en el camino).\n`); onPingFail?.({ pc, ip }); return; }
+        if (downId) {
+          const l = graph.links.find(x => x.id === downId);
+          const a = graph.nodes.find(n => n.id === l.source);
+          const b = graph.nodes.find(n => n.id === l.target);
+          append(`Destination host unreachable: el enlace ${a?.label} ↔ ${b?.label} está caído.\n`);
+          highlight({ failLinkId: downId, nodeIds: reachableFrom(graph, pc.id) });
+        } else {
+          append(`Destination host unreachable.\n`);
+          if (r.message) append(`  ${r.message}\n`);
+          highlight({
+            linkIds: r.linkIds || [],
+            nodeIds: r.linkIds?.length ? nodesOfPath(graph, r.linkIds) : reachableFrom(graph, pc.id),
+            failNodeId: r.failNodeId,
+          });
+        }
+        onPingFail?.({ pc, ip });
+        return;
+      }
+
+      const path = r.linkIds;
+      const rtt = computeRttMs(graph, path, { applyJitter: false }) ?? 1;
 
       const fwBlock = checkAclPath(graph, path, ip);
       if (fwBlock) {
         append(`Destination unreachable. Blocked by firewall: ${fwBlock.label} (ACL deny).\n`);
+        highlight({ linkIds: path, nodeIds: nodesOfPath(graph, path), failNodeId: fwBlock.id });
         onPingFail?.({ pc, ip });
         return;
       }
 
       append(`Pinging ${ip} with 32 bytes of data:\n`);
+      highlight({ linkIds: path, nodeIds: nodesOfPath(graph, path) });
       onPingRequest?.({ fromId: pc.id, toId: dst.id, pathLinkIds: path });
 
       const linkLoss = estimatePathLossPct(graph, path);
+      let recv = 0;
       for (let i = 0; i < 4; i++) {
         const lost = Math.random() < linkLoss / 100;
         if (lost) {
           append(`Request timed out.\n`);
         } else {
+          recv++;
           // Apply link-level jitter per packet
           const rttWithJitter = computeRttMs(graph, path, { applyJitter: true }) ?? rtt;
           append(`Reply from ${ip}: bytes=32 time=${Math.max(1, Math.round(rttWithJitter))}ms TTL=64\n`);
         }
       }
-      const recv = Math.round(4 * (1 - linkLoss / 100));
-      append(`\nPing statistics for ${ip}:\n    Packets: Sent = 4, Received = ${recv}, Lost = ~${Math.round(linkLoss)}%\n`);
+      // `recv` se cuenta de las respuestas realmente impresas. Antes se
+      // estimaba con Math.round(4*(1-loss/100)) y podía contradecir las
+      // cuatro líneas de arriba.
+      const lostPct = Math.round((4 - recv) / 4 * 100);
+      append(`\nPing statistics for ${ip}:\n    Packets: Sent = 4, Received = ${recv}, Lost = ${4 - recv} (${lostPct}%)\n`);
       return;
     }
 
@@ -214,22 +296,65 @@ export function createTerminalPanel({ store, dispatch, ActionTypes, onPingReques
       if (!dst) { append(`traceroute: host ${ip} no encontrado.\n`); return; }
 
       const path = bfsPath(graph, pc.id, dst.id);
-      if (!path.length) { append(`No route to host ${ip}.\n`); onPingFail?.({ pc, ip }); return; }
+      if (!path.length) {
+        append(`No route to host ${ip}.\n`);
+        highlight({ nodeIds: reachableFrom(graph, pc.id), failNodeId: dst.id });
+        onPingFail?.({ pc, ip });
+        return;
+      }
 
       append(`traceroute to ${ip} (${dst.label}), ${path.length} hops max:\n`);
+
+      // Precalcula el nodo y el RTT acumulado de cada salto. La impresión se
+      // hace luego de una en una, conforme vuelve cada sonda.
+      const saltos = [];
       let accRtt = 0;
       let prevId = pc.id;
       for (let i = 0; i < path.length; i++) {
         const link = graph.links.find(l => l.id === path[i]);
         if (!link) continue;
         accRtt += 2 * (Number(link.latencyMs) || 0);
-        // El nodo del salto es el extremo del enlace que NO es el anterior
         const hopId = link.source === prevId ? link.target : link.source;
-        const hopNode = graph.nodes.find(n => n.id === hopId) || dst;
         prevId = hopId;
-        const hopIp = hopNode.ip || "*";
-        append(`  ${i + 1}  ${hopIp} (${hopNode.label})  ${jittered(accRtt)} ms\n`);
+        saltos.push({
+          node: graph.nodes.find(n => n.id === hopId) || dst,
+          rtt: accRtt,
+          linkIds: path.slice(0, i + 1),
+        });
       }
+
+      const linea = (i) => {
+        const s = saltos[i];
+        append(`  ${i + 1}  ${s.node.ip || "*"} (${s.node.label})  ${jittered(s.rtt)} ms\n`);
+      };
+
+      // Sin motor de animación (o si el caller no lo provee) se imprime todo
+      // de golpe, como antes: el comando nunca debe quedarse a medias.
+      if (!onTraceProbe) {
+        saltos.forEach((_, i) => linea(i));
+        highlight({ linkIds: path, nodeIds: nodesOfPath(graph, path) });
+        return;
+      }
+
+      // Salto a salto, que es como funciona de verdad: la sonda va cada vez
+      // más lejos y su respuesta es la que revela el nodo intermedio.
+      const lanzar = (i) => {
+        if (i >= saltos.length) return;
+        onTraceProbe({
+          fromId: pc.id,
+          pathLinkIds: path,
+          ttl: i + 1,
+          onReturn: () => {
+            linea(i);
+            highlight({
+              linkIds: saltos[i].linkIds,
+              nodeIds: saltos.slice(0, i + 1).map(s => s.node.id).concat(pc.id),
+            });
+            lanzar(i + 1);
+          },
+        });
+      };
+      lanzar(0);
       return;
     }
 

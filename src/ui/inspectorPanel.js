@@ -1,5 +1,6 @@
 // src/ui/inspectorPanel.js
 import { isIPv4, parseMask, prefixToDotted, maskHint } from "../model/addressing.js";
+import { TYPE_LABEL } from "../render/typePalette.js";
 
 export function createInspector({ dispatch, ActionTypes, onOpenAdvanced }) {
   function overlay() {
@@ -37,6 +38,7 @@ export function createInspector({ dispatch, ActionTypes, onOpenAdvanced }) {
     if (sel.kind === "node") {
       const node = graph.nodes.find(n => n.id === sel.id);
       if (!node) {
+        delete container.dataset.type;
         container.innerHTML = `<div class="muted">Nodo no encontrado.</div>`;
         return;
       }
@@ -45,7 +47,15 @@ export function createInspector({ dispatch, ActionTypes, onOpenAdvanced }) {
       const dupIp = node.ip && node.ip !== ""
         && graph.nodes.some(n => n.id !== node.id && n.ip === node.ip);
 
+      // El tipo del nodo tiñe la cabecera: es un dato del dispositivo
+      // seleccionado, así que el color del espectro es legítimo aquí.
+      container.dataset.type = node.type;
+
       container.innerHTML = `
+        <div class="insp-type-header type-bar--top">
+          <span class="type-swatch"></span>
+          <span class="insp-type-name">${escapeAttr(TYPE_LABEL[node.type] || node.type)}</span>
+        </div>
         <div class="field">
           <label>Nombre</label>
           <input id="ins-node-label" value="${escapeAttr(node.label)}" />

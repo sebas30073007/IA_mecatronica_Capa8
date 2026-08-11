@@ -1,6 +1,9 @@
 // src/render/renderer.js
 import { getNodeBox } from "./hitTest.js";
 import { FANOUT_THRESHOLD } from "../app/prettyLayout.js";
+import { getTypeColor } from "./typePalette.js";
+
+const SVG_NS = "http://www.w3.org/2000/svg";
 
 // Construye el conjunto de IDs de switches con fan-out alto (Regla 9)
 function buildHighFanoutSet(graph) {
@@ -17,18 +20,8 @@ function buildHighFanoutSet(graph) {
   return result;
 }
 
-// ── Paletas de color por tema ───────────────────────────────────────────────
-const ICON_COLORS = {
-  dark:  { router:"#60a5fa", switch:"#22d3ee", pc:"#a78bfa", firewall:"#f87171", server:"#34d399", cloud:"#7dd3fc", ap:"#fbbf24", plc:"#a78bfa", ur3:"#38bdf8", agv:"#fb923c" },
-  light: { router:"#2563eb", switch:"#0891b2", pc:"#7c3aed", firewall:"#dc2626", server:"#059669", cloud:"#3b82f6", ap:"#d97706", plc:"#6d28d9", ur3:"#0369a1", agv:"#c2410c" },
-};
-
-// Light mode: fondo sólido de color por tipo (el SVG se renderiza en blanco)
-const BUBBLE_COLORS_LIGHT = {
-  router:"#2563eb", switch:"#0891b2", pc:"#7c3aed", firewall:"#dc2626",
-  server:"#059669", cloud:"#3b82f6", ap:"#d97706", plc:"#6d28d9",
-  ur3:"#0369a1", agv:"#c2410c",
-};
+// Los colores por tipo se leen de los tokens --type-* del CSS.
+// Ver src/render/typePalette.js — no declarar hex aquí.
 
 // ── Íconos SVG por tipo de nodo (funciones que reciben el color) ────────────
 export const NODE_ICON_FN = {
@@ -144,16 +137,16 @@ export const NODE_ICON_FN = {
 };
 
 // Devuelve el <div class="node-icon"> completo con color/fondo según el tema activo.
-// Dark mode : SVG de color semántico + fondo tint vía CSS.
-// Light mode: SVG blanco + fondo sólido del color semántico (inline style).
+// Dark mode : SVG del color de tipo + halo tint vía CSS (--node-color).
+// Light mode: SVG blanco + fondo sólido del color de tipo (inline style).
+// En ambos casos el color sale del mismo token --type-*, así que el
+// SVG y el halo del CSS siempre coinciden.
 function getNodeIconHTML(type) {
-  const isLight  = document.documentElement.dataset.theme === "light";
-  const color    = isLight ? "#ffffff" : (ICON_COLORS.dark[type] ?? ICON_COLORS.dark.pc);
-  const fn       = NODE_ICON_FN[type] ?? NODE_ICON_FN.pc;
-  const stylePart = isLight
-    ? ` style="background:${BUBBLE_COLORS_LIGHT[type] ?? BUBBLE_COLORS_LIGHT.pc}"`
-    : "";
-  return `<div class="node-icon"${stylePart}>${fn(color)}</div>`;
+  const isLight   = document.documentElement.dataset.theme === "light";
+  const typeColor = getTypeColor(type);
+  const fn        = NODE_ICON_FN[type] ?? NODE_ICON_FN.pc;
+  const stylePart = isLight ? ` style="background:${typeColor}"` : "";
+  return `<div class="node-icon"${stylePart}>${fn(isLight ? "#ffffff" : typeColor)}</div>`;
 }
 
 // Rastrea IDs de nodos ya renderizados para detectar nodos nuevos
@@ -248,19 +241,32 @@ export function renderStage({ stageEl, svgEl, worldEl, state, dispatch, ActionTy
     const isSelected = ui.selection?.kind === "link" && ui.selection.id === link.id;
     const isLight = document.documentElement.dataset.theme === "light";
 
+    // Resaltado didáctico: el camino que recorre un ping, o el enlace
+    // concreto que lo rompió. Prevalece sobre la selección.
+    const hl = ui.highlight;
+    const isOnPath = hl?.linkIds?.includes(link.id);
+    const isFailLink = hl?.failLinkId === link.id;
+
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("x1", x1);
     line.setAttribute("y1", y1);
     line.setAttribute("x2", x2);
     line.setAttribute("y2", y2);
-    line.setAttribute("stroke", isSelected
-      ? (isLight ? "#1a237e" : "#2d35a8")
-      : (isLight ? "#3344bb" : "#4a55d4"));
-    line.setAttribute("stroke-width", isSelected ? "3.5" : "2");
-    // Fan-out links: opacidad reducida para no saturar visualmente (Regla 9)
-    const baseOpacity = isLight ? 0.55 : 0.6;
-    line.setAttribute("opacity", link.status === "down" ? "0.22" : isFanoutLink ? (isLight ? "0.25" : "0.3") : String(baseOpacity));
-    line.setAttribute("stroke-dasharray", link.status === "down" ? "8 6" : "none");
+    if (isFailLink || isOnPath) {
+      line.setAttribute("class", isFailLink ? "link--fail" : "link--path");
+      line.setAttribute("stroke-width", "4");
+      line.setAttribute("opacity", "1");
+      line.setAttribute("stroke-dasharray", link.status === "down" ? "8 6" : "none");
+    } else {
+      line.setAttribute("stroke", isSelected
+        ? (isLight ? "#1a237e" : "#2d35a8")
+        : (isLight ? "#3344bb" : "#4a55d4"));
+      line.setAttribute("stroke-width", isSelected ? "3.5" : "2");
+      // Fan-out links: opacidad reducida para no saturar visualmente (Regla 9)
+      const baseOpacity = isLight ? 0.55 : 0.6;
+      line.setAttribute("opacity", link.status === "down" ? "0.22" : isFanoutLink ? (isLight ? "0.25" : "0.3") : String(baseOpacity));
+      line.setAttribute("stroke-dasharray", link.status === "down" ? "8 6" : "none");
+    }
     svgEl.appendChild(line);
 
     // Label del enlace — omitido en enlaces fan-out para reducir ruido (Regla 9)
@@ -296,30 +302,60 @@ export function renderStage({ stageEl, svgEl, worldEl, state, dispatch, ActionTy
     }
   }
 
-  // Packets
+  // Destellos de llegada — anillo que se expande y se desvanece.
+  // Marca "aquí llegó el paquete", que es lo que hace legible el salto a salto.
+  for (const u of runtime.pulses || []) {
+    const n = graph.nodes.find(x => x.id === u.nodeId);
+    if (!n) continue;
+    const k = Math.min(1, u.t / 0.45);          // 0→1 a lo largo del destello
+    const ring = document.createElementNS(SVG_NS, "circle");
+    ring.setAttribute("cx", String(n.x));
+    ring.setAttribute("cy", String(n.y));
+    ring.setAttribute("r", String(20 + k * 22));
+    ring.setAttribute("fill", "none");
+    ring.setAttribute("stroke", "currentColor");
+    ring.setAttribute("stroke-width", String(2.5 * (1 - k)));
+    ring.setAttribute("opacity", String(0.65 * (1 - k)));
+    ring.setAttribute("class", "pkt-pulse");
+    svgEl.appendChild(ring);
+  }
+
+  // Paquetes — se interpola entre los nodos del salto ACTUAL.
+  // El sentido viene en el propio salto (fromId/toId), así que no hay que
+  // deducirlo de link.source/target, que es lo que hacía que algunos paquetes
+  // se vieran viajar hacia atrás.
   for (const p of runtime.packets) {
-    const link = graph.links.find(l => l.id === p.linkId);
-    if (!link) continue;
-    const a = graph.nodes.find(n => n.id === link.source);
-    const b = graph.nodes.find(n => n.id === link.target);
-    if (!a || !b) continue;
+    const hop = p.hops?.[p.hopIndex];
+    if (!hop) continue;
+    const from = graph.nodes.find(n => n.id === hop.fromId);
+    const to   = graph.nodes.find(n => n.id === hop.toId);
+    if (!from || !to) continue;
 
-    const start = p.direction === "ab" ? a : b;
-    const end = p.direction === "ab" ? b : a;
+    const x = from.x + (to.x - from.x) * p.progress;
+    const y = from.y + (to.y - from.y) * p.progress;
 
-    const x = start.x + (end.x - start.x) * p.progress;
-    const y = start.y + (end.y - start.y) * p.progress;
+    const g = document.createElementNS(SVG_NS, "g");
+    g.setAttribute("class", `pkt pkt--${p.kind}`);
 
-    const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    const dot = document.createElementNS(SVG_NS, "circle");
     dot.setAttribute("cx", String(x));
     dot.setAttribute("cy", String(y));
-    dot.setAttribute("r", "5");
-    dot.setAttribute("fill", "#4a55d4");
-    dot.setAttribute("stroke", "#ffffff");
-    dot.setAttribute("stroke-width", "2");
-    dot.setAttribute("opacity", p.kind === "icmp" ? "1" : "0.7");
-    dot.setAttribute("filter", "drop-shadow(0 0 4px rgba(74,85,212,0.5))");
-    svgEl.appendChild(dot);
+    dot.setAttribute("r", "6");
+    dot.setAttribute("class", "pkt-dot");
+    g.appendChild(dot);
+
+    // La etiqueta ("TTL=2", "echo reply"…) es lo que convierte el punto en
+    // una lección en vez de una mota que se mueve.
+    if (p.label) {
+      const t = document.createElementNS(SVG_NS, "text");
+      t.setAttribute("x", String(x + 10));
+      t.setAttribute("y", String(y - 9));
+      t.setAttribute("class", "pkt-label");
+      t.textContent = p.label;
+      g.appendChild(t);
+    }
+
+    svgEl.appendChild(g);
   }
 
   // 2) DOM nodes — dentro del world container
@@ -335,8 +371,14 @@ export function renderStage({ stageEl, svgEl, worldEl, state, dispatch, ActionTy
     const isConn     = connected.get(node.id);
     const isNet      = hasInternet.get(node.id);
 
+    // Resaltado didáctico: nodos del camino, y el que provocó el fallo
+    // (un firewall que bloquea, el último alcanzable…).
+    const onPath = ui.highlight?.nodeIds?.includes(node.id);
+    const isFail = ui.highlight?.failNodeId === node.id;
+
     const el = document.createElement("div");
-    el.className = `node ${node.type}${isSelected ? " selected" : ""}${isNew ? " node--entering" : ""}`;
+    el.className = `node ${node.type}${isSelected ? " selected" : ""}${isNew ? " node--entering" : ""}`
+      + (onPath ? " node--path" : "") + (isFail ? " node--fail" : "");
     el.dataset.nodeId = node.id;
     el.style.left = `${node.x}px`;
     el.style.top  = `${node.y}px`;

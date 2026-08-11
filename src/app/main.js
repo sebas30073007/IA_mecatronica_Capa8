@@ -11,9 +11,10 @@ import { createInspector } from "../ui/inspectorPanel.js";
 import { createTerminalPanel } from "../ui/terminalPanel.js";
 
 import { renderStage, NODE_ICON_FN } from "../render/renderer.js";
+import { getTypeColor } from "../render/typePalette.js";
 import { hitTestLink } from "../render/hitTest.js";
 
-import { importGraphFromURL, exportGraphToURL } from "../persistence/urlCodec.js";
+import { importGraphFromURL, exportGraphToURL, clearGraphFromURL } from "../persistence/urlCodec.js";
 import { downloadJson, openJsonFilePicker, graphToSvg, downloadSvg, downloadPng } from "../persistence/fileIO.js";
 import { normalizeGraph, createDemoGraph } from "../model/schema.js";
 import { suggestIp } from "../model/addressing.js";
@@ -22,10 +23,12 @@ import { prettyLayout } from "./prettyLayout.js";
 import { resolveAndDispatch } from "./positionManager.js";
 import { loadExample } from "../examples/index.js";
 import { createEngine } from "../sim/engine.js";
-import { bfsPath, findNodeByIp, computeRttMs } from "../model/graph.js";
+import { bfsPath, findNodeByIp, computeRttMs, linksToHops, reverseHops } from "../model/graph.js";
 import { createChatPanel } from "../ui/chatPanel.js";
 import { createActionDispatcher } from "../ai/actionDispatcher.js";
 import { createAdvancedModal } from "../ui/advancedModal.js";
+import { createDiagnosticsPanel } from "../ui/diagnosticsPanel.js";
+import { createEmptyState } from "../ui/emptyState.js";
 
 function uid(prefix = "id") {
   return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
@@ -197,9 +200,47 @@ document.addEventListener("DOMContentLoaded", async () => {
     store,
     dispatch: store.dispatch,
     ActionTypes,
-    onPingRequest: ({ fromId, toId, pathLinkIds }) => {
-      engine.enqueuePathAnimation({ linkIds: pathLinkIds, kind: "icmp", direction: "ab" });
-      engine.enqueuePathAnimation({ linkIds: [...pathLinkIds].reverse(), kind: "icmp", direction: "ba" });
+    // Un solo paquete recorre el camino; al llegar, encola la respuesta de
+    // vuelta. Antes se encolaban ida y vuelta en el mismo instante, así que
+    // se veían simultáneas y no se distinguía la petición de la respuesta.
+    onPingRequest: ({ fromId, pathLinkIds }) => {
+      const graph = store.getState().graph;
+      const hops = linksToHops(graph, fromId, pathLinkIds);
+      if (!hops.length) return;
+      engine.enqueuePacket({
+        hops,
+        kind: "echo-request",
+        label: "echo request",
+        onArrive: () => {
+          engine.enqueuePacket({
+            hops: reverseHops(hops),
+            kind: "echo-reply",
+            label: "echo reply",
+          });
+        },
+      });
+    },
+    // traceroute: una sonda que llega hasta el salto `ttl` y vuelve. Al
+    // volver se avisa al terminal, que imprime esa línea y lanza la
+    // siguiente. Es el encadenamiento el que produce el efecto escalonado,
+    // sin ningún setTimeout.
+    onTraceProbe: ({ fromId, pathLinkIds, ttl, onReturn }) => {
+      const graph = store.getState().graph;
+      const tramo = linksToHops(graph, fromId, pathLinkIds).slice(0, ttl);
+      if (!tramo.length) { onReturn?.(); return; }
+      engine.enqueuePacket({
+        hops: tramo,
+        kind: "probe",
+        label: `TTL=${ttl}`,
+        onArrive: () => {
+          engine.enqueuePacket({
+            hops: reverseHops(tramo),
+            kind: "probe-reply",
+            label: "TTL exceeded",
+            onArrive: () => onReturn?.(),
+          });
+        },
+      });
     },
     onPingFail: ({ ip }) => {
       chatPanel?.notifyPingFail(ip);
@@ -276,15 +317,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   // ── Mobile action buttons ────────────────────────────────────────────
-  document.getElementById("m-btn-run")?.addEventListener("click", () => handleMenuAction("TOGGLE_RUN"));
   document.getElementById("m-btn-terminal")?.addEventListener("click", () => setTerminalVisible(!showTerminal));
   document.getElementById("m-btn-copylink")?.addEventListener("click", () => {
     document.getElementById("btn-copylink").click();
   });
 
-  // ── Run/Stop button ──────────────────────────────────────────────────
-  const btnRun = document.getElementById("btn-run");
-  btnRun.addEventListener("click", () => handleMenuAction("TOGGLE_RUN"));
+  // ── Velocidad de la animación ────────────────────────────────────────
+  // Reactiva SET_SIM_SPEED / engine.setSpeed(), que existían desde hace
+  // tiempo sin que nada los usara.
+  document.getElementById("speed-group")?.addEventListener("click", e => {
+    const btn = e.target.closest(".speed-btn");
+    if (!btn) return;
+    const speed = Number(btn.dataset.speed) || 1;
+    store.dispatch({ type: ActionTypes.SET_SIM_SPEED, payload: { speed } });
+    engine.setSpeed(speed);
+    for (const b of document.querySelectorAll("#speed-group .speed-btn")) {
+      const on = b === btn;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-pressed", String(on));
+    }
+  });
 
   // ── Terminal toggle ──────────────────────────────────────────────────
   let showTerminal = false;
@@ -392,6 +444,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   function openSidebar() {
     // Reset to CSS default height (50dvh) each time the panel opens on mobile
     if (window.innerWidth <= 768) aiFabPanel.style.height = "";
+    closeDiagPanel();   // ocupan el mismo riel: solo uno abierto a la vez
     aiFabPanel.classList.add("open");
     stageWrap?.classList.add("has-ai-open");
     document.getElementById("ai-fab-btn")?.setAttribute("aria-expanded", "true");
@@ -414,6 +467,72 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("ai-fab-btn").addEventListener("click", () => {
     aiFabPanel.classList.contains("open") ? closeSidebar() : openSidebar();
+  });
+
+  // ── Panel de revisión ────────────────────────────────────────────────
+  // Comparte el riel derecho con el panel de IA: abrir uno cierra el otro,
+  // porque ocupan exactamente el mismo espacio.
+  const diagPanelEl = document.getElementById("diag-panel");
+  const diagBtn     = document.getElementById("diag-btn");
+
+  const diagPanel = createDiagnosticsPanel({
+    container: diagPanelEl,
+    onSelectNode: id => {
+      store.dispatch({ type: ActionTypes.SET_SELECTION, payload: { selection: { kind: "node", id } } });
+      inspector.show();
+    },
+    onSelectLink: id => {
+      store.dispatch({ type: ActionTypes.SET_SELECTION, payload: { selection: { kind: "link", id } } });
+      inspector.show();
+    },
+    // Reutiliza el pipeline de acciones validadas: el issue se manda al
+    // chat como petición y la IA responde con bloques CAPA8_ACTION, que
+    // pasan por el mismo validador que cualquier otra acción.
+    onFixRequest: issue => {
+      closeDiagPanel();
+      openSidebar();
+      chatPanel?.sendUserMessage?.(`Corrige este problema de la topología: ${issue.message}`);
+    },
+  });
+
+  function openDiagPanel() {
+    closeSidebar();
+    diagPanelEl?.classList.add("open");
+    stageWrap?.classList.add("has-ai-open");
+    diagBtn?.setAttribute("aria-expanded", "true");
+    const badge = document.getElementById("diag-badge");
+    if (badge) badge.hidden = true;
+    diagPanel?.render(store.getState().graph);
+  }
+  function closeDiagPanel() {
+    diagPanelEl?.classList.remove("open");
+    if (!aiFabPanel?.classList.contains("open")) stageWrap?.classList.remove("has-ai-open");
+    diagBtn?.setAttribute("aria-expanded", "false");
+  }
+
+  diagBtn?.addEventListener("click", () => {
+    diagPanelEl?.classList.contains("open") ? closeDiagPanel() : openDiagPanel();
+  });
+
+  // ── Estado vacío ─────────────────────────────────────────────────────
+  const emptyState = createEmptyState({
+    container: document.getElementById("empty-state"),
+    // Describir la red abre el panel de IA y manda el texto por el mismo
+    // camino que cualquier otro mensaje: intentRouter lo clasifica como
+    // petición de construir porque el lienzo está vacío.
+    onDescribe: texto => {
+      openSidebar();
+      chatPanel?.sendUserMessage?.(texto);
+    },
+    onLoadExample: graph => {
+      pushHistorySnapshot();
+      store.dispatch({ type: ActionTypes.LOAD_GRAPH, payload: { graph } });
+      requestAnimationFrame(() => {
+        resolveAndDispatch(store, store.dispatch, ActionTypes, null);
+        runPretty();
+      });
+      showToast("Ejemplo cargado ✅");
+    },
   });
 
   // Sync close button inside panel (created dynamically by chatPanel.js)
@@ -905,13 +1024,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
 
-  // ── AI tab issue badge ───────────────────────────────────────────────
+  // ── Badge de la pestaña Revisión ─────────────────────────────────────
+  // El badge ya no es el único canal: solo avisa de que hay algo que ver.
+  // El detalle vive en el panel, que es lo que hace accionable al analyzer.
   function updateFabBadge(graph) {
-    const issues = analyzeTopology(graph);
-    const count = issues.filter(i => i.severity === "error" || i.severity === "warning").length;
-    const badge = document.getElementById("ai-tab-badge");
+    const result = diagPanel?.render(graph);
+    const badge = document.getElementById("diag-badge");
     if (!badge) return;
-    const panelOpen = aiFabPanel?.classList.contains("open");
+    const count = (result?.errors ?? 0) + (result?.warnings ?? 0);
+    const panelOpen = diagPanelEl?.classList.contains("open");
     if (count > 0 && !panelOpen) {
       badge.textContent = count;
       badge.hidden = false;
@@ -922,19 +1043,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ── Ghost cursor setup ────────────────────────────────────────────────
   const ghostEl = document.getElementById("cursor-ghost");
-  const GHOST_ICON_COLORS = {
-    router: '#60a5fa', switch: '#22d3ee', pc: '#a78bfa',
-    firewall: '#f87171', server: '#34d399', cloud: '#7dd3fc',
-    ap: '#fbbf24', plc: '#a78bfa', ur3: '#38bdf8', agv: '#fb923c',
-  };
-  const GHOST_ICONS = {};
-  for (const [type, fn] of Object.entries(NODE_ICON_FN)) {
-    GHOST_ICONS[type] = fn(GHOST_ICON_COLORS[type] ?? '#60a5fa');
+  // El ghost se genera al vuelo para que siga al tema activo:
+  // getTypeColor lee los tokens --type-* y se reevalúa al cambiar de tema.
+  function ghostIconFor(tool) {
+    const fn = NODE_ICON_FN[tool];
+    return fn ? fn(getTypeColor(tool)) : null;
   }
 
   function showGhost(tool) {
-    if (!ghostEl || !GHOST_ICONS[tool]) { hideGhost(); return; }
-    ghostEl.innerHTML = GHOST_ICONS[tool];
+    const icon = ghostEl && ghostIconFor(tool);
+    if (!icon) { hideGhost(); return; }
+    ghostEl.innerHTML = icon;
     ghostEl.classList.add('ghost--visible');
     stageEl.classList.add("has-tool");
   }
@@ -956,7 +1075,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
   stageEl.addEventListener("mouseenter", () => {
     const tool = store.getState().ui.tool;
-    if (GHOST_ICONS[tool]) ghostEl.classList.add('ghost--visible');
+    if (ghostIconFor(tool)) ghostEl.classList.add('ghost--visible');
   });
 
   // ── Menu actions ─────────────────────────────────────────────────────
@@ -972,26 +1091,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         hideGhost();
       } else {
         stageEl.classList.remove('has-link-tool');
-        if (GHOST_ICONS[tool]) showGhost(tool);
+        if (ghostIconFor(tool)) showGhost(tool);
         else hideGhost();
       }
       render();
       return;
     }
 
-    if (actionId === "TOGGLE_RUN") {
-      store.dispatch({ type: ActionTypes.TOGGLE_RUN });
-      const running = store.getState().sim.running;
-      engine.setRunning(running);
-      const runHtml = running
-        ? `<i class="fa-solid fa-stop"></i> Stop`
-        : `<i class="fa-solid fa-play"></i> Run`;
-      btnRun.classList.toggle("running", running);
-      btnRun.innerHTML = runHtml;
-      const mBtnRun = document.getElementById("m-btn-run");
-      if (mBtnRun) { mBtnRun.classList.toggle("running", running); mBtnRun.innerHTML = runHtml; }
-      return;
-    }
 
     if (actionId === "RESET_DEMO") {
       pushHistorySnapshot();
@@ -1169,16 +1275,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ── Status badge ─────────────────────────────────────────────────────
   function updateStatusBadge(state) {
     const { nodes, links } = state.graph;
-    const simDot = state.sim.running
-      ? ` · <span class="sim-dot"></span>simulando`
-      : "";
     const uc = history.undoCount();
     const rc = history.redoCount();
     const undoRedo = (uc > 0 || rc > 0)
       ? ` · <span title="Pasos deshacer/rehacer" style="opacity:0.65">↩${uc} ↪${rc}</span>`
       : "";
     document.getElementById("status-badge").innerHTML =
-      `${nodes.length} nodos · ${links.length} enlaces${simDot}${undoRedo}`;
+      `${nodes.length} nodos · ${links.length} enlaces${undoRedo}`;
   }
 
   // ── Subscribe ────────────────────────────────────────────────────────
@@ -1200,8 +1303,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Status badge (includes undo/redo counts)
     updateStatusBadge(st);
 
-    // AI FAB issue badge
+    // Badge de la pestaña Revisión (y repintado del panel si está abierto)
     updateFabBadge(st.graph);
+
+    // Primera pantalla: aparece con el lienzo vacío, desaparece al primer nodo
+    emptyState?.sync(st.graph);
 
     // Terminal PC tracking
     const sel = st.ui.selection;
@@ -1214,7 +1320,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Auto-persist: URL + sessionStorage (debounced 600 ms)
     const updatedAt = st.graph?.meta?.updatedAt;
-    if (updatedAt && updatedAt !== lastExportedAt) {
+
+    // Un lienzo vacío no se guarda: se OLVIDA.
+    //
+    // Antes sí se persistía, y `NEW_GRAPH` sella un `updatedAt` nuevo, así que
+    // Ctrl+N borraba el storage y 600 ms después lo volvía a escribir vacío —
+    // además de dejar un `?g=` con el grafo vacío. Al recargar salía "Cargado
+    // desde URL ✅" sobre un lienzo en blanco en vez de la pantalla de inicio.
+    if (st.graph.nodes.length === 0) {
+      clearTimeout(autoExportTimer);
+      clearTimeout(autoLsTimer);
+      lastExportedAt = updatedAt;
+      try {
+        sessionStorage.removeItem(DIAGRAM_KEY);
+        localStorage.removeItem(AUTOSAVE_LS_KEY);
+      } catch {}
+      clearGraphFromURL();
+    } else if (updatedAt && updatedAt !== lastExportedAt) {
       clearTimeout(autoExportTimer);
       autoExportTimer = setTimeout(() => {
         lastExportedAt = updatedAt;
@@ -1262,5 +1384,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   inspector.render(store.getState());
   updateStatusBadge(store.getState());
   terminalPanel.render();
+  // En arranque en frío —sin ?g= ni autosave— no se despacha nada, así que el
+  // suscriptor nunca corre y la pantalla de inicio no llegaba a aparecer.
+  emptyState?.sync(store.getState().graph);
   render();
 });

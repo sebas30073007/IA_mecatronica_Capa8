@@ -21,7 +21,9 @@ export function bindShortcuts({ onAction, onStatus }) {
     if (ctrl && key === "l") { e.preventDefault(); onAction("EXPORT_URL"); return; }
 
     if (e.key === "Escape") { onAction("TOOL_SELECT"); return; }
-    if (e.key === " ") { e.preventDefault(); onAction("TOGGLE_RUN"); return; }
+    // La barra espaciadora mapeaba a TOGGLE_RUN. Al desaparecer Run se retira
+    // en vez de reasignarla: una tecla que hace algo inesperado es peor que
+    // una tecla que no hace nada.
 
     if (key === "r") { onAction("TOOL_ROUTER");   onStatus?.("Herramienta: Router (R)"); return; }
     if (key === "s") { onAction("TOOL_SWITCH");   onStatus?.("Herramienta: Switch (S)"); return; }

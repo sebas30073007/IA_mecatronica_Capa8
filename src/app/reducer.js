@@ -1,6 +1,8 @@
 // src/app/reducer.js
 import { ActionTypes } from "../core/actions.js";
-import { createDemoGraph, createEmptyGraph, normalizeGraph } from "../model/schema.js";
+// createDemoGraph ya no se usa aquí: el arranque es vacío y el demo lo
+// despacha main.js en la acción RESET_DEMO.
+import { createEmptyGraph, normalizeGraph } from "../model/schema.js";
 import { hasLinkBetween } from "../model/graph.js";
 
 function deepClone(obj) {
@@ -9,14 +11,30 @@ function deepClone(obj) {
 
 export function createInitialState() {
   return {
-    graph: createDemoGraph(),
+    // Arranca VACÍO, no con el demo.
+    //
+    // Con el demo de 4 nodos, la primera pantalla de un alumno era una
+    // topología cualquiera sin explicación, y el estado vacío —que es
+    // donde se ofrecen las 11 topologías y el «descríbeme tu red»— no
+    // llegaba a verse nunca.
+    //
+    // El demo no se pierde: sigue en Archivo → Reset, y las topologías
+    // de la galería son bastante más ricas que él.
+    //
+    // Si hay algo guardado (autosave) o viene un ?g= en la URL, main.js
+    // despacha LOAD_GRAPH justo después y este vacío no se llega a ver.
+    graph: createEmptyGraph(),
     ui: {
       tool: "select", // select|router|switch|pc|link
       selection: null, // {kind:'node'|'link', id}
       showIpLabels: true,
+      // { linkIds[], nodeIds[], failLinkId, failNodeId } — lo pinta el
+      // renderer para señalar el camino de un ping o dónde se rompió.
+      highlight: null,
     },
+    // `running` desapareció: la animación corre sola cuando hay paquetes.
+    // `speed` es el multiplicador del selector 0.5× / 1× / 2×.
     sim: {
-      running: false,
       speed: 1,
     },
     terminalLog: "",
@@ -114,8 +132,19 @@ export function reducer(state, action) {
       return next;
     }
 
-    case ActionTypes.TOGGLE_RUN: {
-      next.sim.running = !next.sim.running;
+    case ActionTypes.SET_HIGHLIGHT: {
+      const h = action.payload || {};
+      next.ui.highlight = {
+        linkIds:    Array.isArray(h.linkIds) ? h.linkIds : [],
+        nodeIds:    Array.isArray(h.nodeIds) ? h.nodeIds : [],
+        failLinkId: h.failLinkId || null,
+        failNodeId: h.failNodeId || null,
+      };
+      return next;
+    }
+
+    case ActionTypes.CLEAR_HIGHLIGHT: {
+      next.ui.highlight = null;
       return next;
     }
 

@@ -1,0 +1,98 @@
+[
+  {
+    "condition": "full",
+    "n": 30,
+    "errors": 0,
+    "actionEmissionRate": 100,
+    "solverEmissionRate": 100,
+    "spuriousActionRate": 37.5,
+    "totalBlocks": 45,
+    "jsonValidityRate": 100,
+    "semanticValidityRate": 77.8,
+    "interceptedActions": 10,
+    "normalizedActions": 4,
+    "retryRate": 0,
+    "medianLatencyMs": 2434,
+    "traps": {
+      "A09:gateway": "correct",
+      "A10:ip-fix": "correct",
+      "A11:nonexistent": "1 intercepted, 0 warnings",
+      "A12:nonexistent": "0 intercepted, 0 warnings",
+      "A14:alias": "0 intercepted, 0 warnings",
+      "A16:dup-ip": "0 intercepted, 1 warnings",
+      "S04:gateway": "correct"
+    }
+  },
+  {
+    "condition": "no-seed",
+    "n": 30,
+    "errors": 0,
+    "actionEmissionRate": 100,
+    "solverEmissionRate": 100,
+    "spuriousActionRate": 37.5,
+    "totalBlocks": 50,
+    "jsonValidityRate": 100,
+    "semanticValidityRate": 92,
+    "interceptedActions": 4,
+    "normalizedActions": 4,
+    "retryRate": 0,
+    "medianLatencyMs": 28443,
+    "traps": {
+      "A09:gateway": "correct",
+      "A10:ip-fix": "correct",
+      "A11:nonexistent": "1 intercepted, 0 warnings",
+      "A12:nonexistent": "0 intercepted, 0 warnings",
+      "A14:alias": "0 intercepted, 0 warnings",
+      "A16:dup-ip": "0 intercepted, 1 warnings",
+      "S04:gateway": "correct"
+    }
+  },
+  {
+    "condition": "no-retry",
+    "n": 30,
+    "errors": 0,
+    "actionEmissionRate": 100,
+    "solverEmissionRate": 100,
+    "spuriousActionRate": 37.5,
+    "totalBlocks": 47,
+    "jsonValidityRate": 100,
+    "semanticValidityRate": 76.6,
+    "interceptedActions": 11,
+    "normalizedActions": 4,
+    "retryRate": 0,
+    "medianLatencyMs": 31371,
+    "traps": {
+      "A09:gateway": "correct",
+      "A10:ip-fix": "correct",
+      "A11:nonexistent": "1 intercepted, 0 warnings",
+      "A12:nonexistent": "0 intercepted, 0 warnings",
+      "A14:alias": "0 intercepted, 0 warnings",
+      "A16:dup-ip": "0 intercepted, 1 warnings",
+      "S04:gateway": "correct"
+    }
+  },
+  {
+    "condition": "no-system",
+    "n": 30,
+    "errors": 0,
+    "actionEmissionRate": 100,
+    "solverEmissionRate": 100,
+    "spuriousActionRate": 37.5,
+    "totalBlocks": 45,
+    "jsonValidityRate": 100,
+    "semanticValidityRate": 68.9,
+    "interceptedActions": 14,
+    "normalizedActions": 4,
+    "retryRate": 0,
+    "medianLatencyMs": 30882,
+    "traps": {
+      "A09:gateway": "correct",
+      "A10:ip-fix": "correct",
+      "A11:nonexistent": "1 intercepted, 0 warnings",
+      "A12:nonexistent": "1 intercepted, 0 warnings",
+      "A14:alias": "0 intercepted, 0 warnings",
+      "A16:dup-ip": "0 intercepted, 1 warnings",
+      "S04:gateway": "correct"
+    }
+  }
+]

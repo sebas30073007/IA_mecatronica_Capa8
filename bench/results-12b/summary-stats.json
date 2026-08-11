@@ -1,0 +1,204 @@
+[
+  {
+    "condition": "full",
+    "reps": 5,
+    "partialRepsSkipped": 0,
+    "stats": {
+      "actionEmissionRate": {
+        "mean": 100,
+        "sd": 0,
+        "n": 5
+      },
+      "solverEmissionRate": {
+        "mean": 100,
+        "sd": 0,
+        "n": 5
+      },
+      "spuriousActionRate": {
+        "mean": 0,
+        "sd": 0,
+        "n": 5
+      },
+      "jsonValidityRate": {
+        "mean": 100,
+        "sd": 0,
+        "n": 5
+      },
+      "semanticValidityRate": {
+        "mean": 66.5,
+        "sd": 3.2893768406797066,
+        "n": 5
+      },
+      "interceptedActions": {
+        "mean": 12.2,
+        "sd": 1.3038404810405297,
+        "n": 5
+      },
+      "normalizedActions": {
+        "mean": 0,
+        "sd": 0,
+        "n": 5
+      },
+      "retryRate": {
+        "mean": 0,
+        "sd": 0,
+        "n": 5
+      },
+      "medianLatencyMs": {
+        "mean": 18764,
+        "sd": 1282.4369380207356,
+        "n": 5
+      },
+      "totalBlocks": {
+        "mean": 36.4,
+        "sd": 0.5477225575051661,
+        "n": 5
+      }
+    },
+    "perRep": [
+      {
+        "condition": "full",
+        "n": 30,
+        "errors": 0,
+        "actionEmissionRate": 100,
+        "solverEmissionRate": 100,
+        "spuriousActionRate": 0,
+        "totalBlocks": 36,
+        "jsonValidityRate": 100,
+        "semanticValidityRate": 69.4,
+        "interceptedActions": 11,
+        "normalizedActions": 0,
+        "retryRate": 0,
+        "medianLatencyMs": 20532,
+        "traps": {
+          "A09:gateway": "correct",
+          "A10:ip-fix": "correct",
+          "A11:nonexistent": "0 intercepted, 0 warnings",
+          "A12:nonexistent": "1 intercepted, 0 warnings",
+          "A14:alias": "0 intercepted, 0 warnings",
+          "A16:dup-ip": "0 intercepted, 1 warnings",
+          "S04:gateway": "correct"
+        }
+      },
+      {
+        "condition": "full",
+        "n": 30,
+        "errors": 0,
+        "actionEmissionRate": 100,
+        "solverEmissionRate": 100,
+        "spuriousActionRate": 0,
+        "totalBlocks": 37,
+        "jsonValidityRate": 100,
+        "semanticValidityRate": 62.2,
+        "interceptedActions": 14,
+        "normalizedActions": 0,
+        "retryRate": 0,
+        "medianLatencyMs": 18289,
+        "traps": {
+          "A09:gateway": "correct",
+          "A10:ip-fix": "correct",
+          "A11:nonexistent": "0 intercepted, 0 warnings",
+          "A12:nonexistent": "1 intercepted, 0 warnings",
+          "A14:alias": "0 intercepted, 0 warnings",
+          "A16:dup-ip": "0 intercepted, 1 warnings",
+          "S04:gateway": "correct"
+        }
+      },
+      {
+        "condition": "full",
+        "n": 30,
+        "errors": 0,
+        "actionEmissionRate": 100,
+        "solverEmissionRate": 100,
+        "spuriousActionRate": 0,
+        "totalBlocks": 37,
+        "jsonValidityRate": 100,
+        "semanticValidityRate": 67.6,
+        "interceptedActions": 12,
+        "normalizedActions": 0,
+        "retryRate": 0,
+        "medianLatencyMs": 18952,
+        "traps": {
+          "A09:gateway": "correct",
+          "A10:ip-fix": "correct",
+          "A11:nonexistent": "0 intercepted, 0 warnings",
+          "A12:nonexistent": "1 intercepted, 0 warnings",
+          "A14:alias": "0 intercepted, 0 warnings",
+          "A16:dup-ip": "0 intercepted, 1 warnings",
+          "S04:gateway": "correct"
+        }
+      },
+      {
+        "condition": "full",
+        "n": 30,
+        "errors": 0,
+        "actionEmissionRate": 100,
+        "solverEmissionRate": 100,
+        "spuriousActionRate": 0,
+        "totalBlocks": 36,
+        "jsonValidityRate": 100,
+        "semanticValidityRate": 63.9,
+        "interceptedActions": 13,
+        "normalizedActions": 0,
+        "retryRate": 0,
+        "medianLatencyMs": 19047,
+        "traps": {
+          "A09:gateway": "correct",
+          "A10:ip-fix": "correct",
+          "A11:nonexistent": "0 intercepted, 0 warnings",
+          "A12:nonexistent": "1 intercepted, 0 warnings",
+          "A14:alias": "0 intercepted, 0 warnings",
+          "A16:dup-ip": "0 intercepted, 1 warnings",
+          "S04:gateway": "correct"
+        }
+      },
+      {
+        "condition": "full",
+        "n": 30,
+        "errors": 0,
+        "actionEmissionRate": 100,
+        "solverEmissionRate": 100,
+        "spuriousActionRate": 0,
+        "totalBlocks": 36,
+        "jsonValidityRate": 100,
+        "semanticValidityRate": 69.4,
+        "interceptedActions": 11,
+        "normalizedActions": 0,
+        "retryRate": 0,
+        "medianLatencyMs": 17000,
+        "traps": {
+          "A09:gateway": "correct",
+          "A10:ip-fix": "correct",
+          "A11:nonexistent": "0 intercepted, 0 warnings",
+          "A12:nonexistent": "1 intercepted, 0 warnings",
+          "A14:alias": "0 intercepted, 0 warnings",
+          "A16:dup-ip": "0 intercepted, 1 warnings",
+          "S04:gateway": "correct"
+        }
+      }
+    ],
+    "traps": {
+      "A09:gateway": {
+        "correct": 5
+      },
+      "A10:ip-fix": {
+        "correct": 5
+      },
+      "A11:nonexistent": {
+        "0int/0warn": 5
+      },
+      "A12:nonexistent": {
+        "1int/0warn": 5
+      },
+      "A14:alias": {
+        "0int/0warn": 5
+      },
+      "A16:dup-ip": {
+        "0int/1warn": 5
+      },
+      "S04:gateway": {
+        "correct": 5
+      }
+    }
+  }
+]

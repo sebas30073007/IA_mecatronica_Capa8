@@ -1,5 +1,5 @@
 // src/ui/chatPanel.js
-// Panel de chat integrado en el simulador (diagrams.html).
+// Panel de chat integrado en el simulador. Es la ÚNICA implementación de
 import { API_BASE } from "../config.js";
 import { buildGraphContext } from "../ai/context-builder.js";
 import { analyzeTopology } from "../ai/topology-analyzer.js";
@@ -437,5 +437,7 @@ export function createChatPanel({ store, onApplyAction, onApplyActions }) {
     }
   }
 
-  return { refreshWelcome, notifyPingFail, appendErrorMessage };
+  // `sendUserMessage` lo usa el panel de revisión para pedir la corrección
+  // de un issue sin que el usuario tenga que reescribirlo.
+  return { refreshWelcome, notifyPingFail, appendErrorMessage, sendUserMessage: sendMessage };
 }

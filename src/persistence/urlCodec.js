@@ -28,6 +28,20 @@ export function exportGraphToURL(graph) {
   return url.toString();
 }
 
+/**
+ * Quita el grafo de la URL sin recargar.
+ *
+ * Hace falta al vaciar el lienzo: si el `?g=` se queda, al recargar se
+ * restaura un grafo vacío con el toast "Cargado desde URL" en vez de
+ * entrar en la pantalla de inicio.
+ */
+export function clearGraphFromURL() {
+  const url = new URL(window.location.href);
+  if (!url.searchParams.has(PARAM)) return;
+  url.searchParams.delete(PARAM);
+  window.history.replaceState({}, "", url.toString());
+}
+
 export function importGraphFromURL() {
   const url = new URL(window.location.href);
   const encoded = url.searchParams.get(PARAM);

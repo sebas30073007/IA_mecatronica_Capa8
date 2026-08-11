@@ -59,7 +59,23 @@ export function classifyIntent(message, graph, surface) {
     }
   }
 
-  // 5. Default
+  // 5. Lienzo vacío: no hay nada que consultar.
+  //
+  // Una descripción en sintagma nominal ("una red de oficina con un router
+  // y 3 PCs") no lleva verbo imperativo, así que no la captura MODIFY_VERBS
+  // y caía al default como query_graph. Eso importa porque query_graph NO
+  // es intención de acción: server.js entonces no inyecta DIAGRAM_DIRECTIVE,
+  // no pre-siembra el ejemplo, sube la temperatura y no reintenta — se
+  // apagan justo las cuatro cosas que hacen fiable la emisión de acciones.
+  //
+  // Y es el camino exacto del estado vacío, donde el usuario describe la red
+  // que quiere. Si no hay nodos, cualquier mensaje que no sea pregunta
+  // conceptual ni diagnóstico solo puede ser una petición de construir.
+  if (surface === "diagrams" && nodes.length === 0 && msg.length > 0) {
+    return { type: "modify_clear", confidence: "low", extractedRefs: {} };
+  }
+
+  // 6. Default
   return {
     type: surface === "diagrams" ? "query_graph" : "conceptual",
     confidence: "low",

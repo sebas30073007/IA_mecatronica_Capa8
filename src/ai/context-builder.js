@@ -68,7 +68,9 @@ export function buildGraphContext(graph, selection = null) {
     lines.push("Problemas detectados:");
     for (const issue of issues) {
       const prefix = issue.severity === "error" ? "❌" : issue.severity === "warning" ? "⚠️" : "ℹ️";
-      lines.push(`  ${prefix} ${issue.message}`);
+      // El hint técnico va solo al prompt; el panel muestra `message` a secas.
+      const hint = issue.llmHint ? ` — ${issue.llmHint}` : "";
+      lines.push(`  ${prefix} ${issue.message}${hint}`);
     }
   } else {
     lines.push("No se detectaron problemas evidentes en la topología.");

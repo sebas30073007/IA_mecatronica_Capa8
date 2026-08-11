@@ -1,0 +1,54 @@
+[
+  {
+    "condition": "full",
+    "reps": 5,
+    "skipped": 0,
+    "actionEmissionRate": "100±0",
+    "spuriousActionRate": "27.5±5.6",
+    "jsonValidityRate": "100±0",
+    "semanticValidityRate": "77.2±0.9",
+    "interceptedActions": "10.8±0.4",
+    "normalizedActions": "4±0",
+    "retryRate": "0±0",
+    "medianLatencyMs": "1870.6±215.8"
+  },
+  {
+    "condition": "no-seed",
+    "reps": 5,
+    "skipped": 0,
+    "actionEmissionRate": "100±0",
+    "spuriousActionRate": "42.5±6.8",
+    "jsonValidityRate": "100±0",
+    "semanticValidityRate": "92.3±0.2",
+    "interceptedActions": "4±0",
+    "normalizedActions": "4±0",
+    "retryRate": "0±0",
+    "medianLatencyMs": "1989.6±131.1"
+  },
+  {
+    "condition": "no-retry",
+    "reps": 5,
+    "skipped": 0,
+    "actionEmissionRate": "100±0",
+    "spuriousActionRate": "30±6.8",
+    "jsonValidityRate": "100±0",
+    "semanticValidityRate": "76±1",
+    "interceptedActions": "11.4±0.5",
+    "normalizedActions": "4±0",
+    "retryRate": "0±0",
+    "medianLatencyMs": "2069.6±165.9"
+  },
+  {
+    "condition": "no-system",
+    "reps": 5,
+    "skipped": 0,
+    "actionEmissionRate": "100±0",
+    "spuriousActionRate": "35±5.6",
+    "jsonValidityRate": "100±0",
+    "semanticValidityRate": "64.4±1.1",
+    "interceptedActions": "15.6±0.5",
+    "normalizedActions": "4±0",
+    "retryRate": "0±0",
+    "medianLatencyMs": "1935.8±223"
+  }
+]

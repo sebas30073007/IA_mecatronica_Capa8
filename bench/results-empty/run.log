@@ -1,0 +1,58 @@
+﻿
+=== Lienzo vacío: 12 prompts × 3 reps ===
+Servidor: http://localhost:3000 · ya hechos: 2
+
+  [r1 E03] intent=query_graph ... FALLA  bloques=6 aplicadas=6 nodos=4 enlaces=2 comp=2
+  [r1 E04] intent=modify_clear ... OK   bloques=11 aplicadas=11 nodos=6 enlaces=5 comp=1
+  [r1 E05] intent=query_graph ... OK   bloques=7 aplicadas=7 nodos=4 enlaces=3 comp=1
+  [r1 E06] intent=query_graph ... parcial  bloques=7 aplicadas=7 nodos=4 enlaces=3 comp=1 falta:<6 nodos
+  [r1 E07] intent=modify_clear ... FALLA  bloques=6 aplicadas=6 nodos=5 enlaces=1 comp=4
+  [r1 E08] intent=query_graph ... FALLA  bloques=2 aplicadas=2 nodos=2 enlaces=0 comp=2
+  [r1 E09] intent=query_graph ... parcial  bloques=7 aplicadas=7 nodos=4 enlaces=3 comp=1 falta:<5 nodos
+  [r1 E10] intent=query_graph ... FALLA  bloques=1 aplicadas=1 nodos=1 enlaces=0 comp=1
+  [r1 E11] intent=modify_clear ... OK   bloques=5 aplicadas=5 nodos=3 enlaces=2 comp=1
+  [r1 E12] intent=query_graph ... OK   bloques=7 aplicadas=7 nodos=4 enlaces=3 comp=1
+  [r2 E01] intent=query_graph ... OK   bloques=9 aplicadas=9 nodos=5 enlaces=4 comp=1
+  [r2 E02] intent=query_graph ... parcial  bloques=7 aplicadas=5 nodos=3 enlaces=2 comp=1 falta:<4 nodos
+  [r2 E03] intent=query_graph ... OK   bloques=9 aplicadas=9 nodos=5 enlaces=4 comp=1
+  [r2 E04] intent=modify_clear ... OK   bloques=11 aplicadas=11 nodos=6 enlaces=5 comp=1
+  [r2 E05] intent=query_graph ... OK   bloques=7 aplicadas=7 nodos=4 enlaces=3 comp=1
+  [r2 E06] intent=query_graph ... parcial  bloques=6 aplicadas=3 nodos=2 enlaces=1 comp=1 falta:<6 nodos
+  [r2 E07] intent=modify_clear ... FALLA  bloques=7 aplicadas=7 nodos=5 enlaces=2 comp=3
+  [r2 E08] intent=query_graph ... FALLA  bloques=2 aplicadas=2 nodos=2 enlaces=0 comp=2
+  [r2 E09] intent=query_graph ... parcial  bloques=7 aplicadas=7 nodos=4 enlaces=3 comp=1 falta:<5 nodos
+  [r2 E10] intent=query_graph ... FALLA  bloques=1 aplicadas=1 nodos=1 enlaces=0 comp=1
+  [r2 E11] intent=modify_clear ... OK   bloques=5 aplicadas=5 nodos=3 enlaces=2 comp=1
+  [r2 E12] intent=query_graph ... OK   bloques=7 aplicadas=7 nodos=4 enlaces=3 comp=1
+  [r3 E01] intent=query_graph ... OK   bloques=9 aplicadas=9 nodos=5 enlaces=4 comp=1
+  [r3 E02] intent=query_graph ... parcial  bloques=7 aplicadas=5 nodos=3 enlaces=2 comp=1 falta:<4 nodos
+  [r3 E03] intent=query_graph ... FALLA  bloques=8 aplicadas=8 nodos=5 enlaces=3 comp=2
+  [r3 E04] intent=modify_clear ... OK   bloques=11 aplicadas=11 nodos=6 enlaces=5 comp=1
+  [r3 E05] intent=query_graph ... OK   bloques=7 aplicadas=7 nodos=4 enlaces=3 comp=1
+  [r3 E06] intent=query_graph ... parcial  bloques=6 aplicadas=3 nodos=2 enlaces=1 comp=1 falta:<6 nodos
+  [r3 E07] intent=modify_clear ... FALLA  bloques=6 aplicadas=6 nodos=5 enlaces=1 comp=4
+  [r3 E08] intent=query_graph ... FALLA  bloques=2 aplicadas=2 nodos=2 enlaces=0 comp=2
+  [r3 E09] intent=query_graph ... parcial  bloques=7 aplicadas=7 nodos=4 enlaces=3 comp=1 falta:<5 nodos
+  [r3 E10] intent=query_graph ... FALLA  bloques=1 aplicadas=1 nodos=1 enlaces=0 comp=1
+  [r3 E11] intent=modify_clear ... OK   bloques=5 aplicadas=5 nodos=3 enlaces=2 comp=1
+  [r3 E12] intent=query_graph ... OK   bloques=7 aplicadas=7 nodos=4 enlaces=3 comp=1
+
+──────────────────────────────────────────────
+  modelo             gemma3:12b
+  n                  36 (0 errores)
+  emite acciones     100.0%
+  grafo usable       69.4%
+  responde a lo pedido 75.0%
+  ÉXITO (ambas)      44.4%
+  nodos promedio     3.7
+  fragmentado (>1 componente) 22.2%
+  con nodos aislados 30.6%
+  latencia mediana   82261 ms
+──────────────────────────────────────────────
+
+Peores prompts:
+  E02 0/3  "red doméstica simple: modem, router wifi y dos lapto"
+  E06 0/3  "topología de campus con 3 edificios"
+  E07 0/3  "conecta dos sucursales por internet"
+  E08 0/3  "red industrial con un PLC y un robot UR3"
+  E09 0/3  "necesito practicar VLANs, hazme una topología para e"

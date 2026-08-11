@@ -1,0 +1,15 @@
+[
+  {
+    "condition": "full",
+    "reps": 5,
+    "skipped": 0,
+    "actionEmissionRate": "100±0",
+    "spuriousActionRate": "0±0",
+    "jsonValidityRate": "100±0",
+    "semanticValidityRate": "66.5±3.3",
+    "interceptedActions": "12.2±1.3",
+    "normalizedActions": "0±0",
+    "retryRate": "0±0",
+    "medianLatencyMs": "18764±1282.4"
+  }
+]

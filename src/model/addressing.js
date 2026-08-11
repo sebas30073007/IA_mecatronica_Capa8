@@ -82,6 +82,28 @@ export function networkAddress(ip, prefix) {
   return [24, 16, 8, 0].map(s => (netInt >>> s) & 0xff).join(".");
 }
 
+/** Prefijo por defecto cuando un nodo no declara máscara. */
+export const DEFAULT_PREFIX = 24;
+
+/**
+ * Prefijo efectivo de un nodo.
+ *
+ * `normalizeGraph` deja `mask: null` cuando el nodo no la trae, y 7 de las 11
+ * topologías de ejemplo no la declaran. Todas están direccionadas como /24,
+ * así que ese es el supuesto: permite razonar sobre subredes sin reescribir
+ * los datos. La carencia no se oculta — topology-analyzer la reporta.
+ */
+export function effectivePrefix(node) {
+  const m = node?.mask;
+  return (typeof m === "number" && m >= 0 && m <= 32) ? m : DEFAULT_PREFIX;
+}
+
+/** ¿Dos IPs caen en la misma subred con ese prefijo? */
+export function sameSubnet(ipA, ipB, prefix) {
+  if (!isIPv4(ipA) || !isIPv4(ipB)) return false;
+  return networkAddress(ipA, prefix) === networkAddress(ipB, prefix);
+}
+
 // Devuelve el texto de equivalencia para mostrar bajo el input
 export function maskHint(raw) {
   const prefix = parseMask(raw);

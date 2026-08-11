@@ -2,11 +2,10 @@
 
 // ── SVG/PNG diagram export ────────────────────────────────────────────────────
 
-const NODE_COLORS = {
-  router:   "#60a5fa", switch: "#22d3ee", pc:    "#a78bfa",
-  firewall: "#f87171", server: "#34d399", cloud: "#7dd3fc",
-  ap:       "#fbbf24", plc:    "#a78bfa", ur3:   "#38bdf8", agv: "#fb923c",
-};
+import { getTypePaletteFor } from "../render/typePalette.js";
+
+// Los colores por tipo salen de los tokens --type-* del CSS, igual que
+// en el lienzo, para que lo exportado coincida con lo que se ve.
 
 const NODE_SYMBOLS = {
   router:   "▣", switch: "⊞", pc:    "▢",
@@ -35,11 +34,13 @@ export function graphToSvg(graph, { darkMode = true } = {}) {
   const W    = maxX - minX;
   const H    = maxY - minY;
 
-  const bg      = darkMode ? "#0a0b1e" : "#f8f9fc";
-  const textCol = darkMode ? "#e2e8f0" : "#1e293b";
-  const subCol  = darkMode ? "#64748b" : "#94a3b8";
-  const linkCol = darkMode ? "#334155" : "#cbd5e1";
-  const downCol = "#ef4444";
+  // Superficie SEBS: grafito o blanco técnico, según el modo pedido.
+  const NODE_COLORS = getTypePaletteFor(darkMode ? "dark" : "light");
+  const bg      = darkMode ? "#111317" : "#FFFFFF";
+  const textCol = darkMode ? "#FFFFFF" : "#111317";
+  const subCol  = darkMode ? "#8E939B" : "#6B6F76";
+  const linkCol = darkMode ? "#2A2D33" : "#E5E7EB";
+  const downCol = NODE_COLORS.firewall;
 
   // Build node lookup
   const nodeMap = Object.fromEntries(graph.nodes.map(n => [n.id, n]));
@@ -57,7 +58,7 @@ export function graphToSvg(graph, { darkMode = true } = {}) {
   const nodesSvg = graph.nodes.map(n => {
     const cx    = n.x - minX;
     const cy    = n.y - minY;
-    const color = NODE_COLORS[n.type] ?? "#60a5fa";
+    const color = NODE_COLORS[n.type] ?? NODE_COLORS.pc;
     const sym   = NODE_SYMBOLS[n.type] ?? "◻";
     const label = escSvg(n.label ?? "");
     const ip    = n.ip ? escSvg(n.ip) : "";

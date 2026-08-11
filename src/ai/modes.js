@@ -53,7 +53,7 @@ export function normalizeEnfoque(enfoque) {
   return "disenar";
 }
 
-/** Construye el system prompt base para chat (index.html). */
+/** Construye el system prompt base para el modo chat. */
 export function getSystemPrompt(nivel, enfoque) {
   const nivelKey = normalizeNivel(nivel);
   const enfoqueKey = normalizeEnfoque(enfoque);

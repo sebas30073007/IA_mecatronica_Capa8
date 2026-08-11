@@ -1,0 +1,4976 @@
+[
+  {
+    "id": "A01",
+    "rep": 1,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega una PC llamada PC9 con IP 192.168.1.50",
+    "elapsedMs": 1878,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando PC9.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC9\",\"ip\":\"192.168.1.50\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A02",
+    "rep": 1,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega 2 computadoras nuevas al diagrama",
+    "elapsedMs": 3075,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 2,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando 2 computadoras nuevas al diagrama.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC4\",\"ip\":\"192.168.1.13\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC5\",\"ip\":\"192.168.1.14\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A03",
+    "rep": 1,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "conecta PC1 al Switch1",
+    "elapsedMs": 2332,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 1,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"PC1\" y \"Switch1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Enlazando PC1 → Switch1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"PC1\",\"targetLabel\":\"Switch1\",\"latencyMs\":2,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A04",
+    "rep": 1,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un firewall llamado FW1 con IP 192.168.1.2",
+    "elapsedMs": 2297,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando FW1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"firewall\",\"label\":\"FW1\",\"ip\":\"192.168.1.2\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A05",
+    "rep": 1,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "elimina PC2",
+    "elapsedMs": 2090,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "delete_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Eliminando PC2.\n[CAPA8_ACTION]\n{\"action\":\"delete_node\",\"label\":\"PC2\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A06",
+    "rep": 1,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "pon en down el enlace entre Router1 y Switch1",
+    "elapsedMs": 2012,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "set_link_status",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Estableciendo enlace entre Router1 y Switch1 en estado DOWN.\n[CAPA8_ACTION]\n{\"action\":\"set_link_status\",\"sourceLabel\":\"Router1\",\"targetLabel\":\"Switch1\",\"status\":\"down\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A07",
+    "rep": 1,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "diseña una red de oficina con 1 router, 1 switch y 3 PCs",
+    "elapsedMs": 8703,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 9,
+    "nJsonValid": 9,
+    "nSemValid": 8,
+    "nIntercepted": 1,
+    "nNormalized": 4,
+    "nWarnings": 7,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"Router1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"Switch1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"PC1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"PC2\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Router1\" y \"Switch1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Switch1\" y \"PC1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Switch1\" y \"PC2\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo destino no encontrado: \"PC3\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Creando red de oficina.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"router\",\"label\":\"Router1\",\"ip\":\"192.168.1.1\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"switch\",\"label\":\"Switch1\",\"ip\":\"\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC1\",\"ip\":\"192.168.1.10\",\"gateway\":\"192.168.1.1\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"lab"
+  },
+  {
+    "id": "A08",
+    "rep": 1,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un servidor llamado WebServer con IP 192.168.1.30 y conéctalo al Switch1",
+    "elapsedMs": 2744,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"WebServer\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando el servidor WebServer.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"server\",\"label\":\"WebServer\",\"ip\":\"192.168.1.30\"}\n[/CAPA8_ACTION]\nEnlazando WebServer al Switch1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"WebServer\",\"targetLabel\":\"Switch1\",\"latencyMs\":5,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A09",
+    "rep": 1,
+    "category": "accion",
+    "trap": "gateway",
+    "intentType": "query_graph",
+    "msg": "PC1 no tiene gateway configurado, arréglalo",
+    "elapsedMs": 1982,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Configurando gateway para PC1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC1\",\"patch\":{\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A10",
+    "rep": 1,
+    "category": "accion",
+    "trap": "ip-fix",
+    "intentType": "query_graph",
+    "msg": "asigna una IP a PC2",
+    "elapsedMs": 2148,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Asignando IP a PC2.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC2\",\"patch\":{\"ip\":\"192.168.1.11\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A11",
+    "rep": 1,
+    "category": "accion",
+    "trap": "nonexistent",
+    "intentType": "modify_clear",
+    "msg": "conecta PC7 al Router5",
+    "elapsedMs": 2821,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"PC7\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Enlazando PC7 → Router5.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC7\",\"ip\":\"192.168.1.13\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"PC7\",\"targetLabel\":\"Router5\",\"latencyMs\":3,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A12",
+    "rep": 1,
+    "category": "accion",
+    "trap": "nonexistent",
+    "intentType": "modify_clear",
+    "msg": "elimina el nodo Servidor3",
+    "elapsedMs": 1268,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"Servidor3\".",
+        "warnings": [],
+        "actionType": "delete_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Eliminando Servidor3.\n[CAPA8_ACTION]\n{\"action\":\"delete_node\",\"label\":\"Servidor3\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A13",
+    "rep": 1,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un access point llamado AP1 y conéctalo al Router1",
+    "elapsedMs": 2318,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"AP1\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando AP1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"ap\",\"label\":\"AP1\"}\n[/CAPA8_ACTION]\nEnlazando AP1 con Router1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"AP1\",\"targetLabel\":\"Router1\",\"latencyMs\":1,\"bandwidthMbps\":50}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A14",
+    "rep": 1,
+    "category": "accion",
+    "trap": "alias",
+    "intentType": "modify_clear",
+    "msg": "agrega una laptop llamada Laptop1 con IP 192.168.1.40",
+    "elapsedMs": 1707,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando Laptop1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"Laptop1\",\"ip\":\"192.168.1.40\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A15",
+    "rep": 1,
+    "category": "accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "cambia la IP del Router1 a 10.0.0.1",
+    "elapsedMs": 1515,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Asignando IP al Router1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Router1\",\"patch\":{\"ip\":\"10.0.0.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A16",
+    "rep": 1,
+    "category": "accion",
+    "trap": "dup-ip",
+    "intentType": "modify_clear",
+    "msg": "agrega un servidor llamado Backup1 con IP 192.168.1.10",
+    "elapsedMs": 1739,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 1,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "IP \"192.168.1.10\" ya está en uso por \"PC1\". Considera usar otra dirección."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando el servidor Backup1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"server\",\"label\":\"Backup1\",\"ip\":\"192.168.1.10\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "S01",
+    "rep": 1,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "¿por qué no llega el ping de PC1 a PC2?",
+    "elapsedMs": 3703,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 0,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual, veo que PC1 y PC2 están conectados al Switch1.  PC2 no tiene IP asignada. La falta de IP en PC2 impide la comunicación directa con PC1. Además, PC1 carece de una dirección gateway configurada.\n\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"gateway\":"
+  },
+  {
+    "id": "S02",
+    "rep": 1,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "hay un problema en mi red, ¿puedes detectarlo?",
+    "elapsedMs": 3869,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 3,
+    "nJsonValid": 3,
+    "nSemValid": 1,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Detectando problemas en la topología actual...\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.5\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\",\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]\nAnálisis: Se ha asig"
+  },
+  {
+    "id": "S03",
+    "rep": 1,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "analiza la topología y corrige los problemas que encuentres",
+    "elapsedMs": 6141,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 3,
+    "nJsonValid": 3,
+    "nSemValid": 1,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual detecto las siguientes inconsistencias y propongo las correcciones necesarias:\n\n⚠️ Nodo \"Switch1\" no tiene IP asignada.  Asignando IP a Switch1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.50\"}}\n[/CAPA8_ACTION]\n\n⚠️ Nodo \"PC2\" no tiene IP asignada. Asignando IP a PC2.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{"
+  },
+  {
+    "id": "S04",
+    "rep": 1,
+    "category": "solver",
+    "trap": "gateway",
+    "intentType": "solver",
+    "msg": "PC2 no puede salir de su subred, diagnostica la causa y arréglala",
+    "elapsedMs": 2141,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "La PC2 no tiene IP asignada ni gateway configurado.  Esto impide que pueda comunicarse fuera de su subred local.\n\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\",\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "S05",
+    "rep": 1,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "el ping entre PC1 y Server1 falla, ¿qué está mal?",
+    "elapsedMs": 2795,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual, el problema podría estar relacionado con la configuración de red de PC2 o Switch1.  La falta de IP en PC2 y la ausencia de IP en Switch1 podrían afectar la conectividad.\n\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.50\"}}\n[/CAPA8_"
+  },
+  {
+    "id": "S06",
+    "rep": 1,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "revisa si hay IPs duplicadas y arréglalas",
+    "elapsedMs": 3076,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 0,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Revisando topología... Detectada IP duplicada: PC2 (192.168.1.12).\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.13\"}}\n[/CAPA8_ACTION]\nRevisando topología... Detectada IP duplicada: PC1 (192.168.1.10).\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"ip\":\"192.168.1.11\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C01",
+    "rep": 1,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuál es la diferencia entre un router y un switch?",
+    "elapsedMs": 2734,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Un router y un switch son ambos dispositivos de red, pero tienen funciones distintas. Un switch conecta dispositivos dentro de una misma red local (LAN), permitiendo que se comuniquen directamente entre sí. Piensa en él como un director de tráfico dentro de tu casa o oficina.\n\nPor otro lado, un router conecta redes diferentes, como tu red doméstica a Internet.  Además de conectar redes, el router "
+  },
+  {
+    "id": "C02",
+    "rep": 1,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "¿qué es una VLAN y para qué sirve?",
+    "elapsedMs": 1881,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Una VLAN (Red de Área Local Virtual) es una segmentación lógica de una red física en múltiples redes locales separadas.  Permite agrupar dispositivos según criterios específicos, como departamento, función o seguridad. Esto mejora la seguridad al aislar el tráfico entre diferentes grupos de usuarios y reduce la congestión de la red al limitar el tráfico dentro de cada VLAN."
+  },
+  {
+    "id": "C03",
+    "rep": 1,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "explícame cómo funciona el protocolo DHCP",
+    "elapsedMs": 2912,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "El protocolo DHCP (Dynamic Host Configuration Protocol) es un sistema que asigna automáticamente direcciones IP y otra información de configuración de red a los dispositivos en una red IP.  Esto simplifica enormemente la administración de redes, ya que no necesitas configurar manualmente cada dispositivo con una dirección IP única. El servidor DHCP proporciona estas configuraciones, como la direcc"
+  },
+  {
+    "id": "C04",
+    "rep": 1,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿qué significa la máscara de subred 255.255.255.0?",
+    "elapsedMs": 2615,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 1,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "IP \"192.168.1.1\" ya está en uso por \"Router1\"."
+        ],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "La máscara de subred 255.255.255.0 define el tamaño del segmento de red en una dirección IP. En este caso, indica que los primeros tres octetos (los números a la izquierda) pueden variar dentro de un rango específico, mientras que el último octeto identifica de forma única cada dispositivo dentro de ese segmento.  Esto permite conectar múltiples dispositivos en la misma red local.\n[CAPA8_ACTION]\n{"
+  },
+  {
+    "id": "C05",
+    "rep": 1,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuántos nodos hay en mi topología?",
+    "elapsedMs": 805,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Hay 5 nodos en la topología actual."
+  },
+  {
+    "id": "C06",
+    "rep": 1,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿qué IP tiene PC1?",
+    "elapsedMs": 1490,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Consultando la IP de PC1...\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC1\",\"patch\":{\"ip\":\"192.168.1.10\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C07",
+    "rep": 1,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuáles dispositivos están conectados al Switch1?",
+    "elapsedMs": 1345,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Acción desconocida: \"list_connections\". Válidas: add_node, add_link, delete_node, delete_link, set_link_status, apply_graph, update_node.",
+        "warnings": [],
+        "actionType": "list_connections",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Identificando dispositivos conectados a Switch1.\n[CAPA8_ACTION]\n{\"action\":\"list_connections\",\"targetLabel\":\"Switch1\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C08",
+    "rep": 1,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "¿qué es el modelo OSI?",
+    "elapsedMs": 1938,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "El modelo OSI (Open Systems Interconnection) es un marco conceptual que describe las funciones de una red informática. Se divide en siete capas, cada una con responsabilidades específicas para la transmisión de datos. Estas capas son: Física, Enlace de Datos, Red, Transporte, Sesión, Presentación y Aplicación. Cada capa interactúa con las capas adyacentes para permitir la comunicación entre dispos"
+  },
+  {
+    "id": "A01",
+    "rep": 2,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega una PC llamada PC9 con IP 192.168.1.50",
+    "elapsedMs": 1603,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando PC9.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC9\",\"ip\":\"192.168.1.50\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A02",
+    "rep": 2,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega 2 computadoras nuevas al diagrama",
+    "elapsedMs": 2322,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 2,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando 2 computadoras nuevas al diagrama.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC4\",\"ip\":\"192.168.1.13\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC5\",\"ip\":\"192.168.1.14\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A03",
+    "rep": 2,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "conecta PC1 al Switch1",
+    "elapsedMs": 1659,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 1,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"PC1\" y \"Switch1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Enlazando PC1 → Switch1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"PC1\",\"targetLabel\":\"Switch1\",\"latencyMs\":2,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A04",
+    "rep": 2,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un firewall llamado FW1 con IP 192.168.1.2",
+    "elapsedMs": 1563,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando FW1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"firewall\",\"label\":\"FW1\",\"ip\":\"192.168.1.2\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A05",
+    "rep": 2,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "elimina PC2",
+    "elapsedMs": 1237,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "delete_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Eliminando PC2.\n[CAPA8_ACTION]\n{\"action\":\"delete_node\",\"label\":\"PC2\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A06",
+    "rep": 2,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "pon en down el enlace entre Router1 y Switch1",
+    "elapsedMs": 1629,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "set_link_status",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Estableciendo enlace entre Router1 y Switch1 en estado DOWN.\n[CAPA8_ACTION]\n{\"action\":\"set_link_status\",\"sourceLabel\":\"Router1\",\"targetLabel\":\"Switch1\",\"status\":\"down\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A07",
+    "rep": 2,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "diseña una red de oficina con 1 router, 1 switch y 3 PCs",
+    "elapsedMs": 7958,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 9,
+    "nJsonValid": 9,
+    "nSemValid": 8,
+    "nIntercepted": 1,
+    "nNormalized": 4,
+    "nWarnings": 7,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"Router1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"Switch1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"PC1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"PC2\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Router1\" y \"Switch1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Switch1\" y \"PC1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Switch1\" y \"PC2\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo destino no encontrado: \"PC3\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Creando red de oficina.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"router\",\"label\":\"Router1\",\"ip\":\"192.168.1.1\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"switch\",\"label\":\"Switch1\",\"ip\":\"\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC1\",\"ip\":\"192.168.1.10\",\"gateway\":\"192.168.1.1\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"lab"
+  },
+  {
+    "id": "A08",
+    "rep": 2,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un servidor llamado WebServer con IP 192.168.1.30 y conéctalo al Switch1",
+    "elapsedMs": 2424,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"WebServer\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando el servidor WebServer.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"server\",\"label\":\"WebServer\",\"ip\":\"192.168.1.30\"}\n[/CAPA8_ACTION]\nEnlazando WebServer al Switch1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"WebServer\",\"targetLabel\":\"Switch1\",\"latencyMs\":5,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A09",
+    "rep": 2,
+    "category": "accion",
+    "trap": "gateway",
+    "intentType": "query_graph",
+    "msg": "PC1 no tiene gateway configurado, arréglalo",
+    "elapsedMs": 1490,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Configurando gateway de PC1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC1\",\"patch\":{\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A10",
+    "rep": 2,
+    "category": "accion",
+    "trap": "ip-fix",
+    "intentType": "query_graph",
+    "msg": "asigna una IP a PC2",
+    "elapsedMs": 1492,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Asignando IP a PC2.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC2\",\"patch\":{\"ip\":\"192.168.1.11\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A11",
+    "rep": 2,
+    "category": "accion",
+    "trap": "nonexistent",
+    "intentType": "modify_clear",
+    "msg": "conecta PC7 al Router5",
+    "elapsedMs": 2482,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"PC7\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Enlazando PC7 → Router5.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC7\",\"ip\":\"192.168.1.13\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"PC7\",\"targetLabel\":\"Router5\",\"latencyMs\":3,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A12",
+    "rep": 2,
+    "category": "accion",
+    "trap": "nonexistent",
+    "intentType": "modify_clear",
+    "msg": "elimina el nodo Servidor3",
+    "elapsedMs": 1263,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"Servidor3\".",
+        "warnings": [],
+        "actionType": "delete_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Eliminando Servidor3.\n[CAPA8_ACTION]\n{\"action\":\"delete_node\",\"label\":\"Servidor3\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A13",
+    "rep": 2,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un access point llamado AP1 y conéctalo al Router1",
+    "elapsedMs": 2251,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"AP1\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando AP1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"ap\",\"label\":\"AP1\"}\n[/CAPA8_ACTION]\nEnlazando AP1 con Router1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"AP1\",\"targetLabel\":\"Router1\",\"latencyMs\":1,\"bandwidthMbps\":50}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A14",
+    "rep": 2,
+    "category": "accion",
+    "trap": "alias",
+    "intentType": "modify_clear",
+    "msg": "agrega una laptop llamada Laptop1 con IP 192.168.1.40",
+    "elapsedMs": 1712,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando Laptop1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"Laptop1\",\"ip\":\"192.168.1.40\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A15",
+    "rep": 2,
+    "category": "accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "cambia la IP del Router1 a 10.0.0.1",
+    "elapsedMs": 1519,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Asignando IP al Router1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Router1\",\"patch\":{\"ip\":\"10.0.0.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A16",
+    "rep": 2,
+    "category": "accion",
+    "trap": "dup-ip",
+    "intentType": "modify_clear",
+    "msg": "agrega un servidor llamado Backup1 con IP 192.168.1.10",
+    "elapsedMs": 1685,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 1,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "IP \"192.168.1.10\" ya está en uso por \"PC1\". Considera usar otra dirección."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando el servidor Backup1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"server\",\"label\":\"Backup1\",\"ip\":\"192.168.1.10\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "S01",
+    "rep": 2,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "¿por qué no llega el ping de PC1 a PC2?",
+    "elapsedMs": 3249,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 0,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual, veo que PC1 y PC2 están conectados al Switch1.  PC2 no tiene IP asignada.  La falta de IP en PC2 impide la comunicación directa con PC1. Además, PC1 carece de una dirección gateway configurada.\n\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"gateway\""
+  },
+  {
+    "id": "S02",
+    "rep": 2,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "hay un problema en mi red, ¿puedes detectarlo?",
+    "elapsedMs": 3566,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 3,
+    "nJsonValid": 3,
+    "nSemValid": 1,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Detectando problemas en la topología actual...\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.5\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\",\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]\nAnálisis: Se ha asig"
+  },
+  {
+    "id": "S03",
+    "rep": 2,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "analiza la topología y corrige los problemas que encuentres",
+    "elapsedMs": 6170,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 3,
+    "nJsonValid": 3,
+    "nSemValid": 1,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual detecto las siguientes inconsistencias y propongo las correcciones necesarias:\n\n⚠️ Nodo \"Switch1\" no tiene IP asignada.  Asignando IP a Switch1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.50\"}}\n[/CAPA8_ACTION]\n\n⚠️ Nodo \"PC2\" no tiene IP asignada. Asignando IP a PC2.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{"
+  },
+  {
+    "id": "S04",
+    "rep": 2,
+    "category": "solver",
+    "trap": "gateway",
+    "intentType": "solver",
+    "msg": "PC2 no puede salir de su subred, diagnostica la causa y arréglala",
+    "elapsedMs": 1516,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Configurando gateway en PC2.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "S05",
+    "rep": 2,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "el ping entre PC1 y Server1 falla, ¿qué está mal?",
+    "elapsedMs": 2762,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual, el problema podría estar relacionado con la configuración de red de PC2 o Switch1.  La falta de IP en PC2 y la ausencia de IP en Switch1 podrían afectar la conectividad.\n\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.50\"}}\n[/CAPA8_"
+  },
+  {
+    "id": "S06",
+    "rep": 2,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "revisa si hay IPs duplicadas y arréglalas",
+    "elapsedMs": 2957,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 0,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Revisando topología... Detectada IP duplicada: PC2 (192.168.1.12).\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.13\"}}\n[/CAPA8_ACTION]\nRevisando topología... Detectada IP duplicada: PC1 (192.168.1.10).\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"ip\":\"192.168.1.11\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C01",
+    "rep": 2,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuál es la diferencia entre un router y un switch?",
+    "elapsedMs": 2645,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Un router y un switch son ambos dispositivos de red, pero tienen funciones distintas. Un switch conecta dispositivos dentro de una misma red local (LAN), permitiendo que se comuniquen directamente entre sí.  Piensa en él como un director de tráfico dentro de tu casa o oficina.\n\nPor otro lado, un router conecta redes diferentes, como tu red doméstica a Internet.  Además de conectar dispositivos, el"
+  },
+  {
+    "id": "C02",
+    "rep": 2,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "¿qué es una VLAN y para qué sirve?",
+    "elapsedMs": 2095,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Una VLAN (Red de Área Local Virtual) es una segmentación lógica de una red física en múltiples redes lógicas.  Permite agrupar dispositivos según su función o departamento, mejorando la seguridad, el rendimiento y la administración de la red.  En esencia, crea \"redes\" virtuales dentro de tu infraestructura física, lo que te permite aplicar políticas de seguridad específicas a cada VLAN sin necesid"
+  },
+  {
+    "id": "C03",
+    "rep": 2,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "explícame cómo funciona el protocolo DHCP",
+    "elapsedMs": 2281,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "El protocolo DHCP (Dynamic Host Configuration Protocol) es un sistema que asigna automáticamente direcciones IP y otra información de configuración de red a los dispositivos en una red TCP/IP.  Esto simplifica enormemente la administración de redes, ya que no necesitas configurar manualmente cada dispositivo con una dirección IP única. El servidor DHCP proporciona estas configuraciones, y los clie"
+  },
+  {
+    "id": "C04",
+    "rep": 2,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿qué significa la máscara de subred 255.255.255.0?",
+    "elapsedMs": 2682,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 1,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "IP \"192.168.1.1\" ya está en uso por \"Router1\"."
+        ],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "La máscara de subred 255.255.255.0 define el tamaño del segmento de red en tu red IP.  En este caso, indica que los primeros tres octetos (los números a la izquierda) pueden variar dentro de un rango específico, mientras que el último octeto identifica de forma única cada dispositivo dentro de ese segmento.  Esto permite conectar muchos dispositivos en una misma subred.\n[CAPA8_ACTION]\n{\"action\":\"u"
+  },
+  {
+    "id": "C05",
+    "rep": 2,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuántos nodos hay en mi topología?",
+    "elapsedMs": 819,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Hay 5 nodos en la topología actual."
+  },
+  {
+    "id": "C06",
+    "rep": 2,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿qué IP tiene PC1?",
+    "elapsedMs": 1572,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Consultando la IP de PC1...\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC1\",\"patch\":{\"ip\":\"192.168.1.10\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C07",
+    "rep": 2,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuáles dispositivos están conectados al Switch1?",
+    "elapsedMs": 1315,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Acción desconocida: \"list_connections\". Válidas: add_node, add_link, delete_node, delete_link, set_link_status, apply_graph, update_node.",
+        "warnings": [],
+        "actionType": "list_connections",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Identificando dispositivos conectados a Switch1.\n[CAPA8_ACTION]\n{\"action\":\"list_connections\",\"targetLabel\":\"Switch1\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C08",
+    "rep": 2,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "¿qué es el modelo OSI?",
+    "elapsedMs": 1964,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "El modelo OSI (Open Systems Interconnection) es un marco conceptual que describe las funciones de una red de comunicaciones en siete capas.  Cada capa tiene una función específica y trabaja con la capa superior, pero no interactúa directamente con la capa inferior. Este modelo ayuda a entender cómo funcionan las redes y facilita el desarrollo y mantenimiento de los protocolos de comunicación."
+  },
+  {
+    "id": "A01",
+    "rep": 3,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega una PC llamada PC9 con IP 192.168.1.50",
+    "elapsedMs": 1593,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando PC9.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC9\",\"ip\":\"192.168.1.50\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A02",
+    "rep": 3,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega 2 computadoras nuevas al diagrama",
+    "elapsedMs": 2322,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 2,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando 2 computadoras nuevas al diagrama.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC4\",\"ip\":\"192.168.1.13\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC5\",\"ip\":\"192.168.1.14\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A03",
+    "rep": 3,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "conecta PC1 al Switch1",
+    "elapsedMs": 1550,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 1,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"PC1\" y \"Switch1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Enlazando PC1 → Switch1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"PC1\",\"targetLabel\":\"Switch1\",\"latencyMs\":2,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A04",
+    "rep": 3,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un firewall llamado FW1 con IP 192.168.1.2",
+    "elapsedMs": 1477,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando FW1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"firewall\",\"label\":\"FW1\",\"ip\":\"192.168.1.2\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A05",
+    "rep": 3,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "elimina PC2",
+    "elapsedMs": 1148,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "delete_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Eliminando PC2.\n[CAPA8_ACTION]\n{\"action\":\"delete_node\",\"label\":\"PC2\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A06",
+    "rep": 3,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "pon en down el enlace entre Router1 y Switch1",
+    "elapsedMs": 1494,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "set_link_status",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Estableciendo enlace entre Router1 y Switch1 en estado DOWN.\n[CAPA8_ACTION]\n{\"action\":\"set_link_status\",\"sourceLabel\":\"Router1\",\"targetLabel\":\"Switch1\",\"status\":\"down\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A07",
+    "rep": 3,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "diseña una red de oficina con 1 router, 1 switch y 3 PCs",
+    "elapsedMs": 8074,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 9,
+    "nJsonValid": 9,
+    "nSemValid": 8,
+    "nIntercepted": 1,
+    "nNormalized": 4,
+    "nWarnings": 7,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"Router1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"Switch1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"PC1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"PC2\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Router1\" y \"Switch1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Switch1\" y \"PC1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Switch1\" y \"PC2\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo destino no encontrado: \"PC3\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Creando red de oficina.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"router\",\"label\":\"Router1\",\"ip\":\"192.168.1.1\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"switch\",\"label\":\"Switch1\",\"ip\":\"\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC1\",\"ip\":\"192.168.1.10\",\"gateway\":\"192.168.1.1\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"lab"
+  },
+  {
+    "id": "A08",
+    "rep": 3,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un servidor llamado WebServer con IP 192.168.1.30 y conéctalo al Switch1",
+    "elapsedMs": 2430,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"WebServer\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando el servidor WebServer.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"server\",\"label\":\"WebServer\",\"ip\":\"192.168.1.30\"}\n[/CAPA8_ACTION]\nEnlazando WebServer al Switch1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"WebServer\",\"targetLabel\":\"Switch1\",\"latencyMs\":5,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A09",
+    "rep": 3,
+    "category": "accion",
+    "trap": "gateway",
+    "intentType": "query_graph",
+    "msg": "PC1 no tiene gateway configurado, arréglalo",
+    "elapsedMs": 1601,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Configurando gateway de PC1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC1\",\"patch\":{\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A10",
+    "rep": 3,
+    "category": "accion",
+    "trap": "ip-fix",
+    "intentType": "query_graph",
+    "msg": "asigna una IP a PC2",
+    "elapsedMs": 1586,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Asignando IP a PC2.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC2\",\"patch\":{\"ip\":\"192.168.1.11\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A11",
+    "rep": 3,
+    "category": "accion",
+    "trap": "nonexistent",
+    "intentType": "modify_clear",
+    "msg": "conecta PC7 al Router5",
+    "elapsedMs": 2462,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"PC7\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Enlazando PC7 → Router5.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC7\",\"ip\":\"192.168.1.13\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"PC7\",\"targetLabel\":\"Router5\",\"latencyMs\":3,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A12",
+    "rep": 3,
+    "category": "accion",
+    "trap": "nonexistent",
+    "intentType": "modify_clear",
+    "msg": "elimina el nodo Servidor3",
+    "elapsedMs": 1300,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"Servidor3\".",
+        "warnings": [],
+        "actionType": "delete_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Eliminando Servidor3.\n[CAPA8_ACTION]\n{\"action\":\"delete_node\",\"label\":\"Servidor3\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A13",
+    "rep": 3,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un access point llamado AP1 y conéctalo al Router1",
+    "elapsedMs": 2118,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"AP1\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando AP1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"ap\",\"label\":\"AP1\"}\n[/CAPA8_ACTION]\nEnlazando AP1 con Router1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"AP1\",\"targetLabel\":\"Router1\",\"latencyMs\":1,\"bandwidthMbps\":50}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A14",
+    "rep": 3,
+    "category": "accion",
+    "trap": "alias",
+    "intentType": "modify_clear",
+    "msg": "agrega una laptop llamada Laptop1 con IP 192.168.1.40",
+    "elapsedMs": 1467,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando Laptop1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"Laptop1\",\"ip\":\"192.168.1.40\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A15",
+    "rep": 3,
+    "category": "accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "cambia la IP del Router1 a 10.0.0.1",
+    "elapsedMs": 1528,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Asignando IP al Router1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Router1\",\"patch\":{\"ip\":\"10.0.0.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A16",
+    "rep": 3,
+    "category": "accion",
+    "trap": "dup-ip",
+    "intentType": "modify_clear",
+    "msg": "agrega un servidor llamado Backup1 con IP 192.168.1.10",
+    "elapsedMs": 1608,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 1,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "IP \"192.168.1.10\" ya está en uso por \"PC1\". Considera usar otra dirección."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando el servidor Backup1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"server\",\"label\":\"Backup1\",\"ip\":\"192.168.1.10\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "S01",
+    "rep": 3,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "¿por qué no llega el ping de PC1 a PC2?",
+    "elapsedMs": 3174,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 0,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual, veo que PC1 y PC2 están conectados al Switch1.  PC2 no tiene IP asignada. La falta de IP en PC2 impide la comunicación directa con PC1. Además, PC1 carece de una dirección gateway configurada.\n\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"gateway\":"
+  },
+  {
+    "id": "S02",
+    "rep": 3,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "hay un problema en mi red, ¿puedes detectarlo?",
+    "elapsedMs": 3475,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 3,
+    "nJsonValid": 3,
+    "nSemValid": 1,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Detectando problemas en la topología actual...\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.5\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\",\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]\nAnálisis: Se ha asig"
+  },
+  {
+    "id": "S03",
+    "rep": 3,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "analiza la topología y corrige los problemas que encuentres",
+    "elapsedMs": 6352,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 3,
+    "nJsonValid": 3,
+    "nSemValid": 2,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual detecto las siguientes inconsistencias y propongo las correcciones necesarias:\n\n⚠️ Nodo \"Switch1\" no tiene IP asignada.  Asignando IP a Switch1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.3\"}}\n[/CAPA8_ACTION]\n\n⚠️ Nodo \"PC2\" no tiene IP asignada. Asignando IP a PC2.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC2\",\"patch\":{\"i"
+  },
+  {
+    "id": "S04",
+    "rep": 3,
+    "category": "solver",
+    "trap": "gateway",
+    "intentType": "solver",
+    "msg": "PC2 no puede salir de su subred, diagnostica la causa y arréglala",
+    "elapsedMs": 1897,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Configurando gateway en PC2.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "S05",
+    "rep": 3,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "el ping entre PC1 y Server1 falla, ¿qué está mal?",
+    "elapsedMs": 3539,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual, el problema podría estar relacionado con la configuración de red de PC2 o Switch1.  La falta de IP en PC2 y la ausencia de IP en Switch1 podrían afectar la conectividad.\n\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.50\"}}\n[/CAPA8_"
+  },
+  {
+    "id": "S06",
+    "rep": 3,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "revisa si hay IPs duplicadas y arréglalas",
+    "elapsedMs": 3038,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 0,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Revisando topología... Detectada IP duplicada: PC2 (192.168.1.12).\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.13\"}}\n[/CAPA8_ACTION]\nRevisando topología... Detectada IP duplicada: PC1 (192.168.1.10).\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"ip\":\"192.168.1.11\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C01",
+    "rep": 3,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuál es la diferencia entre un router y un switch?",
+    "elapsedMs": 2651,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Un router y un switch son ambos dispositivos de red, pero tienen funciones distintas. Un switch conecta dispositivos dentro de una misma red local (LAN), permitiendo que se comuniquen directamente entre sí.  Piensa en él como un director de tráfico dentro de tu casa o oficina.\n\nPor otro lado, un router conecta redes diferentes, como tu red doméstica a Internet.  Además de conectar, el router dirig"
+  },
+  {
+    "id": "C02",
+    "rep": 3,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "¿qué es una VLAN y para qué sirve?",
+    "elapsedMs": 1882,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Una VLAN (Red de Área Local Virtual) es una segmentación lógica de una red física.  Permite agrupar dispositivos en redes más pequeñas, mejorando la seguridad y el rendimiento.  En esencia, crea redes virtuales dentro de tu infraestructura existente, permitiendo que los administradores controlen el tráfico entre ellas independientemente de la ubicación física de los dispositivos."
+  },
+  {
+    "id": "C03",
+    "rep": 3,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "explícame cómo funciona el protocolo DHCP",
+    "elapsedMs": 3861,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "El protocolo DHCP (Dynamic Host Configuration Protocol) es un sistema que asigna automáticamente direcciones IP y otra información de configuración de red a los dispositivos en una red TCP/IP.  Esto simplifica enormemente la administración de redes, ya que no necesitas configurar manualmente cada dispositivo con una dirección IP única.  Un servidor DHCP actúa como un \"administrador\" de direcciones"
+  },
+  {
+    "id": "C04",
+    "rep": 3,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿qué significa la máscara de subred 255.255.255.0?",
+    "elapsedMs": 2191,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "La máscara de subred 255.255.255.0 define el tamaño del segmento de red en tu red IP.  En este caso, indica que los primeros tres octetos (los números a la izquierda) pueden tener cualquier valor dentro del rango permitido para tu red, mientras que el último octeto debe ser 0 para identificar dispositivos dentro de esa subred específica.  Esto permite que tengas 254 direcciones IP disponibles para"
+  },
+  {
+    "id": "C05",
+    "rep": 3,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuántos nodos hay en mi topología?",
+    "elapsedMs": 802,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Hay 5 nodos en la topología actual."
+  },
+  {
+    "id": "C06",
+    "rep": 3,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿qué IP tiene PC1?",
+    "elapsedMs": 1451,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Consultando la IP de PC1...\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC1\",\"patch\":{\"ip\":\"192.168.1.10\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C07",
+    "rep": 3,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuáles dispositivos están conectados al Switch1?",
+    "elapsedMs": 1260,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Acción desconocida: \"list_connections\". Válidas: add_node, add_link, delete_node, delete_link, set_link_status, apply_graph, update_node.",
+        "warnings": [],
+        "actionType": "list_connections",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Identificando dispositivos conectados a Switch1.\n[CAPA8_ACTION]\n{\"action\":\"list_connections\",\"targetLabel\":\"Switch1\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C08",
+    "rep": 3,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "¿qué es el modelo OSI?",
+    "elapsedMs": 2051,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "El modelo OSI (Open Systems Interconnection) es un marco conceptual que describe cómo se deben organizar y conectar los sistemas de comunicación en una red. Se divide en siete capas, cada una con funciones específicas para la transmisión de datos.  Estas capas son: Física, Enlace de Datos, Red, Transporte, Sesión, Presentación y Aplicación.  Es importante para entender cómo funcionan las redes y d"
+  },
+  {
+    "id": "A01",
+    "rep": 4,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega una PC llamada PC9 con IP 192.168.1.50",
+    "elapsedMs": 1601,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando PC9.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC9\",\"ip\":\"192.168.1.50\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A02",
+    "rep": 4,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega 2 computadoras nuevas al diagrama",
+    "elapsedMs": 2363,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 2,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando 2 computadoras nuevas al diagrama.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC4\",\"ip\":\"192.168.1.13\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC5\",\"ip\":\"192.168.1.14\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A03",
+    "rep": 4,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "conecta PC1 al Switch1",
+    "elapsedMs": 1650,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 1,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"PC1\" y \"Switch1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Enlazando PC1 → Switch1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"PC1\",\"targetLabel\":\"Switch1\",\"latencyMs\":2,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A04",
+    "rep": 4,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un firewall llamado FW1 con IP 192.168.1.2",
+    "elapsedMs": 1520,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando FW1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"firewall\",\"label\":\"FW1\",\"ip\":\"192.168.1.2\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A05",
+    "rep": 4,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "elimina PC2",
+    "elapsedMs": 1173,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "delete_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Eliminando PC2.\n[CAPA8_ACTION]\n{\"action\":\"delete_node\",\"label\":\"PC2\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A06",
+    "rep": 4,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "pon en down el enlace entre Router1 y Switch1",
+    "elapsedMs": 1479,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "set_link_status",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Estableciendo enlace entre Router1 y Switch1 en estado DOWN.\n[CAPA8_ACTION]\n{\"action\":\"set_link_status\",\"sourceLabel\":\"Router1\",\"targetLabel\":\"Switch1\",\"status\":\"down\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A07",
+    "rep": 4,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "diseña una red de oficina con 1 router, 1 switch y 3 PCs",
+    "elapsedMs": 7664,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 9,
+    "nJsonValid": 9,
+    "nSemValid": 8,
+    "nIntercepted": 1,
+    "nNormalized": 4,
+    "nWarnings": 7,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"Router1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"Switch1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"PC1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"PC2\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Router1\" y \"Switch1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Switch1\" y \"PC1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Switch1\" y \"PC2\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo destino no encontrado: \"PC3\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Creando red de oficina.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"router\",\"label\":\"Router1\",\"ip\":\"192.168.1.1\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"switch\",\"label\":\"Switch1\",\"ip\":\"\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC1\",\"ip\":\"192.168.1.10\",\"gateway\":\"192.168.1.1\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"lab"
+  },
+  {
+    "id": "A08",
+    "rep": 4,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un servidor llamado WebServer con IP 192.168.1.30 y conéctalo al Switch1",
+    "elapsedMs": 2360,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"WebServer\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando el servidor WebServer.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"server\",\"label\":\"WebServer\",\"ip\":\"192.168.1.30\"}\n[/CAPA8_ACTION]\nEnlazando WebServer al Switch1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"WebServer\",\"targetLabel\":\"Switch1\",\"latencyMs\":5,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A09",
+    "rep": 4,
+    "category": "accion",
+    "trap": "gateway",
+    "intentType": "query_graph",
+    "msg": "PC1 no tiene gateway configurado, arréglalo",
+    "elapsedMs": 1474,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Configurando gateway de PC1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC1\",\"patch\":{\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A10",
+    "rep": 4,
+    "category": "accion",
+    "trap": "ip-fix",
+    "intentType": "query_graph",
+    "msg": "asigna una IP a PC2",
+    "elapsedMs": 1431,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Asignando IP a PC2.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC2\",\"patch\":{\"ip\":\"192.168.1.11\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A11",
+    "rep": 4,
+    "category": "accion",
+    "trap": "nonexistent",
+    "intentType": "modify_clear",
+    "msg": "conecta PC7 al Router5",
+    "elapsedMs": 2320,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"PC7\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Enlazando PC7 → Router5.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC7\",\"ip\":\"192.168.1.13\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"PC7\",\"targetLabel\":\"Router5\",\"latencyMs\":3,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A12",
+    "rep": 4,
+    "category": "accion",
+    "trap": "nonexistent",
+    "intentType": "modify_clear",
+    "msg": "elimina el nodo Servidor3",
+    "elapsedMs": 1573,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"Servidor3\".",
+        "warnings": [],
+        "actionType": "delete_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Eliminando Servidor3.\n[CAPA8_ACTION]\n{\"action\":\"delete_node\",\"label\":\"Servidor3\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A13",
+    "rep": 4,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un access point llamado AP1 y conéctalo al Router1",
+    "elapsedMs": 2089,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"AP1\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando AP1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"ap\",\"label\":\"AP1\"}\n[/CAPA8_ACTION]\nEnlazando AP1 con Router1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"AP1\",\"targetLabel\":\"Router1\",\"latencyMs\":1,\"bandwidthMbps\":50}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A14",
+    "rep": 4,
+    "category": "accion",
+    "trap": "alias",
+    "intentType": "modify_clear",
+    "msg": "agrega una laptop llamada Laptop1 con IP 192.168.1.40",
+    "elapsedMs": 1443,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando Laptop1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"Laptop1\",\"ip\":\"192.168.1.40\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A15",
+    "rep": 4,
+    "category": "accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "cambia la IP del Router1 a 10.0.0.1",
+    "elapsedMs": 1432,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Asignando IP al Router1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Router1\",\"patch\":{\"ip\":\"10.0.0.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A16",
+    "rep": 4,
+    "category": "accion",
+    "trap": "dup-ip",
+    "intentType": "modify_clear",
+    "msg": "agrega un servidor llamado Backup1 con IP 192.168.1.10",
+    "elapsedMs": 1617,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 1,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "IP \"192.168.1.10\" ya está en uso por \"PC1\". Considera usar otra dirección."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando el servidor Backup1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"server\",\"label\":\"Backup1\",\"ip\":\"192.168.1.10\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "S01",
+    "rep": 4,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "¿por qué no llega el ping de PC1 a PC2?",
+    "elapsedMs": 3066,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 0,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual, veo que PC1 y PC2 están conectados al Switch1.  PC2 no tiene IP asignada. La falta de IP en PC2 impide la comunicación directa con PC1. Además, PC1 carece de una dirección gateway configurada.\n\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"gateway\":"
+  },
+  {
+    "id": "S02",
+    "rep": 4,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "hay un problema en mi red, ¿puedes detectarlo?",
+    "elapsedMs": 4407,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 3,
+    "nJsonValid": 3,
+    "nSemValid": 1,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Detectando problemas en la red...\n\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.3\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\",\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]\nProblema detectado: Switch1 no t"
+  },
+  {
+    "id": "S03",
+    "rep": 4,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "analiza la topología y corrige los problemas que encuentres",
+    "elapsedMs": 5714,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 3,
+    "nJsonValid": 3,
+    "nSemValid": 2,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual detecto las siguientes inconsistencias y propongo las correcciones necesarias:\n\n⚠️ Nodo \"Switch1\" no tiene IP asignada.  Asignando IP a Switch1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.50\"}}\n[/CAPA8_ACTION]\n\n⚠️ Nodo \"PC2\" no tiene IP asignada. Asignando IP a PC2.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC2\",\"patch\":{\""
+  },
+  {
+    "id": "S04",
+    "rep": 4,
+    "category": "solver",
+    "trap": "gateway",
+    "intentType": "solver",
+    "msg": "PC2 no puede salir de su subred, diagnostica la causa y arréglala",
+    "elapsedMs": 1405,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Configurando gateway para PC2.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "S05",
+    "rep": 4,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "el ping entre PC1 y Server1 falla, ¿qué está mal?",
+    "elapsedMs": 2751,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual, el problema podría estar relacionado con la configuración de red de PC2 o Switch1.  La falta de IP en PC2 y la ausencia de IP en Switch1 podrían afectar la conectividad.\n\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.50\"}}\n[/CAPA8_"
+  },
+  {
+    "id": "S06",
+    "rep": 4,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "revisa si hay IPs duplicadas y arréglalas",
+    "elapsedMs": 2825,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 0,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Revisando topología... Detectada IP duplicada: PC2 (192.168.1.12).\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.13\"}}\n[/CAPA8_ACTION]\nRevisando topología... Detectada IP duplicada: PC1 (192.168.1.10).\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"ip\":\"192.168.1.11\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C01",
+    "rep": 4,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuál es la diferencia entre un router y un switch?",
+    "elapsedMs": 2706,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Un router y un switch son ambos dispositivos de red, pero tienen funciones distintas. Un switch conecta dispositivos dentro de una misma red local (LAN), permitiendo que se comuniquen directamente entre sí.  Piensa en él como un director de tráfico dentro de tu casa o oficina.\n\nPor otro lado, un router conecta redes diferentes, como tu red doméstica a Internet.  Además de conectar redes, el router"
+  },
+  {
+    "id": "C02",
+    "rep": 4,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "¿qué es una VLAN y para qué sirve?",
+    "elapsedMs": 1749,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Una VLAN (Red de Área Local Virtual) es una segmentación lógica de una red física.  Permite agrupar dispositivos en redes más pequeñas, mejorando la seguridad y el rendimiento.  En esencia, crea \"redes dentro de una red\", permitiendo aplicar políticas de red específicas a cada grupo sin necesidad de cambiar la infraestructura física."
+  },
+  {
+    "id": "C03",
+    "rep": 4,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "explícame cómo funciona el protocolo DHCP",
+    "elapsedMs": 2412,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "El protocolo DHCP (Dynamic Host Configuration Protocol) es un sistema que asigna automáticamente direcciones IP y otra información de configuración de red a los dispositivos en una red IP.  Esto simplifica enormemente la administración de redes, ya que no necesitas configurar manualmente cada dispositivo con una dirección IP única. El servidor DHCP proporciona estas configuraciones, y los clientes"
+  },
+  {
+    "id": "C04",
+    "rep": 4,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿qué significa la máscara de subred 255.255.255.0?",
+    "elapsedMs": 2815,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 1,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "IP \"192.168.1.1\" ya está en uso por \"Router1\"."
+        ],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "La máscara de subred 255.255.255.0 define el tamaño del segmento de red en tu red IP.  En este caso, indica que los primeros tres octetos (los números a la izquierda) pueden tener cualquier valor dentro de un rango específico, mientras que el último octeto debe ser igual para todos los dispositivos en esa subred. Esto permite identificar de forma única cada dispositivo dentro de esa parte de la re"
+  },
+  {
+    "id": "C05",
+    "rep": 4,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuántos nodos hay en mi topología?",
+    "elapsedMs": 800,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Hay 5 nodos en la topología actual."
+  },
+  {
+    "id": "C06",
+    "rep": 4,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿qué IP tiene PC1?",
+    "elapsedMs": 1389,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Consultando la IP de PC1...\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC1\",\"patch\":{\"ip\":\"192.168.1.10\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C07",
+    "rep": 4,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuáles dispositivos están conectados al Switch1?",
+    "elapsedMs": 1211,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Acción desconocida: \"list_connections\". Válidas: add_node, add_link, delete_node, delete_link, set_link_status, apply_graph, update_node.",
+        "warnings": [],
+        "actionType": "list_connections",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Identificando dispositivos conectados a Switch1.\n[CAPA8_ACTION]\n{\"action\":\"list_connections\",\"targetLabel\":\"Switch1\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C08",
+    "rep": 4,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "¿qué es el modelo OSI?",
+    "elapsedMs": 1712,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "El modelo OSI (Open Systems Interconnection) es un marco conceptual que describe cómo se deben comunicar las aplicaciones a través de una red. Se divide en siete capas, cada una con funciones específicas para facilitar la transmisión de datos.  Es una herramienta fundamental para entender y solucionar problemas de redes."
+  },
+  {
+    "id": "A01",
+    "rep": 5,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega una PC llamada PC9 con IP 192.168.1.50",
+    "elapsedMs": 1661,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando PC9.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC9\",\"ip\":\"192.168.1.50\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A02",
+    "rep": 5,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega 2 computadoras nuevas al diagrama",
+    "elapsedMs": 2449,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 2,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando 2 computadoras nuevas al diagrama.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC4\",\"ip\":\"192.168.1.13\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC5\",\"ip\":\"192.168.1.14\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A03",
+    "rep": 5,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "conecta PC1 al Switch1",
+    "elapsedMs": 1524,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 1,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"PC1\" y \"Switch1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Enlazando PC1 → Switch1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"PC1\",\"targetLabel\":\"Switch1\",\"latencyMs\":2,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A04",
+    "rep": 5,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un firewall llamado FW1 con IP 192.168.1.2",
+    "elapsedMs": 1543,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando FW1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"firewall\",\"label\":\"FW1\",\"ip\":\"192.168.1.2\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A05",
+    "rep": 5,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "elimina PC2",
+    "elapsedMs": 1112,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "delete_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Eliminando PC2.\n[CAPA8_ACTION]\n{\"action\":\"delete_node\",\"label\":\"PC2\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A06",
+    "rep": 5,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "pon en down el enlace entre Router1 y Switch1",
+    "elapsedMs": 1450,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "set_link_status",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Estableciendo enlace entre Router1 y Switch1 en estado DOWN.\n[CAPA8_ACTION]\n{\"action\":\"set_link_status\",\"sourceLabel\":\"Router1\",\"targetLabel\":\"Switch1\",\"status\":\"down\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A07",
+    "rep": 5,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "diseña una red de oficina con 1 router, 1 switch y 3 PCs",
+    "elapsedMs": 7615,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 9,
+    "nJsonValid": 9,
+    "nSemValid": 8,
+    "nIntercepted": 1,
+    "nNormalized": 4,
+    "nWarnings": 7,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"Router1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"Switch1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"PC1\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Nodo \"PC2\" ya existe — convertido automáticamente a update_node."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": "update_node"
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Router1\" y \"Switch1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Switch1\" y \"PC1\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "Ya existe un enlace entre \"Switch1\" y \"PC2\"."
+        ],
+        "actionType": "add_link",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo destino no encontrado: \"PC3\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Creando red de oficina.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"router\",\"label\":\"Router1\",\"ip\":\"192.168.1.1\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"switch\",\"label\":\"Switch1\",\"ip\":\"\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC1\",\"ip\":\"192.168.1.10\",\"gateway\":\"192.168.1.1\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"lab"
+  },
+  {
+    "id": "A08",
+    "rep": 5,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un servidor llamado WebServer con IP 192.168.1.30 y conéctalo al Switch1",
+    "elapsedMs": 2355,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"WebServer\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando el servidor WebServer.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"server\",\"label\":\"WebServer\",\"ip\":\"192.168.1.30\"}\n[/CAPA8_ACTION]\nEnlazando WebServer al Switch1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"WebServer\",\"targetLabel\":\"Switch1\",\"latencyMs\":5,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A09",
+    "rep": 5,
+    "category": "accion",
+    "trap": "gateway",
+    "intentType": "query_graph",
+    "msg": "PC1 no tiene gateway configurado, arréglalo",
+    "elapsedMs": 1531,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Configurando gateway para PC1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC1\",\"patch\":{\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A10",
+    "rep": 5,
+    "category": "accion",
+    "trap": "ip-fix",
+    "intentType": "query_graph",
+    "msg": "asigna una IP a PC2",
+    "elapsedMs": 1511,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Asignando IP a PC2.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC2\",\"patch\":{\"ip\":\"192.168.1.11\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A11",
+    "rep": 5,
+    "category": "accion",
+    "trap": "nonexistent",
+    "intentType": "modify_clear",
+    "msg": "conecta PC7 al Router5",
+    "elapsedMs": 2279,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"PC7\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Enlazando PC7 → Router5.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"PC7\",\"ip\":\"192.168.1.13\"}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"PC7\",\"targetLabel\":\"Router5\",\"latencyMs\":3,\"bandwidthMbps\":100}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A12",
+    "rep": 5,
+    "category": "accion",
+    "trap": "nonexistent",
+    "intentType": "modify_clear",
+    "msg": "elimina el nodo Servidor3",
+    "elapsedMs": 1183,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"Servidor3\".",
+        "warnings": [],
+        "actionType": "delete_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Eliminando Servidor3.\n[CAPA8_ACTION]\n{\"action\":\"delete_node\",\"label\":\"Servidor3\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A13",
+    "rep": 5,
+    "category": "accion",
+    "trap": null,
+    "intentType": "modify_clear",
+    "msg": "agrega un access point llamado AP1 y conéctalo al Router1",
+    "elapsedMs": 2001,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo origen no encontrado: \"AP1\".",
+        "warnings": [],
+        "actionType": "add_link",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando AP1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"ap\",\"label\":\"AP1\"}\n[/CAPA8_ACTION]\nEnlazando AP1 con Router1.\n[CAPA8_ACTION]\n{\"action\":\"add_link\",\"sourceLabel\":\"AP1\",\"targetLabel\":\"Router1\",\"latencyMs\":1,\"bandwidthMbps\":50}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A14",
+    "rep": 5,
+    "category": "accion",
+    "trap": "alias",
+    "intentType": "modify_clear",
+    "msg": "agrega una laptop llamada Laptop1 con IP 192.168.1.40",
+    "elapsedMs": 1387,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando Laptop1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"pc\",\"label\":\"Laptop1\",\"ip\":\"192.168.1.40\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A15",
+    "rep": 5,
+    "category": "accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "cambia la IP del Router1 a 10.0.0.1",
+    "elapsedMs": 1415,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Asignando IP al Router1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Router1\",\"patch\":{\"ip\":\"10.0.0.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "A16",
+    "rep": 5,
+    "category": "accion",
+    "trap": "dup-ip",
+    "intentType": "modify_clear",
+    "msg": "agrega un servidor llamado Backup1 con IP 192.168.1.10",
+    "elapsedMs": 1535,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 1,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "IP \"192.168.1.10\" ya está en uso por \"PC1\". Considera usar otra dirección."
+        ],
+        "actionType": "add_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Agregando el servidor Backup1.\n[CAPA8_ACTION]\n{\"action\":\"add_node\",\"type\":\"server\",\"label\":\"Backup1\",\"ip\":\"192.168.1.10\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "S01",
+    "rep": 5,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "¿por qué no llega el ping de PC1 a PC2?",
+    "elapsedMs": 2999,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 0,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual, veo que PC1 y PC2 están conectados al Switch1.  PC2 no tiene IP asignada. La falta de IP en PC2 impide la comunicación directa con PC1. Además, PC1 carece de una dirección gateway configurada.\n\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"gateway\":"
+  },
+  {
+    "id": "S02",
+    "rep": 5,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "hay un problema en mi red, ¿puedes detectarlo?",
+    "elapsedMs": 3454,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 3,
+    "nJsonValid": 3,
+    "nSemValid": 1,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Detectando problemas en la topología actual...\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.5\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\",\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]\nAnálisis: Se ha asig"
+  },
+  {
+    "id": "S03",
+    "rep": 5,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "analiza la topología y corrige los problemas que encuentres",
+    "elapsedMs": 5696,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 3,
+    "nJsonValid": 3,
+    "nSemValid": 1,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual detecto las siguientes inconsistencias y propongo las correcciones necesarias:\n\n⚠️ Nodo \"Switch1\" no tiene IP asignada.  Asignando IP a Switch1.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.3\"}}\n[/CAPA8_ACTION]\n\n⚠️ Nodo \"PC2\" no tiene IP asignada. Asignando IP a PC2.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\""
+  },
+  {
+    "id": "S04",
+    "rep": 5,
+    "category": "solver",
+    "trap": "gateway",
+    "intentType": "solver",
+    "msg": "PC2 no puede salir de su subred, diagnostica la causa y arréglala",
+    "elapsedMs": 1457,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": "correct",
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Configurando gateway en PC2.\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"gateway\":\"192.168.1.1\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "S05",
+    "rep": 5,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "el ping entre PC1 y Server1 falla, ¿qué está mal?",
+    "elapsedMs": 2643,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 1,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Analizando la topología actual, el problema podría estar relacionado con la configuración de red de PC2 o Switch1.  La falta de IP asignada a PC2 y a Switch1 puede afectar la conectividad.\n\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.12\"}}\n[/CAPA8_ACTION]\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"Switch1\",\"patch\":{\"ip\":\"192.168.1.50\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "S06",
+    "rep": 5,
+    "category": "solver",
+    "trap": null,
+    "intentType": "solver",
+    "msg": "revisa si hay IPs duplicadas y arréglalas",
+    "elapsedMs": 2800,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 2,
+    "nJsonValid": 2,
+    "nSemValid": 0,
+    "nIntercepted": 2,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 2\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      },
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Nodo no encontrado: \"PC 1\".",
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Revisando topología... Detectada IP duplicada: PC2 (192.168.1.12).\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 2\",\"patch\":{\"ip\":\"192.168.1.13\"}}\n[/CAPA8_ACTION]\nRevisando topología... Detectada IP duplicada: PC1 (192.168.1.10).\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC 1\",\"patch\":{\"ip\":\"192.168.1.11\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C01",
+    "rep": 5,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuál es la diferencia entre un router y un switch?",
+    "elapsedMs": 2374,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Un router y un switch son ambos dispositivos de red, pero tienen funciones distintas. Un switch conecta dispositivos dentro de una misma red local (LAN), permitiendo que se comuniquen directamente entre sí.  Piensa en él como un director de tráfico dentro de tu casa o oficina.\n\nPor otro lado, un router conecta redes diferentes, como tu red doméstica a Internet.  Además de conectar, el router gesti"
+  },
+  {
+    "id": "C02",
+    "rep": 5,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "¿qué es una VLAN y para qué sirve?",
+    "elapsedMs": 1809,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Una VLAN (Red de Área Local Virtual) es una segmentación lógica de una red física.  Permite agrupar dispositivos en redes más pequeñas, mejorando la seguridad y el rendimiento al aislar el tráfico entre diferentes grupos de usuarios o departamentos.  Esto significa que puedes crear múltiples redes dentro de un mismo switch físico, lo cual facilita la administración y reduce los problemas de seguri"
+  },
+  {
+    "id": "C03",
+    "rep": 5,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "explícame cómo funciona el protocolo DHCP",
+    "elapsedMs": 3607,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "El protocolo DHCP (Dynamic Host Configuration Protocol) es un sistema que permite asignar automáticamente direcciones IP y otra información de configuración de red a los dispositivos en una red, como computadoras y servidores.  En lugar de configurar manualmente cada dispositivo con una dirección IP, máscara de subred, puerta de enlace predeterminada y servidor DNS, el DHCP se encarga de todo este"
+  },
+  {
+    "id": "C04",
+    "rep": 5,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿qué significa la máscara de subred 255.255.255.0?",
+    "elapsedMs": 2527,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 1,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [
+          "IP \"192.168.1.1\" ya está en uso por \"Router1\"."
+        ],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "La máscara de subred 255.255.255.0 define el tamaño del segmento de red en tu red IP. En este caso, indica que los primeros tres octetos (los números a la izquierda) pueden variar dentro de un rango específico, mientras que el último octeto identifica de forma única cada dispositivo dentro de ese segmento.  Esto permite conectar muchos dispositivos en una misma subred.\n[CAPA8_ACTION]\n{\"action\":\"up"
+  },
+  {
+    "id": "C05",
+    "rep": 5,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuántos nodos hay en mi topología?",
+    "elapsedMs": 753,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "Hay 5 nodos en la topología actual."
+  },
+  {
+    "id": "C06",
+    "rep": 5,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿qué IP tiene PC1?",
+    "elapsedMs": 1385,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 1,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": true,
+        "error": null,
+        "warnings": [],
+        "actionType": "update_node",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Consultando la IP de PC1...\n[CAPA8_ACTION]\n{\"action\":\"update_node\",\"label\":\"PC1\",\"patch\":{\"ip\":\"192.168.1.10\"}}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C07",
+    "rep": 5,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "query_graph",
+    "msg": "¿cuáles dispositivos están conectados al Switch1?",
+    "elapsedMs": 1189,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 1,
+    "nJsonValid": 1,
+    "nSemValid": 0,
+    "nIntercepted": 1,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [
+      {
+        "stage": "semantic",
+        "valid": false,
+        "error": "Acción desconocida: \"list_connections\". Válidas: add_node, add_link, delete_node, delete_link, set_link_status, apply_graph, update_node.",
+        "warnings": [],
+        "actionType": "list_connections",
+        "normalizedTo": null
+      }
+    ],
+    "answerPreview": "Identificando dispositivos conectados a Switch1.\n[CAPA8_ACTION]\n{\"action\":\"list_connections\",\"targetLabel\":\"Switch1\"}\n[/CAPA8_ACTION]"
+  },
+  {
+    "id": "C08",
+    "rep": 5,
+    "category": "no-accion",
+    "trap": null,
+    "intentType": "conceptual",
+    "msg": "¿qué es el modelo OSI?",
+    "elapsedMs": 2073,
+    "retried": false,
+    "model": "gemma3:4b",
+    "nBlocks": 0,
+    "nJsonValid": 0,
+    "nSemValid": 0,
+    "nIntercepted": 0,
+    "nNormalized": 0,
+    "nWarnings": 0,
+    "trapResult": null,
+    "validations": [],
+    "answerPreview": "El modelo OSI (Open Systems Interconnection) es un marco conceptual que describe cómo deben funcionar las redes de computadoras. Divide la comunicación en siete capas, cada una con funciones específicas para garantizar que los datos se transmitan correctamente desde un origen hasta un destino. Estas capas son: Física, Enlace de Datos, Red, Transporte, Sesión, Presentación y Aplicación.  Es una her"
+  }
+]

@@ -4,25 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CAPA 8 · Debug IA</title>
+  <link rel="icon" type="image/png" href="./assets/img/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    /* Página de debug: sistema SEBS reducido. No importa style.css
+       para mantenerla aislada de los cambios de la app. */
     :root {
-      --bg:       #0d0e10;
-      --surface:  #16181c;
-      --surface2: #1e2028;
-      --border:   rgba(255,255,255,0.08);
-      --accent:   #c8102e;
-      --text:     #e0e2e8;
-      --soft:     rgba(224,226,232,0.65);
-      --muted:    rgba(224,226,232,0.32);
-      --green:    #22c55e;
-      --red:      #ef4444;
-      --yellow:   #f59e0b;
-      --mono:     'Consolas','Monaco',monospace;
+      --bg:       #111317;   /* Graphite */
+      --surface:  #1A1D22;   /* Graphite raised */
+      --surface2: #22262C;
+      --border:   #2A2D33;
+      --accent:   #FF6B35;   /* Copper — acento de Capa 8 */
+      --text:     #FFFFFF;
+      --soft:     #8E939B;   /* Alloy light */
+      --muted:    rgba(142,147,155,0.6);
+      --green:    #34d399;
+      --red:      #fb7185;
+      --yellow:   #fbbf24;
+      --mono:     'IBM Plex Mono', ui-monospace, Consolas, monospace;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: var(--bg); color: var(--text);
-      font-family: system-ui, sans-serif; font-size: 13px;
+      font-family: 'Manrope', system-ui, sans-serif; font-size: 13px;
       height: 100vh; display: flex; flex-direction: column; overflow: hidden;
     }
 
@@ -33,7 +37,7 @@
       background: var(--surface); flex-shrink: 0;
     }
     header h1 { font-size: 13px; font-weight: 700; }
-    .badge { background: var(--accent); color: #fff; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 4px; letter-spacing:.04em; }
+    .badge { background: var(--accent); color: var(--bg); font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 4px; letter-spacing:.04em; }
     header a { margin-left: auto; color: var(--muted); text-decoration: none; font-size: 11px; }
     header a:hover { color: var(--soft); }
 
@@ -86,8 +90,8 @@
     /* Send */
     .send-btn {
       width: 100%; padding: 8px; margin-top: 6px;
-      background: linear-gradient(135deg, var(--accent), #e8234e);
-      border: none; color: #fff; border-radius: 8px;
+      background: var(--accent);
+      border: none; color: var(--bg); border-radius: 8px;
       font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .15s;
     }
     .send-btn:hover:not(:disabled) { opacity: .88; }
@@ -113,7 +117,7 @@
     .tab.active { color: var(--text); background: var(--surface2); border-color: var(--border); }
     .tab:hover:not(.active) { color: var(--soft); }
     .tab-badge {
-      display: inline-block; background: var(--accent); color: #fff;
+      display: inline-block; background: var(--accent); color: var(--bg);
       font-size: 9px; font-weight: 700; padding: 0 5px; border-radius: 4px; margin-left: 5px;
     }
 
@@ -129,7 +133,7 @@
       white-space: pre-wrap; word-break: break-all; color: var(--soft);
       flex: 1; overflow-y: auto;
     }
-    .code-block .hl { color: #f59e0b; font-weight: 700; }
+    .code-block .hl { color: var(--yellow); font-weight: 700; }
 
     /* Action cards */
     .action-card {
@@ -145,9 +149,9 @@
       padding: 1px 7px; border-radius: 4px; font-size: 10px; font-weight: 700;
     }
     .chip.ok   { background: rgba(34,197,94,.15);  color: var(--green); }
-    .chip.err  { background: rgba(239,68,68,.15);  color: var(--red); }
-    .chip.warn { background: rgba(245,158,11,.15); color: var(--yellow); }
-    .chip.info { background: rgba(200,16,46,.12);  color: var(--accent); }
+    .chip.err  { background: rgba(251,113,133,.15); color: var(--red); } /* sebs-allow: tinte de estado de error, contenido en el chip */
+    .chip.warn { background: rgba(251,191,36,.15);  color: var(--yellow); }
+    .chip.info { background: rgba(255,107,53,.12);  color: var(--accent); }
 
     .action-json { font-family: var(--mono); font-size: 11px; color: var(--soft); white-space: pre-wrap; }
     .val-msg { font-size: 11px; margin-top: 4px; }
@@ -179,7 +183,7 @@
 <header>
   <h1>CAPA 8</h1>
   <span class="badge">Debug IA</span>
-  <a href="/diagrams.html">← Diagramas</a>
+  <a href="/">← Herramienta</a>
 </header>
 
 <div class="layout">

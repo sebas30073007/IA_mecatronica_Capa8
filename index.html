@@ -1,147 +1,199 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Capa 8 - IA de Redes</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./assets/fa/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:,">
-    <script>
-      if (localStorage.getItem('capa8_theme') === 'light')
-        document.documentElement.dataset.theme = 'light';
-    </script>
-    <script src="./assets/marked.umd.js"></script>
-    <script type="module" src="src/index.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CAPA 8 - Diagramas</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/fa/css/all.min.css">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="icon" type="image/png" href="./assets/img/favicon.png">
+
+  <script>
+    // Aplica tema antes del primer paint para evitar flash
+    if (localStorage.getItem('capa8_theme') === 'light')
+      document.documentElement.dataset.theme = 'light';
+  </script>
+  <script src="./assets/marked.umd.js"></script>
+  <script type="module" src="./src/app/main.js"></script>
 </head>
+
 <body>
-
-    <!-- ── Navbar ── -->
-    <header class="obsidiana-nav">
-        <!-- Logo con dropdown -->
-        <div class="onav-logo-wrap">
-            <button class="onav-logo-btn" id="onav-logo-btn">
-                <span class="onav-logo-text">CAPA 8</span>
-                <svg class="onav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"/>
-                </svg>
-            </button>
-            <div class="onav-dropdown" id="onav-dropdown" hidden>
-                <a href="index.html" class="onav-dropdown-item active">
-                    <span class="onav-dropdown-item-title">IA</span>
-                    <span class="onav-dropdown-item-sub">Asistente de redes</span>
-                </a>
-                <a href="about.html" class="onav-dropdown-item">
-                    <span class="onav-dropdown-item-title">Sobre el Proyecto</span>
-                    <span class="onav-dropdown-item-sub">Sobre el proyecto</span>
-                </a>
-                <a href="diagrams.html" class="onav-dropdown-item">
-                    <span class="onav-dropdown-item-title">Diagramas</span>
-                    <span class="onav-dropdown-item-sub">Simulador de topologías</span>
-                </a>
-                <a href="https://github.com/sebas30073007/IA_mecatronica_Capa8" target="_blank" rel="noopener noreferrer" class="onav-dropdown-item">
-                    <span class="onav-dropdown-item-title">Repo</span>
-                    <span class="onav-dropdown-item-sub">Repositorio GitHub</span>
-                </a>
-            </div>
-        </div>
-
-        <div class="onav-divider"></div>
-
-        <!-- Herramientas contextuales: NIVEL + ENFOQUE + TOOLS -->
-        <div class="onav-tools" id="onav-tools">
-            <span class="onav-label">NIVEL</span>
-            <div id="nivel-buttons" style="display:flex;gap:4px;">
-                <button class="onav-chip" data-nivel="guiado" data-tooltip="Paso a paso con analogías. Ideal si estás aprendiendo.">Guiado</button>
-                <button class="onav-chip active" data-nivel="balanceado" data-tooltip="Directo y práctico. Para uso general.">Balanceado</button>
-                <button class="onav-chip" data-nivel="tecnico" data-tooltip="Denso, referencias RFC/IEEE. Para expertos.">Técnico</button>
-            </div>
-            <div class="onav-divider"></div>
-            <span class="onav-label">MODO</span>
-            <div id="enfoque-buttons" style="display:flex;gap:4px;">
-                <button class="onav-chip active" data-enfoque="disenar" data-tooltip="Propone y construye topologías.">Diseñar</button>
-                <button class="onav-chip" data-enfoque="solver" data-tooltip="Diagnostica problemas en la red.">Solver</button>
-            </div>
-            <div class="onav-divider"></div>
-            <span class="onav-label">TOOLS</span>
-            <a class="onav-chip" href="diagrams.html">
-                <i class="fa-solid fa-share-nodes"></i> Diagrams
-            </a>
-        </div>
-
-        <!-- Hamburger (mobile) -->
-        <button class="onav-hamburger onav-icon-btn" id="onav-hamburger" title="Menú">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <line x1="3" y1="12" x2="21" y2="12"/>
-                <line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
-        </button>
-
-        <div class="onav-spacer"></div>
-
-        <!-- Tema toggle -->
-        <button id="theme-toggle" class="theme-toggle-btn" title="Cambiar tema (claro/oscuro)">
-            <i class="fa-solid fa-moon"></i>
-        </button>
-
-        <!-- Online pill -->
-        <div class="onav-online">
-            <span class="onav-dot"></span>
-            <span class="onav-online-text">Online</span>
-        </div>
-    </header>
-
-    <!-- Mobile tools dropdown -->
-    <div class="onav-mobile-menu" id="onav-mobile-menu" hidden>
-        <span class="onav-mobile-label">NIVEL</span>
-        <div class="onav-mobile-chips">
-            <button class="onav-chip" data-nivel="guiado" data-tooltip="Paso a paso con analogías. Ideal si estás aprendiendo.">Guiado</button>
-            <button class="onav-chip active" data-nivel="balanceado" data-tooltip="Directo y práctico. Para uso general.">Balanceado</button>
-            <button class="onav-chip" data-nivel="tecnico" data-tooltip="Denso, referencias RFC/IEEE. Para expertos.">Técnico</button>
-        </div>
-        <span class="onav-mobile-label">MODO</span>
-        <div class="onav-mobile-chips">
-            <button class="onav-chip active" data-enfoque="disenar" data-tooltip="Propone y construye topologías.">Diseñar</button>
-            <button class="onav-chip" data-enfoque="solver" data-tooltip="Diagnostica problemas en la red.">Solver</button>
-        </div>
-        <span class="onav-mobile-label">TOOLS</span>
-        <div class="onav-mobile-chips">
-            <a class="onav-chip" href="diagrams.html"><i class="fa-solid fa-share-nodes"></i> Diagrams</a>
-        </div>
+  <!-- Obsidiana navbar (shared) -->
+  <header class="obsidiana-nav">
+    <!-- Logo con dropdown -->
+    <div class="onav-logo-wrap">
+      <button class="onav-logo-btn" id="onav-logo-btn">
+        <img class="onav-logo-img" src="./assets/img/logo-horizontal.png" alt="Capa 8" width="646" height="198">
+        <svg class="onav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+      <div class="onav-dropdown" id="onav-dropdown" hidden>
+        <a href="./index.html" class="onav-dropdown-item active">
+          <span class="onav-dropdown-item-title">Herramienta</span>
+          <span class="onav-dropdown-item-sub">Simulador y asistente</span>
+        </a>
+        <a href="./about.html" class="onav-dropdown-item">
+          <span class="onav-dropdown-item-title">Sobre el proyecto</span>
+          <span class="onav-dropdown-item-sub">Arquitectura y flujo</span>
+        </a>
+        <a href="https://github.com/sebas30073007/IA_mecatronica_Capa8" target="_blank" rel="noopener noreferrer" class="onav-dropdown-item">
+          <span class="onav-dropdown-item-title">Repo</span>
+          <span class="onav-dropdown-item-sub">Repositorio GitHub</span>
+        </a>
+      </div>
     </div>
 
-    <!-- ── Chat page ── -->
-    <div class="chat-page">
-        <!-- Zona de mensajes (scroll) -->
-        <div class="chat-page-messages" id="chat-messages-wrap">
-            <div class="chat-page-messages-inner chat-messages">
-                <div class="message ai-message">
-                    Hola! Soy Capa_8, tu asistente de soporte en temas de redes, estoy aqui para resolver tus problemas de Capa 8. ¿En qué puedo ayudarte?
-                </div>
-            </div>
-        </div>
+    <!-- Firma de marca: Capa 8 — by SEBS -->
+    <a class="logo-by" href="https://sebs.mx" target="_blank" rel="noopener noreferrer" title="SEBS — sebs.mx">
+      <span class="logo-by-word">by</span>
+      <img class="logo-sebs" src="./assets/img/SEBS-wordmark.png" alt="SEBS" width="416" height="94">
+    </a>
 
-        <!-- Input anclado al fondo -->
-        <div class="chat-page-input">
-            <div class="chat-page-input-inner">
-                <div class="input-wrapper">
-                    <textarea class="chat-input" rows="1" placeholder="Escribe tu mensaje aquí..."></textarea>
-                    <button class="send-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="19" x2="12" y2="5"/>
-                            <polyline points="5 12 12 5 19 12"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="chat-page-footer">
-                    <span>Capa_8 v3.0 · <span id="chat-mode-title">Balanceado · Diseñar</span></span>
-                    <span>Enter ↵</span>
-                </div>
-            </div>
-        </div>
+    <div class="onav-divider"></div>
+
+    <!-- Archivo / Dibujar / Ajustes / Ejemplos dropdowns -->
+    <div id="sim-menubar" class="sim-menubar onav-menus"></div>
+
+    <!-- Hamburger (mobile) -->
+    <button class="onav-hamburger onav-icon-btn" id="onav-hamburger" title="Menú">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+
+    <div class="onav-spacer"></div>
+
+    <!-- Action buttons -->
+    <div class="onav-diag-actions">
+      <!-- Velocidad de la animación. Sustituye al antiguo Run/Stop: los
+           paquetes se animan solos cuando los hay, así que un play/pause no
+           tenía nada que arrancar. Poder verlo a cámara lenta sí sirve para
+           explicar un camino en clase. -->
+      <div class="speed-group" id="speed-group" role="group" aria-label="Velocidad de la simulación">
+        <button class="speed-btn" data-speed="0.5" type="button">0.5×</button>
+        <button class="speed-btn active" data-speed="1" type="button" aria-pressed="true">1×</button>
+        <button class="speed-btn" data-speed="2" type="button">2×</button>
+      </div>
+      <button id="btn-terminal" class="cnav-icon-btn" title="Terminal">
+        <i class="fa-solid fa-terminal"></i>
+      </button>
+      <button id="btn-copylink" class="cnav-icon-btn" title="Copiar enlace">
+        <i class="fa-solid fa-link" id="btn-copylink-icon"></i>
+      </button>
     </div>
+
+    <!-- Tema toggle -->
+    <button id="theme-toggle" class="theme-toggle-btn" title="Cambiar tema (claro/oscuro)">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+
+    <!-- Autosave indicator -->
+    <div id="autosave-indicator" class="autosave-indicator" aria-live="polite">
+      <i class="fa-solid fa-check"></i>
+      <span>Guardado</span>
+    </div>
+
+    <!-- Online pill -->
+    <div class="onav-online">
+      <span class="onav-dot"></span>
+      <span class="onav-online-text">Online</span>
+    </div>
+  </header>
+
+  <!-- Mobile tools dropdown -->
+  <div class="onav-mobile-menu" id="onav-mobile-menu" hidden>
+    <div id="sim-menubar-mobile" class="onav-mobile-sim-menu"></div>
+  </div>
+
+  <!-- Canvas fills remaining viewport -->
+  <div class="sim-stage-wrap" id="sim-stage-wrap">
+
+    <div class="network-stage" id="network-stage" aria-label="Workspace de diagramas">
+      <div class="stage-world" id="stage-world">
+        <svg class="stage-svg" id="stage-svg"></svg>
+      </div>
+      <!-- Primera pantalla: solo visible con el lienzo vacío.
+           Va fuera de #stage-world a propósito, para que no se desplace
+           ni escale con el zoom y el paneo del diagrama. -->
+      <div class="empty-state" id="empty-state" hidden></div>
+    </div>
+
+    <!-- Inspector overlay (top-right of canvas) -->
+    <div id="inspector-overlay" class="inspector-overlay" hidden></div>
+
+    <!-- Node right-click context menu -->
+    <div id="node-ctx-menu" class="node-ctx-menu" hidden></div>
+
+    <!-- Node/link status badge (bottom-left) -->
+    <div id="status-badge" class="status-badge" role="status" aria-live="polite">0 nodos · 0 enlaces</div>
+
+    <!-- Terminal bottom slide panel -->
+    <div id="terminal-bottom" class="terminal-bottom terminal-bottom--hidden"
+         role="complementary" aria-label="Terminal de red">
+      <div class="terminal-bottom-header">
+        <span class="t-green">CAPA8-NET TERMINAL v1.0</span>
+        <div>
+          <button id="btn-term-clear" class="term-hdr-btn" aria-label="Limpiar terminal">Limpiar</button>
+          <button id="btn-term-close" class="term-hdr-btn" aria-label="Cerrar terminal">✕</button>
+        </div>
+      </div>
+      <div class="terminal-output" id="terminal-output" role="log" aria-live="polite" aria-label="Salida del terminal"></div>
+      <div class="terminal-input-row">
+        <span class="terminal-prompt t-green" aria-hidden="true">root@capa8:~$</span>
+        <input id="terminal-input" class="terminal-input" type="text"
+               placeholder="ping 10.0.0.1" autocomplete="off"
+               aria-label="Comando de terminal" />
+        <button id="terminal-send" class="terminal-send" aria-label="Ejecutar comando">↵</button>
+      </div>
+    </div>
+
+    <!-- Paneles laterales: IA y Revisión comparten el riel derecho -->
+    <div class="ai-side-wrap" id="ai-side-wrap">
+      <div class="ai-fab-panel" id="ai-fab-panel" role="complementary" aria-label="Panel del asistente IA"></div>
+      <div class="diag-panel" id="diag-panel" role="complementary" aria-label="Revisión de la topología"></div>
+      <button class="ai-tab-btn" id="ai-fab-btn" title="Asistente IA"
+              aria-label="Abrir asistente IA" aria-expanded="false" aria-controls="ai-fab-panel">
+        <i class="fa-solid fa-chevron-left" id="ai-fab-icon" aria-hidden="true"></i>
+        <span class="ai-tab-label">IA</span>
+      </button>
+      <button class="ai-tab-btn diag-tab-btn" id="diag-btn" title="Revisión de la topología"
+              aria-label="Abrir revisión de la topología" aria-expanded="false" aria-controls="diag-panel">
+        <i class="fa-solid fa-stethoscope" aria-hidden="true"></i>
+        <span class="ai-tab-label">Revisión</span>
+        <span id="diag-badge" class="ai-tab-badge" hidden aria-label="Problemas detectados"></span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Advanced Properties Modal -->
+  <div id="adv-modal-backdrop" class="adv-modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="adv-modal">
+      <div class="adv-modal-header">
+        <span id="adv-modal-title" class="adv-modal-title">Saber más</span>
+        <button id="adv-modal-close" class="adv-modal-close" title="Cerrar (Esc)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="adv-modal-body" class="adv-modal-body"></div>
+      <div class="adv-modal-footer">
+        <button id="adv-modal-cancel" class="adv-modal-btn adv-modal-btn--cancel" style="display:none"></button>
+        <button id="adv-modal-apply" class="adv-modal-btn adv-modal-btn--apply" style="display:none"></button>
+        <button id="adv-modal-close-footer" class="adv-modal-btn adv-modal-btn--apply">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cursor ghost for node placement -->
+  <div id="cursor-ghost" class="cursor-ghost" hidden></div>
+
+  <!-- Presentation mode exit hint -->
+  <div id="presentation-hint" class="presentation-exit-hint">Presiona Ctrl+P o Esc para salir del modo presentación</div>
 
 </body>
 </html>

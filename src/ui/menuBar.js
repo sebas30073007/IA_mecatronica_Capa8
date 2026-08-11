@@ -2,6 +2,15 @@
 // Menú desplegable estilo Falstad (pero CAPA 8)
 // Lee la estructura de menús desde menuConfig.js (fuente única de verdad).
 import { MENUS } from "./menuConfig.js";
+import { TYPE_ORDER } from "../render/typePalette.js";
+
+// "TOOL_ROUTER" -> "router", si es un tipo de nodo real.
+// Devuelve null para TOOL_SELECT, TOOL_LINK y el resto de acciones.
+function nodeTypeOf(action) {
+  const m = /^TOOL_(.+)$/.exec(action || "");
+  const type = m?.[1].toLowerCase();
+  return TYPE_ORDER.includes(type) ? type : null;
+}
 
 function el(tag, className) {
   const e = document.createElement(tag);
@@ -21,8 +30,15 @@ function buildItem(item, onAction, onStatus) {
 
   const btn = el("button", "menu-item");
   btn.type = "button";
+
+  // Las herramientas de dibujo llevan el color de su tipo: el ítem
+  // del menú crea un dispositivo de ese tipo, así que el color
+  // describe un dato, no decora el menú.
+  const nodeType = nodeTypeOf(item.action);
+  if (nodeType) btn.dataset.type = nodeType;
+
   btn.innerHTML = `
-    <i class="${item.icon || "fa-solid fa-circle"}"></i>
+    <i class="${item.icon || "fa-solid fa-circle"}${nodeType ? " type-ink" : ""}"></i>
     <span>${item.label}</span>
     <span class="menu-kbd">${item.shortcut || ""}</span>
   `;

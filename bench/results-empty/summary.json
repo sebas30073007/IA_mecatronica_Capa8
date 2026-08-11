@@ -1,0 +1,101 @@
+{
+  "model": "gemma3:12b",
+  "prompts": 12,
+  "reps": 3,
+  "n": 36,
+  "errors": 0,
+  "emissionRate": "100.0",
+  "usableRate": "69.4",
+  "matchesRate": "75.0",
+  "successRate": "44.4",
+  "avgNodes": "3.7",
+  "fragmentedRate": "22.2",
+  "isolatedRate": "30.6",
+  "medianLatencyMs": 82261,
+  "byPrompt": {
+    "E01": {
+      "n": 3,
+      "success": 3,
+      "usable": 3,
+      "matches": 3,
+      "msg": "una red de oficina con un router, un switch y 3 PCs"
+    },
+    "E02": {
+      "n": 3,
+      "success": 0,
+      "usable": 3,
+      "matches": 0,
+      "msg": "red doméstica simple: modem, router wifi y dos laptops"
+    },
+    "E03": {
+      "n": 3,
+      "success": 1,
+      "usable": 1,
+      "matches": 3,
+      "msg": "quiero una red con DMZ y dos firewalls"
+    },
+    "E04": {
+      "n": 3,
+      "success": 3,
+      "usable": 3,
+      "matches": 3,
+      "msg": "arma una LAN con 5 computadoras conectadas a un switch"
+    },
+    "E05": {
+      "n": 3,
+      "success": 3,
+      "usable": 3,
+      "matches": 3,
+      "msg": "una red pequeña de empresa con servidor web y servidor de base de datos"
+    },
+    "E06": {
+      "n": 3,
+      "success": 0,
+      "usable": 3,
+      "matches": 0,
+      "msg": "topología de campus con 3 edificios"
+    },
+    "E07": {
+      "n": 3,
+      "success": 0,
+      "usable": 0,
+      "matches": 3,
+      "msg": "conecta dos sucursales por internet"
+    },
+    "E08": {
+      "n": 3,
+      "success": 0,
+      "usable": 0,
+      "matches": 3,
+      "msg": "red industrial con un PLC y un robot UR3"
+    },
+    "E09": {
+      "n": 3,
+      "success": 0,
+      "usable": 3,
+      "matches": 0,
+      "msg": "necesito practicar VLANs, hazme una topología para eso"
+    },
+    "E10": {
+      "n": 3,
+      "success": 0,
+      "usable": 0,
+      "matches": 3,
+      "msg": "red con access point para dispositivos inalámbricos"
+    },
+    "E11": {
+      "n": 3,
+      "success": 3,
+      "usable": 3,
+      "matches": 3,
+      "msg": "haz una red"
+    },
+    "E12": {
+      "n": 3,
+      "success": 3,
+      "usable": 3,
+      "matches": 3,
+      "msg": "un router conectado a internet y 2 PCs detrás"
+    }
+  }
+}

@@ -20,8 +20,12 @@ export const ActionTypes = Object.freeze({
   NEW_GRAPH: "NEW_GRAPH",
 
   // Simulation / runtime
-  TOGGLE_RUN: "TOGGLE_RUN",
   SET_SIM_SPEED: "SET_SIM_SPEED",
+
+  // Resaltado didáctico del lienzo (camino de un ping, dónde falló…).
+  // Es estado de presentación, no del grafo: no entra en el historial.
+  SET_HIGHLIGHT: "SET_HIGHLIGHT",
+  CLEAR_HIGHLIGHT: "CLEAR_HIGHLIGHT",
 
   // Terminal
   TERMINAL_APPEND: "TERMINAL_APPEND",

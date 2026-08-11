@@ -1,0 +1,26 @@
+[
+  {
+    "condition": "full",
+    "n": 30,
+    "errors": 0,
+    "actionEmissionRate": 100,
+    "solverEmissionRate": 100,
+    "spuriousActionRate": 0,
+    "totalBlocks": 36,
+    "jsonValidityRate": 100,
+    "semanticValidityRate": 66.7,
+    "interceptedActions": 12,
+    "normalizedActions": 0,
+    "retryRate": 0,
+    "medianLatencyMs": 24861,
+    "traps": {
+      "A09:gateway": "correct",
+      "A10:ip-fix": "correct",
+      "A11:nonexistent": "0 intercepted, 0 warnings",
+      "A12:nonexistent": "1 intercepted, 0 warnings",
+      "A14:alias": "0 intercepted, 0 warnings",
+      "A16:dup-ip": "0 intercepted, 1 warnings",
+      "S04:gateway": "correct"
+    }
+  }
+]
