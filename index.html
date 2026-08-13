@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./assets/fa/css/all.min.css">
   <link rel="stylesheet" href="./style.css">
-  <link rel="icon" type="image/png" href="./assets/img/favicon.png">
+  <link rel="icon" type="image/png" href="./assets/img/favicon.png?v=2">
 
   <script>
     // Aplica tema antes del primer paint para evitar flash
@@ -22,28 +22,13 @@
 <body>
   <!-- Obsidiana navbar (shared) -->
   <header class="obsidiana-nav">
-    <!-- Logo con dropdown -->
-    <div class="onav-logo-wrap">
-      <button class="onav-logo-btn" id="onav-logo-btn">
-        <img class="onav-logo-img" src="./assets/img/logo-horizontal.png" alt="Capa 8" width="646" height="198">
-        <svg class="onav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
-      </button>
-      <div class="onav-dropdown" id="onav-dropdown" hidden>
-        <a href="./index.html" class="onav-dropdown-item active">
-          <span class="onav-dropdown-item-title">Herramienta</span>
-          <span class="onav-dropdown-item-sub">Simulador y asistente</span>
-        </a>
-        <a href="./about.html" class="onav-dropdown-item">
-          <span class="onav-dropdown-item-title">Sobre el proyecto</span>
-          <span class="onav-dropdown-item-sub">Arquitectura y flujo</span>
-        </a>
-        <a href="https://github.com/sebas30073007/IA_mecatronica_Capa8" target="_blank" rel="noopener noreferrer" class="onav-dropdown-item">
-          <span class="onav-dropdown-item-title">Repo</span>
-          <span class="onav-dropdown-item-sub">Repositorio GitHub</span>
-        </a>
-      </div>
+    <!-- Logo, inerte. Ya no despliega nada: de los tres destinos que tenía el
+         menú, "Herramienta" era esta misma página, "Sobre el proyecto" quedó
+         desconectado y el repo tiene ahora su propio botón a la derecha. Un
+         desplegable con un solo destino, y encima el actual, es un clic que
+         no lleva a ningún sitio. -->
+    <div class="onav-logo">
+      <img class="onav-logo-img" src="./assets/img/logo-horizontal.png" alt="Capa 8" width="646" height="198">
     </div>
 
     <!-- Firma de marca: Capa 8 — by SEBS -->
@@ -79,6 +64,11 @@
         <button class="speed-btn active" data-speed="1" type="button" aria-pressed="true">1×</button>
         <button class="speed-btn" data-speed="2" type="button">2×</button>
       </div>
+      <!-- Organizar (Pretty). Vivía en el menú Ajustes, donde nadie lo
+           encontraba: no es un ajuste, es la acción más usada del lienzo. -->
+      <button id="btn-pretty" class="cnav-icon-btn" title="Organizar diagrama (tecla O)">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+      </button>
       <button id="btn-terminal" class="cnav-icon-btn" title="Terminal">
         <i class="fa-solid fa-terminal"></i>
       </button>
@@ -91,6 +81,16 @@
     <button id="theme-toggle" class="theme-toggle-btn" title="Cambiar tema (claro/oscuro)">
       <i class="fa-solid fa-moon"></i>
     </button>
+
+    <!-- Repo. Heredó el sitio que tenía dentro del desplegable del logo.
+         Va como <a> y no como <button>: navega fuera, así que el usuario
+         debe poder abrirlo en otra pestaña con el clic central. -->
+    <a id="btn-github" class="cnav-icon-btn"
+       href="https://github.com/sebas30073007/IA_mecatronica_Capa8"
+       target="_blank" rel="noopener noreferrer"
+       title="Repositorio en GitHub" aria-label="Repositorio en GitHub">
+      <i class="fa-brands fa-github"></i>
+    </a>
 
     <!-- Autosave indicator -->
     <div id="autosave-indicator" class="autosave-indicator" aria-live="polite">

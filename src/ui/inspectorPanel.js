@@ -1,6 +1,7 @@
 // src/ui/inspectorPanel.js
 import { isIPv4, parseMask, prefixToDotted, maskHint } from "../model/addressing.js";
 import { TYPE_LABEL } from "../render/typePalette.js";
+import { typeChip } from "./typeTag.js";
 
 export function createInspector({ dispatch, ActionTypes, onOpenAdvanced }) {
   function overlay() {
@@ -67,10 +68,6 @@ export function createInspector({ dispatch, ActionTypes, onOpenAdvanced }) {
           <small class="field-error" id="ins-ip-error">${
             !node.ip ? "" : !isIPv4(node.ip) ? "Formato inválido (ej: 10.0.0.1)" : dupIp ? "IP duplicada en el diagrama" : ""
           }</small>
-        </div>
-        <div class="field">
-          <label>Tipo</label>
-          <input value="${escapeAttr(node.type)}" disabled />
         </div>
         <div class="field">
           <label>Máscara de subred</label>
@@ -154,14 +151,29 @@ export function createInspector({ dispatch, ActionTypes, onOpenAdvanced }) {
       return;
     }
 
-    // Link inspector
+    // Link inspector.
+    // Un enlace no tiene tipo propio, así que el contenedor deja de
+    // aportar --node-color: sin esto quedaría colgando el color del
+    // último nodo seleccionado.
+    delete container.dataset.type;
+
     const link = graph.links.find(l => l.id === sel.id);
     if (!link) {
       container.innerHTML = `<div class="muted">Enlace no encontrado.</div>`;
       return;
     }
 
+    // Los extremos son el dato que faltaba: hasta ahora el panel decía
+    // la latencia de un enlace sin decir qué conectaba.
+    const nodeA = graph.nodes.find(n => n.id === link.source);
+    const nodeB = graph.nodes.find(n => n.id === link.target);
+
     container.innerHTML = `
+      <div class="insp-link-header">
+        ${nodeA ? typeChip(nodeA.type, nodeA.label) : `<span class="muted">?</span>`}
+        <i class="fa-solid fa-left-right insp-link-arrow" aria-hidden="true"></i>
+        ${nodeB ? typeChip(nodeB.type, nodeB.label) : `<span class="muted">?</span>`}
+      </div>
       <div class="field">
         <label>Latencia (ms)</label>
         <input id="ins-link-lat" type="number" min="0" step="0.1" value="${link.latencyMs ?? 0.5}" />

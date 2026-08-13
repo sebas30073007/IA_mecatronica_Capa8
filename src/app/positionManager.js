@@ -1,9 +1,20 @@
 // src/app/positionManager.js
-// Gestión de posiciones de nodos: colocación libre, detección y resolución de colisiones.
+// Gestión de posiciones de nodos: colocación libre y resolución de colisiones
+// tras un arrastre manual.
+//
+// La colisión NO se implementa aquí: se delega en `layout/geometry.js`, que
+// es la misma que usa Pretty. Este archivo tenía su propia copia con una
+// distancia propia (85 entre centros, contra los 110 del motor), así que un
+// diagrama recién organizado y uno ajustado a mano obedecían a dos nociones
+// distintas de "demasiado cerca". Ahora hay una sola, y mide la caja real.
 
-const GRID      = 130;
-const COLS      = 5;
-const COLL_DIST = 85; // distancia mínima entre centros (px mundo)
+import { resolveCollisions, MAX_COLLISION_ITER, MIN_GAP_Y } from "./layout/geometry.js";
+
+// Rejilla de colocación de nodos nuevos. Es paso, no separación mínima: se
+// mantiene por encima de `MIN_GAP_Y` para que una celda libre lo esté de
+// verdad y el nodo recién creado no nazca ya solapado.
+const GRID = Math.max(130, MIN_GAP_Y);
+const COLS = 5;
 
 /**
  * Calcula el centroide del grafo existente para anclar la rejilla cerca de los nodos actuales.
@@ -57,120 +68,32 @@ export function positionNewNode(action, graph) {
 }
 
 /**
- * Resuelve colisiones entre nodos de forma pura (no tiene side effects).
- * @param {Array<{id, x, y}>} nodes
- * @param {string|null} anchorId - ID del nodo que actúa como ancla (no se mueve)
- * @returns {Map<string, {x: number, y: number}>} mapa id → nueva posición
- */
-export function resolveCollisions(nodes, anchorId = null) {
-  if (nodes.length < 2) {
-    const m = new Map();
-    for (const n of nodes) m.set(n.id, { x: n.x, y: n.y });
-    return m;
-  }
-
-  const pos = {};
-  for (const n of nodes) pos[n.id] = { x: n.x, y: n.y };
-
-  let changed = true;
-  let safety  = 0;
-  while (changed && safety < 12) {
-    changed = false;
-    safety++;
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const a  = nodes[i], b = nodes[j];
-        const pa = pos[a.id], pb = pos[b.id];
-        const dx = pb.x - pa.x, dy = pb.y - pa.y;
-        const dist = Math.hypot(dx, dy) || 0.001;
-        if (dist >= COLL_DIST) continue;
-        changed = true;
-        const overlap = COLL_DIST - dist;
-        const ux = dx / dist, uy = dy / dist;
-        if (a.id === anchorId) {
-          pos[b.id].x += ux * (overlap + 2);
-          pos[b.id].y += uy * (overlap + 2);
-        } else if (b.id === anchorId) {
-          pos[a.id].x -= ux * (overlap + 2);
-          pos[a.id].y -= uy * (overlap + 2);
-        } else {
-          const push = overlap / 2 + 1;
-          pos[a.id].x -= ux * push; pos[a.id].y -= uy * push;
-          pos[b.id].x += ux * push; pos[b.id].y += uy * push;
-        }
-      }
-    }
-  }
-
-  const result = new Map();
-  for (const n of nodes) {
-    result.set(n.id, { x: Math.round(pos[n.id].x), y: Math.round(pos[n.id].y) });
-  }
-  return result;
-}
-
-/**
- * Resuelve colisiones y despacha solo los nodos que cambiaron de posición.
+ * Resuelve colisiones y aplica el resultado en un solo dispatch.
  * @param {object} store
  * @param {Function} dispatch
  * @param {object} ActionTypes
- * @param {string|null} anchorId
+ * @param {string|null} anchorId - nodo que no se mueve (el recién soltado)
  */
 export function resolveAndDispatch(store, dispatch, ActionTypes, anchorId = null) {
   const nodes = store.getState().graph.nodes;
   if (nodes.length < 2) return;
 
   // Guard: grafos muy grandes → solo 1 iteración (evitar O(N²) lento)
-  const maxIter = nodes.length > 60 ? 1 : 12;
-  const tempNodes = nodes.map(n => ({ ...n }));
-  const newPos = resolveCollisionsN(tempNodes, anchorId, maxIter);
+  const maxIter = nodes.length > 60 ? 1 : MAX_COLLISION_ITER;
 
+  // El nodo recién soltado es el ancla: el usuario lo puso ahí a propósito,
+  // así que ceden los demás. Es el mismo papel que el backbone en Pretty.
+  const positions = new Map(nodes.map(n => [n.id, { x: n.x, y: n.y }]));
+  const fixedIds  = anchorId ? new Set([anchorId]) : new Set();
+  resolveCollisions(positions, fixedIds, maxIter);
+
+  const moves = [];
   for (const n of nodes) {
-    const p = newPos.get(n.id);
-    if (p && (p.x !== n.x || p.y !== n.y)) {
-      dispatch({ type: ActionTypes.MOVE_NODE, payload: { id: n.id, x: p.x, y: p.y } });
-    }
+    const p = positions.get(n.id);
+    if (p && (p.x !== n.x || p.y !== n.y)) moves.push({ id: n.id, x: p.x, y: p.y });
+  }
+  if (moves.length > 0) {
+    dispatch({ type: ActionTypes.APPLY_LAYOUT, payload: { moves } });
   }
 }
 
-// Variante interna con maxIter configurable
-function resolveCollisionsN(nodes, anchorId, maxIter) {
-  const pos = {};
-  for (const n of nodes) pos[n.id] = { x: n.x, y: n.y };
-
-  let changed = true;
-  let safety  = 0;
-  while (changed && safety < maxIter) {
-    changed = false;
-    safety++;
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const a  = nodes[i], b = nodes[j];
-        const pa = pos[a.id], pb = pos[b.id];
-        const dx = pb.x - pa.x, dy = pb.y - pa.y;
-        const dist = Math.hypot(dx, dy) || 0.001;
-        if (dist >= COLL_DIST) continue;
-        changed = true;
-        const overlap = COLL_DIST - dist;
-        const ux = dx / dist, uy = dy / dist;
-        if (a.id === anchorId) {
-          pos[b.id].x += ux * (overlap + 2);
-          pos[b.id].y += uy * (overlap + 2);
-        } else if (b.id === anchorId) {
-          pos[a.id].x -= ux * (overlap + 2);
-          pos[a.id].y -= uy * (overlap + 2);
-        } else {
-          const push = overlap / 2 + 1;
-          pos[a.id].x -= ux * push; pos[a.id].y -= uy * push;
-          pos[b.id].x += ux * push; pos[b.id].y += uy * push;
-        }
-      }
-    }
-  }
-
-  const result = new Map();
-  for (const n of nodes) {
-    result.set(n.id, { x: Math.round(pos[n.id].x), y: Math.round(pos[n.id].y) });
-  }
-  return result;
-}

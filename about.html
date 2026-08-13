@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./assets/fa/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="./assets/img/favicon.png">
+    <link rel="icon" type="image/png" href="./assets/img/favicon.png?v=2">
     <style>
       /* ─── About-page local styles ─────────────────────────────────── */
       .about-wrap {
@@ -394,17 +394,13 @@
       document.addEventListener('click', e => {
         if (!btn.contains(e.target) && !dd.contains(e.target)) { dd.hidden = true; btn.classList.remove('open'); }
       });
-      (function() {
-        const tb = document.getElementById('theme-toggle');
-        const ic = tb?.querySelector('i');
-        if (ic && localStorage.getItem('capa8_theme') === 'light') ic.className = 'fa-solid fa-sun';
-        tb?.addEventListener('click', () => {
-          const isL = document.documentElement.dataset.theme === 'light';
-          document.documentElement.dataset.theme = isL ? '' : 'light';
-          localStorage.setItem('capa8_theme', isL ? '' : 'light');
-          if (ic) ic.className = isL ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
-        });
-      })();
+    </script>
+
+    <!-- El interruptor de tema es el mismo que el del simulador, con su
+         transición de color; ver src/ui/themeSwitch.js. -->
+    <script type="module">
+      import { initThemeToggle } from './src/ui/themeSwitch.js';
+      initThemeToggle();
     </script>
 
     <div class="about-wrap surface-dark">

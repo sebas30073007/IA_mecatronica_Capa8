@@ -11,6 +11,7 @@
 // sin tener que preguntarle al profesor.
 
 import { analyzeTopology } from "../ai/topology-analyzer.js";
+import { typeSwatch, typeChip, typeCensus, typeCount, typeName } from "./typeTag.js";
 
 const SEV_ORDER = { error: 0, warning: 1, info: 2 };
 
@@ -91,8 +92,13 @@ export function createDiagnosticsPanel({ container, onSelectNode, onSelectLink, 
         <div class="diag-empty diag-empty--ok">
           <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
           <p>Sin problemas detectados.</p>
+          <div class="diag-census">
+            ${typeCensus(graph.nodes)
+              .map(({ type, count }) => typeChip(type, typeCount(type, count)))
+              .join("")}
+          </div>
           <span class="diag-empty-sub">
-            ${graph.nodes.length} dispositivos · ${graph.links.length} enlaces
+            ${graph.links.length} enlace${graph.links.length === 1 ? "" : "s"}
           </span>
         </div>`;
       return { errors: 0, warnings: 0 };
@@ -103,11 +109,19 @@ export function createDiagnosticsPanel({ container, onSelectNode, onSelectLink, 
       // Solo se ofrece corrección automática donde la IA puede actuar
       // sobre un nodo concreto. Un enlace caído se arregla en el inspector.
       const fixable = Boolean(issue.nodeId);
+      // De qué dispositivo habla el problema. El borde y el icono siguen
+      // siendo de severidad —ahí el color sí es estado—; el punto dice de
+      // qué tipo es el culpable, que es un dato distinto.
+      const culpable = issue.nodeId
+        ? graph.nodes.find(n => n.id === issue.nodeId)
+        : null;
       return `
         <li class="diag-row diag-row--${esc(issue.severity)}" data-issue-idx="${idx}" tabindex="0">
           <i class="fa-solid ${meta.icon} diag-icon" aria-hidden="true"></i>
           <span class="diag-sev">${meta.label}</span>
-          <span class="diag-msg">${esc(issue.message)}</span>
+          <span class="diag-msg">${
+            culpable ? typeSwatch(culpable.type, typeName(culpable.type)) : ""
+          }${esc(issue.message)}</span>
           ${fixable ? `<button class="diag-fix" type="button" title="Pedirle a la IA que lo corrija">
             <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
           </button>` : ""}

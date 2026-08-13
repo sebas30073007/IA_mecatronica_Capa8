@@ -11,6 +11,11 @@ export const ActionTypes = Object.freeze({
   UPDATE_NODE: "UPDATE_NODE",
   DELETE_NODE: "DELETE_NODE",
 
+  // Reposicionar muchos nodos de una vez. Existe porque cada dispatch
+  // clona el estado entero y repinta el lienzo completo: aplicar un layout
+  // de 40 nodos con MOVE_NODE costaba 40 clones y 40 repintados.
+  APPLY_LAYOUT: "APPLY_LAYOUT",
+
   ADD_LINK: "ADD_LINK",
   UPDATE_LINK: "UPDATE_LINK",
   DELETE_LINK: "DELETE_LINK",
@@ -33,6 +38,7 @@ export const ActionTypes = Object.freeze({
 
   // Canvas UI
   TOGGLE_IP_LABELS: "TOGGLE_IP_LABELS",
-  PRETTY_LAYOUT:       "PRETTY_LAYOUT",
-  PRETTY_LAYOUT_SUAVE: "PRETTY_LAYOUT_SUAVE",
+  // Identificador de acción de la barra de menús, no del store: el reducer
+  // no tiene case para él, lo atiende main.js.
+  PRETTY_LAYOUT: "PRETTY_LAYOUT",
 });

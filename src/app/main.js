@@ -19,7 +19,7 @@ import { downloadJson, openJsonFilePicker, graphToSvg, downloadSvg, downloadPng 
 import { normalizeGraph, createDemoGraph } from "../model/schema.js";
 import { suggestIp } from "../model/addressing.js";
 import { analyzeTopology } from "../ai/topology-analyzer.js";
-import { prettyLayout } from "./prettyLayout.js";
+import { prettyLayout } from "./layout/index.js";
 import { resolveAndDispatch } from "./positionManager.js";
 import { loadExample } from "../examples/index.js";
 import { createEngine } from "../sim/engine.js";
@@ -29,32 +29,24 @@ import { createActionDispatcher } from "../ai/actionDispatcher.js";
 import { createAdvancedModal } from "../ui/advancedModal.js";
 import { createDiagnosticsPanel } from "../ui/diagnosticsPanel.js";
 import { createEmptyState } from "../ui/emptyState.js";
+import { initThemeToggle } from "../ui/themeSwitch.js";
+import { censusBar, typeChip, typeName, esc as escHtml } from "../ui/typeTag.js";
 
 function uid(prefix = "id") {
   return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
 }
 
 // ── Tema claro / oscuro ──────────────────────────────────────────────────
+// El tema guardado ya lo aplica un script inline en el <head>, antes del
+// primer paint; aquí solo queda el botón. `render()` va como callback
+// porque el SVG resuelve sus colores en JS, no desde los tokens.
 (function initTheme() {
   const saved = localStorage.getItem("capa8_theme");
   if (saved === "light") document.documentElement.dataset.theme = "light";
 })();
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // Botón toggle de tema
-  document.getElementById("theme-toggle")?.addEventListener("click", () => {
-    const isLight = document.documentElement.dataset.theme === "light";
-    document.documentElement.dataset.theme = isLight ? "" : "light";
-    localStorage.setItem("capa8_theme", isLight ? "" : "light");
-    const icon = document.querySelector("#theme-toggle i");
-    if (icon) icon.className = isLight ? "fa-solid fa-moon" : "fa-solid fa-sun";
-    render();
-  });
-  // Sync icon on load
-  const themeIcon = document.querySelector("#theme-toggle i");
-  if (themeIcon && document.documentElement.dataset.theme === "light") {
-    themeIcon.className = "fa-solid fa-sun";
-  }
+  initThemeToggle(() => render());
 
   const menubarEl = document.getElementById("sim-menubar");
   const stageEl   = document.getElementById("network-stage");
@@ -64,10 +56,43 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ── Viewport (zoom + pan) ────────────────────────────────────────────
   const vp = { zoom: 1, panX: 0, panY: 0 };
-  const ZOOM_MIN = 0.15, ZOOM_MAX = 4, ZOOM_STEP = 1.07;
+  // ZOOM_MIN a 0.39 y no 0.15: a 0.15 el diagrama entero cabía en una esquina
+  // del lienzo y dejaba de leerse — los nodos quedaban por debajo de los 15px
+  // y el usuario solo podía perderse. Sigue por debajo de LOD_A_MINI (0.50),
+  // así que el juego de iconos macizos conserva su tramo de zoom.
+  const ZOOM_MIN = 0.39, ZOOM_MAX = 4, ZOOM_STEP = 1.07;
+
+  // ── Nivel de detalle del icono ───────────────────────────────────────
+  //
+  // El disco del nodo mide 48px de mundo. A zoom 0.5 son 24px en pantalla, y
+  // ahí los trazos de 1.4px del icono detallado ya caen por debajo del
+  // píxel: el navegador los promedia con el fondo y el icono se vuelve una
+  // mancha. No se arregla con más resolución — a esa escala no cabe el
+  // detalle. Por debajo del umbral se cambia al juego macizo, que se
+  // reconoce por silueta.
+  //
+  // Dos umbrales y no uno: con un único punto de corte, un gesto de zoom que
+  // se quede rondando ese valor repintaría el lienzo entero en cada paso. La
+  // histéresis hace que el cambio ocurra una vez y se quede.
+  const LOD_A_MINI  = 0.50;   // bajando de aquí → iconos macizos
+  const LOD_A_PLENO = 0.62;   // subiendo de aquí → iconos detallados
+  let lodIconos = "full";
+
+  function lodParaZoom(z) {
+    if (lodIconos === "full" && z <  LOD_A_MINI)  return "mini";
+    if (lodIconos === "mini" && z >  LOD_A_PLENO) return "full";
+    return lodIconos;
+  }
 
   function applyViewport() {
     worldEl.style.transform = `translate(${vp.panX}px,${vp.panY}px) scale(${vp.zoom})`;
+
+    // Solo se repinta al CRUZAR el umbral, no en cada paso de zoom.
+    const nuevo = lodParaZoom(vp.zoom);
+    if (nuevo !== lodIconos) {
+      lodIconos = nuevo;
+      render();
+    }
   }
 
   // Ajusta zoom y pan para que el contenido (nodos) ocupe el canvas visible.
@@ -270,36 +295,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     onStatus: text => console.debug("[status]", text),
   });
 
-  // ── Logo dropdown ────────────────────────────────────────────────────
-  const logoBtn      = document.getElementById("onav-logo-btn");
-  const logoDropdown = document.getElementById("onav-dropdown");
-  const logoWrap     = logoBtn.closest(".onav-logo-wrap");
-  logoBtn.addEventListener("click", e => {
-    e.stopPropagation();
-    logoDropdown.hidden ? openLogoDropdown() : closeLogoDropdown();
-  });
-  let logoHideTimer = null;
-  const openLogoDropdown = () => {
-    clearTimeout(logoHideTimer);
-    logoDropdown.hidden = false;
-    logoBtn.classList.add("open");
-  };
-  const closeLogoDropdown = () => {
-    logoHideTimer = setTimeout(() => {
-      logoDropdown.hidden = true;
-      logoBtn.classList.remove("open");
-    }, 180);
-  };
-  // Only listen on the wrap — logoDropdown is a child so mouse inside it
-  // does NOT trigger mouseleave on logoWrap. No dropdown-level listeners needed.
-  logoWrap.addEventListener("mouseenter", openLogoDropdown);
-  logoWrap.addEventListener("mouseleave", closeLogoDropdown);
-  document.addEventListener("click", e => {
-    if (!logoBtn.contains(e.target) && !logoDropdown.contains(e.target)) {
-      logoDropdown.hidden = true;
-      logoBtn.classList.remove("open");
-    }
-  });
+  // El logo ya no despliega nada (ver index.html), así que aquí no queda
+  // ningún cableado: era el único sitio que abría #onav-dropdown.
 
   // ── Hamburger (mobile) ───────────────────────────────────────────────
   const hamburger   = document.getElementById("onav-hamburger");
@@ -336,6 +333,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       b.classList.toggle("active", on);
       b.setAttribute("aria-pressed", String(on));
     }
+  });
+
+  // ── Organizar (Pretty) desde la barra ────────────────────────────────
+  //
+  // El aviso lleva el atajo entre paréntesis a propósito: quien llega por el
+  // botón es justo quien todavía no sabe que existe la tecla O, y este es el
+  // único momento en que va a leerlo.
+  document.getElementById("btn-pretty")?.addEventListener("click", () => {
+    runPretty();
+    showToast("Diagrama organizado ✨ (atajo: tecla O)");
   });
 
   // ── Terminal toggle ──────────────────────────────────────────────────
@@ -425,7 +432,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     pushHistorySnapshot,
     uid,
     postBatchCallback: () => {
-      runPretty();
+      // handleAIActions ya empujó un snapshot por todo el lote: una
+      // petición a la IA es un solo paso de deshacer, organización incluida.
+      runPrettyNoHistory();
       requestAnimationFrame(() => requestAnimationFrame(fitToScreen));
     },
   });
@@ -529,7 +538,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       store.dispatch({ type: ActionTypes.LOAD_GRAPH, payload: { graph } });
       requestAnimationFrame(() => {
         resolveAndDispatch(store, store.dispatch, ActionTypes, null);
-        runPretty();
+        runPrettyNoHistory(); // el snapshot ya se empujó arriba
       });
       showToast("Ejemplo cargado ✅");
     },
@@ -571,8 +580,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const node = store.getState().graph.nodes.find(n => n.id === nodeId);
     const isTerminalNode = ["pc", "agv", "plc", "ur3"].includes(node?.type);
 
+    // El menú se abre sobre un dispositivo concreto y no lo decía. La
+    // cabecera lo nombra y el contenedor toma su color de tipo.
+    if (node?.type) ctxMenu.dataset.type = node.type;
+    else delete ctxMenu.dataset.type;
+
     // Position inside the stage, clamped so it doesn't overflow the right/bottom edge
-    const menuW = 210, menuH = isTerminalNode ? 160 : 130;
+    // (+30 px de cabecera respecto a la altura anterior)
+    const menuW = 210, menuH = isTerminalNode ? 190 : 160;
     const stageW = rect.width, stageH = rect.height;
     const rawLeft = clientX - rect.left;
     const rawTop  = clientY - rect.top;
@@ -580,6 +595,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     ctxMenu.style.top  = Math.min(rawTop,  stageH - menuH) + "px";
 
     ctxMenu.innerHTML = `
+      ${node ? `<div class="ctx-header type-bar--top">
+        <span class="type-swatch"></span>
+        <span class="ctx-header-name">${escHtml(node.label)}</span>
+        <span class="ctx-header-type">${escHtml(typeName(node.type))}</span>
+      </div>` : ""}
       <div class="ctx-item" data-action="inspect">
         <i class="fa-solid fa-pen-to-square"></i> Editar propiedades
       </div>
@@ -706,30 +726,46 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // ── Pretty layout v2 — delegado al módulo prettyLayout.js ───────────
-  function runPretty() {
+  // ── Pretty — delegado a src/app/layout/ ──────────────────────────────
+  //
+  // El historial lo empuja QUIEN LLAMA, no el motor. Antes lo hacían los
+  // dos, y cargar un ejemplo dejaba dos pasos de deshacer para una sola
+  // acción del usuario. `runPretty` es la entrada normal; los llamadores
+  // que ya empujaron su propio snapshot usan `runPrettyNoHistory`.
+  // Orientación del dibujo según la clase de dispositivo. Se consulta en el
+  // momento de organizar, NO al redimensionar: girar el diagrama debajo del
+  // usuario porque cambió el tamaño de la ventana sería peor que dejarlo
+  // como está. El mismo grafo y la misma orientación siempre dan el mismo
+  // resultado; lo que cambia es cuál se pide.
+  const MOVIL_MAX_W = 820;
+  function orientacionActual() {
+    const ancho = window.innerWidth || document.documentElement.clientWidth || 1200;
+    return ancho <= MOVIL_MAX_W ? "vertical" : "horizontal";
+  }
+
+  function applyPretty() {
     prettyLayout({
       graph: store.getState().graph,
-      pushHistorySnapshot,
       dispatch: store.dispatch,
       ActionTypes,
+      orientation: orientacionActual(),
     });
     requestAnimationFrame(() => requestAnimationFrame(() => fitToScreen(60, ZOOM_MAX, 0.9)));
   }
 
+  function runPretty() {
+    pushHistorySnapshot();
+    applyPretty();
+  }
+
   function runPrettyNoHistory() {
-    prettyLayout({
-      graph: store.getState().graph,
-      pushHistorySnapshot,
-      dispatch: store.dispatch,
-      ActionTypes,
-      skipHistory: true,
-    });
-    requestAnimationFrame(() => requestAnimationFrame(() => fitToScreen(60, ZOOM_MAX, 0.9)));
+    applyPretty();
   }
 
   // ── Stage: click / drag / link ───────────────────────────────────────
   let dragging = null;
+  // Enlace bajo el cursor. Vista, no estado: no vive en el store.
+  let hoveredLinkId = null;
 
   stageEl.addEventListener("mousedown", e => {
     if (e.button === 1 || (e.button === 0 && e.altKey)) return;
@@ -796,6 +832,39 @@ document.addEventListener("DOMContentLoaded", async () => {
       x: Math.round(x - dragging.offsetX),
       y: Math.round(y - dragging.offsetY),
     }});
+  });
+
+  // ── Revelado de etiquetas al pasar el cursor ──────────────────────────
+  //
+  // El plan de `renderer.js` apaga las etiquetas que se apiñan; esto las
+  // devuelve una a una. NO pasa por el store a propósito: un dispatch por
+  // cada mousemove repintaría el lienzo entero decenas de veces por
+  // segundo. Se toca la clase del elemento y ya. `hoveredLinkId` se
+  // conserva para que un repintado por otra causa no pierda el revelado.
+  stageEl.addEventListener("mousemove", e => {
+    if (panning || dragging) return;
+    const rect = stageEl.getBoundingClientRect();
+    const { x, y } = toWorld(e.clientX - rect.left, e.clientY - rect.top);
+    const link = hitTestLink(store.getState().graph, Math.round(x), Math.round(y), 12 / vp.zoom);
+    const id = link?.id || null;
+    if (id === hoveredLinkId) return;
+
+    hoveredLinkId = id;
+    for (const el of svgEl.querySelectorAll(".link-label--revelada")) {
+      el.classList.remove("link-label--revelada");
+    }
+    if (id) {
+      svgEl.querySelector(`.link-label[data-link-id="${id}"]`)
+        ?.classList.add("link-label--revelada");
+    }
+  });
+
+  stageEl.addEventListener("mouseleave", () => {
+    if (!hoveredLinkId) return;
+    hoveredLinkId = null;
+    for (const el of svgEl.querySelectorAll(".link-label--revelada")) {
+      el.classList.remove("link-label--revelada");
+    }
   });
 
   window.addEventListener("mouseup", e => {
@@ -1105,7 +1174,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       store.dispatch({ type: ActionTypes.LOAD_GRAPH, payload: { graph: createDemoGraph() } });
       requestAnimationFrame(() => {
         resolveAndDispatch(store, store.dispatch, ActionTypes, null);
-        runPretty();
+        runPrettyNoHistory(); // el snapshot ya se empujó arriba
       });
       showToast("Reset ✅");
       return;
@@ -1202,7 +1271,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         store.dispatch({ type: ActionTypes.LOAD_GRAPH, payload: { graph: ex } });
         requestAnimationFrame(() => {
           resolveAndDispatch(store, store.dispatch, ActionTypes, null);
-          runPretty();
+          runPrettyNoHistory(); // el snapshot ya se empujó arriba
         });
         showToast("Ejemplo ✅");
       } catch {
@@ -1273,6 +1342,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ── Status badge ─────────────────────────────────────────────────────
+  //
+  // El badge dejó de ser un contador para volverse la huella del diagrama:
+  // una barra apilada con un tramo por tipo presente, proporcional a
+  // cuántos dispositivos hay de cada uno. Dos topologías del mismo tamaño
+  // se distinguen de un vistazo, y la barra cambia mientras se construye.
+  //
+  // Es dato, no decoración: solo aparecen los tipos que existen en el
+  // grafo, y los conteos van escritos debajo — el color nunca es la única
+  // señal.
   function updateStatusBadge(state) {
     const { nodes, links } = state.graph;
     const uc = history.undoCount();
@@ -1280,8 +1358,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     const undoRedo = (uc > 0 || rc > 0)
       ? ` · <span title="Pasos deshacer/rehacer" style="opacity:0.65">↩${uc} ↪${rc}</span>`
       : "";
+
+    // Mientras hay una herramienta de nodo cargada, el badge dice cuál:
+    // hasta ahora el único aviso era el fantasma del cursor.
+    const tool = state.ui.tool;
+    const armado = tool && tool !== "select" && tool !== "link"
+      ? `<span class="status-armed">Dibujando ${typeChip(tool)}</span>`
+      : "";
+
     document.getElementById("status-badge").innerHTML =
-      `${nodes.length} nodos · ${links.length} enlaces${undoRedo}`;
+      censusBar(nodes)
+      + `<span class="status-counts">${nodes.length} nodos · ${links.length} enlaces${undoRedo}</span>`
+      + armado;
+
+    // El ítem del menú Dibujar correspondiente se resalta con su propio
+    // color. Se marca el botón y no la barra para que baste una regla CSS
+    // en vez de una por tipo.
+    for (const btn of document.querySelectorAll(".menu-item[data-type]")) {
+      btn.classList.toggle("menu-item--armed", btn.dataset.type === tool);
+    }
   }
 
   // ── Subscribe ────────────────────────────────────────────────────────
@@ -1366,6 +1461,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       dispatch: store.dispatch,
       ActionTypes,
       runtime: engine.runtime,
+      hoveredLinkId,
+      lod: lodIconos,
     });
     if (showTerminal) terminalPanel.render();
   }

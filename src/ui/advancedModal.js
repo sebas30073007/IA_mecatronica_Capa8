@@ -151,8 +151,15 @@ export function createAdvancedModal({ dispatch, ActionTypes, getState }) {
       if (!node) { close(); return; }
       const info = NODE_INFO[node.type] || _fallbackNodeInfo(node.type);
       if (titleEl) titleEl.textContent = info.nombre;
+      // La ficha habla de un dispositivo concreto, así que sus iconos de
+      // sección van en el color de ese tipo en vez de en el acento del
+      // proyecto. El cobre queda para las acciones.
+      backdrop.dataset.type = node.type;
       _renderNodeInfo(info);
     } else {
+      // Un enlace no tiene tipo: se limpia para no arrastrar el color del
+      // último nodo consultado.
+      delete backdrop.dataset.type;
       const link = state.graph.links.find(l => l.id === id);
       if (!link) { close(); return; }
       const mediaKey = link.mediaType || "ethernet";

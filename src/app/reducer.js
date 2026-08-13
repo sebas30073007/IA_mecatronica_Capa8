@@ -77,6 +77,25 @@ export function reducer(state, action) {
       return next;
     }
 
+    // Reposicionamiento masivo (Pretty, ajuste a rejilla, colisiones).
+    // Un solo clon del estado y un solo repintado para todo el lote.
+    case ActionTypes.APPLY_LAYOUT: {
+      const moves = action.payload?.moves;
+      if (!Array.isArray(moves) || moves.length === 0) return state;
+      const byId = new Map(next.graph.nodes.map(n => [n.id, n]));
+      let changed = 0;
+      for (const m of moves) {
+        const n = byId.get(m.id);
+        if (!n) continue;
+        n.x = m.x;
+        n.y = m.y;
+        changed++;
+      }
+      if (changed === 0) return state;
+      next.graph.meta.updatedAt = Date.now();
+      return next;
+    }
+
     case ActionTypes.UPDATE_NODE: {
       const n = next.graph.nodes.find(x => x.id === action.payload.id);
       if (!n) return state;

@@ -1,6 +1,8 @@
 // src/ui/previewPanel.js
 // UI de preview de acciones antes de aplicar al diagrama.
 
+import { typeSwatch, typeName } from "./typeTag.js";
+
 const OP_ICONS  = { add: "+", modify: "~", delete: "−" };
 const OP_CLASSES = { add: "preview-op-add", modify: "preview-op-mod", delete: "preview-op-del" };
 
@@ -25,6 +27,7 @@ export function showPreviewPanel(items, { onApply, onCancel } = {}) {
       ${items.map(item => `
         <div class="preview-item ${OP_CLASSES[item.op] || ""}">
           <span class="preview-op">[${OP_ICONS[item.op] || "?"}]</span>
+          ${item.type ? typeSwatch(item.type, typeName(item.type)) : ""}
           <span class="preview-detail">${escapeHtml(item.detail)}</span>
         </div>
       `).join("")}
@@ -78,10 +81,13 @@ export function actionsToPreviewItems(actions) {
   return actions.filter(a => a.valid && a.parsed).map(action => {
     const p = action.parsed;
     let op = "add", kind = "node", detail = "";
+    // El tipo ya venía en la acción y se tiraba. Con él, la fila puede
+    // decir de qué dispositivo habla antes de aplicar nada.
+    let type = null;
 
     switch (p.action) {
       case "add_node":
-        op = "add"; kind = "node";
+        op = "add"; kind = "node"; type = p.type || null;
         detail = `Agregar ${p.type || "nodo"} "${p.label || "?"}"${p.ip ? ` (${p.ip})` : ""}`;
         break;
       case "add_link":
@@ -108,7 +114,7 @@ export function actionsToPreviewItems(actions) {
         op = "modify"; detail = p.action;
     }
 
-    return { op, kind, detail, action };
+    return { op, kind, type, detail, action };
   });
 }
 

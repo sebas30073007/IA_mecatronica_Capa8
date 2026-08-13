@@ -340,6 +340,30 @@ export function createChatPanel({ store, onApplyAction, onApplyActions }) {
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
+  /**
+   * Las acciones pendientes, una píldora por acción.
+   *
+   * Antes era un solo bloque de texto en cobre. Cuando la acción habla de
+   * un dispositivo, la píldora toma el color de su tipo: así el usuario ve
+   * qué va a aparecer en el lienzo antes de pulsar Aplicar, y el cobre
+   * queda libre para el botón, que es la acción primaria.
+   *
+   * @param {Array<{parsed:object}>} validActions
+   */
+  function pendingPills(validActions) {
+    const wrap = document.createElement("div");
+    wrap.className = "fab-action-pending";
+    for (const a of validActions) {
+      const p = a.parsed;
+      const pill = document.createElement("span");
+      pill.className = "fab-action-pill";
+      if (p.type) pill.dataset.type = p.type;
+      pill.textContent = `${p.action}${p.label ? ": " + p.label : ""}`;
+      wrap.appendChild(pill);
+    }
+    return wrap;
+  }
+
   // Parse CAPA8_ACTION blocks, render markdown, show Apply/Preview buttons.
   function renderAssistantContent(el, text) {
     const { text: cleanText, actions } = parseResponse(text);
@@ -377,14 +401,7 @@ export function createChatPanel({ store, onApplyAction, onApplyActions }) {
 
     } else if (validActions.length > 1) {
       // Batch mode — inline labels + single apply button
-      const pendingLabels = validActions.map(a => {
-        const p = a.parsed;
-        return `[${p.action}${p.label ? ": " + p.label : ""}]`;
-      }).join(" ");
-      const pendingSpan = document.createElement("div");
-      pendingSpan.className = "fab-action-pending";
-      pendingSpan.textContent = pendingLabels;
-      el.appendChild(pendingSpan);
+      el.appendChild(pendingPills(validActions));
 
       const batchBtn = document.createElement("button");
       batchBtn.className = "fab-apply-btn fab-apply-btn--batch";
@@ -412,6 +429,8 @@ export function createChatPanel({ store, onApplyAction, onApplyActions }) {
     } else {
       // Single action
       const a = validActions[0];
+      el.appendChild(pendingPills(validActions));
+
       const btn = document.createElement("button");
       btn.className = "fab-apply-btn";
       btn.innerHTML = `<i class="fa-solid fa-circle-play"></i> Aplicar al diagrama`;

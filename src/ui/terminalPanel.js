@@ -12,6 +12,55 @@ const TERMINAL_COMMANDS = [
   "show ip route", "show mac-address-table", "ifconfig",
 ];
 
+/** Escapa un literal para meterlo en una expresión regular. */
+function reEscape(s) {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Escapa HTML igual que lo hace `render()` antes de colorear. */
+function htmlEscape(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+/**
+ * Tiñe cada nombre de dispositivo con el color de su tipo.
+ *
+ * Va en el coloreador y no en los comandos a propósito: la salida del
+ * terminal vive como texto plano en el store y se escapa entera antes de
+ * pintarse, así que aquí no puede entrar HTML del usuario. Un nodo
+ * llamado `<b>x` sale literal, no interpretado.
+ *
+ * Una sola pasada con una alternancia ordenada de mayor a menor longitud:
+ * así "PC-1" gana sobre "PC" y nada de lo ya sustituido se vuelve a
+ * escanear.
+ *
+ * @param {string} html - texto ya escapado y coloreado por las demás reglas
+ * @param {Array<{label:string,type:string}>} nodes
+ */
+function inkDeviceNames(html, nodes) {
+  const porEtiqueta = new Map();
+  for (const n of nodes) {
+    const l = (n.label || "").trim();
+    if (l.length >= 2) porEtiqueta.set(htmlEscape(l), n.type);
+  }
+  if (porEtiqueta.size === 0) return html;
+
+  const etiquetas = [...porEtiqueta.keys()].sort((a, b) => b.length - a.length);
+  const re = new RegExp(
+    `(^|[^\\w-])(${etiquetas.map(reEscape).join("|")})(?![\\w-])`,
+    "g"
+  );
+
+  // Solo sobre el texto: los fragmentos que son etiquetas HTML (los
+  // <span> que ya insertaron las reglas anteriores) se dejan intactos.
+  return html.split(/(<[^>]+>)/).map(trozo => {
+    if (trozo.startsWith("<")) return trozo;
+    return trozo.replace(re, (_m, pre, lbl) =>
+      `${pre}<span class="type-ink" data-type="${porEtiqueta.get(lbl)}">${lbl}</span>`
+    );
+  }).join("");
+}
+
 /** IDs de los nodos que toca un camino de enlaces. */
 function nodesOfPath(graph, linkIds) {
   const ids = new Set();
@@ -170,8 +219,11 @@ export function createTerminalPanel({ store, dispatch, ActionTypes, onPingReques
         '<span class="type-ink" data-type="$1">[$1]</span>'
       );
 
-    outputEl.innerHTML = colored;
+    // Al final: los nombres de dispositivo. Va después de todo lo demás
+    // para que las reglas anteriores no vuelvan a escanear su marcado.
+    outputEl.innerHTML = inkDeviceNames(colored, state.graph.nodes);
     outputEl.scrollTop = outputEl.scrollHeight;
+
 
     if (inputEl) {
       inputEl.placeholder = pc ? "ping 10.0.0.1" : "Selecciona una PC";

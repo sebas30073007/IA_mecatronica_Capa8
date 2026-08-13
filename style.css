@@ -58,6 +58,21 @@
   --error:           #fb7185;
   --warning:         #fbbf24;
 
+  /* ---- Cromática de la barra ----
+     Los botones de la barra llevan color para poder distinguirse de un
+     vistazo. Hay que saber lo que cuesta: el espectro de tipo ocupa de 45°
+     a 350° y el acento se reserva 0-40°, así que NO QUEDA MATIZ LIBRE.
+     Cualquier color aquí comparte tono con algún tipo de dispositivo.
+     Por eso se eligen por convención y no por gusto, y ninguno se usa como
+     fondo — solo como tinta del icono:
+       · terminal → verde, el mismo del prompt que abre
+       · enlace y luna → azul, el color universal de un enlace y de la noche
+     El sol se queda en el acento del proyecto, que es donde vive el naranja.
+     Alternativa si esto llega a confundirse con los nodos: dejar los iconos
+     neutros y teñir solo el estado activo. */
+  --ui-terminal:     var(--success);
+  --ui-link:         #7aa2f7;
+
   /* ---- Superficies (contexto por defecto: dark) ---- */
   --surface:           var(--graphite);
   --surface-secondary: var(--graphite-raised);
@@ -271,6 +286,18 @@ body:has(.chat-page) {
   left: 0;
   right: 0;
   z-index: 1000;
+  flex-shrink: 0;
+}
+
+/* Logo inerte del simulador — mismo hueco que .onav-logo-btn pero sin
+   cursor, sin hover y sin foco: no es un control, es la marca. Dejar el
+   hover de un botón en algo que no hace nada al pulsarlo es prometer una
+   interacción que no existe.
+   .onav-logo-btn sigue vivo abajo porque about.html aún lo usa. */
+.onav-logo {
+  display: flex; align-items: center;
+  padding: 5px 9px;
+  color: var(--technical-white);
   flex-shrink: 0;
 }
 
@@ -1130,7 +1157,10 @@ a.pill-btn { text-decoration: none; }
   .onav-diag-actions .speed-group { height: 24px; }
   .onav-diag-actions .speed-btn { font-size: 0.6rem; padding: 0 6px; }
   .onav-diag-actions .cnav-icon-btn { width: 24px; height: 24px; font-size: 0.68rem; }
-  .onav-icon-btn, .theme-toggle-btn { width: 32px; height: 32px; font-size: 0.8rem; }
+  /* #btn-github va con el tema y no con .onav-diag-actions (que baja a 24px):
+     son los dos controles que quedan sueltos a la derecha del divisor, y
+     desparejarlos ahí se notaría más que el ahorro de 8px. */
+  .onav-icon-btn, .theme-toggle-btn, #btn-github { width: 32px; height: 32px; font-size: 0.8rem; }
 }
 
 /* ── Mobile sim menu (inside hamburger) ──────────────────── */
@@ -1329,6 +1359,18 @@ a.pill-btn { text-decoration: none; }
 }
 
 .sim-menubar .menu-item:hover i { opacity: 1; }
+
+/* El icono de una herramienta de dibujo ya viene teñido con el color de
+   su tipo: atenuarlo al 60 % anulaba justo la información que aporta. */
+.sim-menubar .menu-item i.type-ink { opacity: 1; }
+
+/* Herramienta cargada. Es estado activo, y va en el color del
+   dispositivo que se va a crear, no en el acento. */
+.menu-item--armed {
+  background: color-mix(in srgb, var(--node-color) 12%, transparent) !important;
+  box-shadow: inset 2px 0 0 var(--node-color);
+}
+.menu-item--armed span:first-of-type { color: var(--node-color); }
 
 .sim-menubar .menu-kbd {
   font-family: var(--font-mono);
@@ -1883,6 +1925,14 @@ a.pill-btn { text-decoration: none; }
 
 .saber-mas-stat i { color: var(--accent); font-size: 0.65rem; }
 
+/* Ficha de un dispositivo concreto: los títulos de sección y los iconos
+   de dato pasan al color de ese tipo. La ficha de un enlace no lleva
+   data-type y se queda en el acento, como estaba. */
+.adv-modal-backdrop[data-type] .saber-mas-section-title,
+.adv-modal-backdrop[data-type] .saber-mas-stat i {
+  color: var(--node-color);
+}
+
 [data-theme="light"] .saber-mas-img-wrap,
 [data-theme="light"] .saber-mas-section {
   background: rgba(0,0,0,0.03);
@@ -2093,6 +2143,15 @@ a.pill-btn { text-decoration: none; }
   text-shadow: 0 1px 4px rgba(0,0,0,0.8), 0 0 8px rgba(0,0,0,0.6);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Acento de tipo bajo el nombre. Subrayado y no borde porque el label
+     ocupa los 86 px del nodo mientras el texto ocupa menos: así la marca
+     mide lo que mide el nombre y sobrevive al recorte con ellipsis.
+     `--node-color` ya lo declara `.node.router`… más abajo. */
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--node-color, var(--type-pc)) 55%, transparent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
 /* Disco crystal detrás del icono SVG */
@@ -2104,7 +2163,13 @@ a.pill-btn { text-decoration: none; }
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  will-change: transform;
+  /* Sin will-change, por la MISMA razón que .stage-world (ver arriba): lo
+     promovía a capa de GPU rasterizada a su escala del momento, así que al
+     hacer zoom el navegador estiraba ese mapa de bits en vez de volver a
+     dibujar el SVG. De ahí el icono borroso que se "limpiaba" solo al pasar
+     el cursor — el drop-shadow del :hover forzaba el redibujado. Y su fondo
+     es casi transparente, así que la capa cacheada también arrastraba el
+     halo, que es por lo que se notaba más en oscuro. */
 }
 .node-icon svg { width: 40px; height: 40px; shape-rendering: geometricPrecision; }
 
@@ -2203,6 +2268,65 @@ a.pill-btn { text-decoration: none; }
   background: color-mix(in srgb, var(--node-color, var(--type-pc)) 10%, transparent);
   border: 1px solid color-mix(in srgb, var(--node-color, var(--type-pc)) 28%, transparent);
   white-space: nowrap;
+  max-width: 14ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.type-chip-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* Fila de puntos: de qué está hecha una topología, antes de abrirla. */
+.comp-strip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+.comp-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--node-color, var(--type-pc));
+  flex-shrink: 0;
+}
+.comp-more {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+/* Tecla que carga una herramienta de dibujo: lleva el color del
+   dispositivo que crea, así el mapeo tecla → color → icono se aprende
+   desde la primera pantalla.
+   `!important` porque las reglas de superficie de cada tema (`.es-draw
+   kbd`, y su variante en claro) van después y tienen igual o más
+   especificidad; el color de tipo debe ganarles por diseño. */
+kbd[data-type] {
+  color: var(--node-color);
+  border-color: color-mix(in srgb, var(--node-color) 40%, transparent) !important;
+  background: color-mix(in srgb, var(--node-color) 10%, transparent) !important;
+}
+
+/* Cabecera del inspector de enlace: nombra sus dos extremos, que hasta
+   ahora el panel no decía. */
+.insp-link-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  margin: calc(var(--space-md) * -1) calc(var(--space-md) * -1) var(--space-md);
+  background: var(--graphite-raised);
+  border-bottom: 1px solid var(--divider-dark);
+}
+.insp-link-arrow {
+  font-size: 10px;
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 /* IP: monoespacio pequeño abajo */
@@ -2706,6 +2830,74 @@ a.pill-btn { text-decoration: none; }
 .cnav-icon-btn:hover { background: rgba(255, 255, 255, 0.1); color: var(--technical-white); }
 .cnav-icon-btn.active { background: rgba(255, 255, 255, 0.18); color: var(--technical-white); }
 
+/* ── Cromática de los botones de la barra ─────────────────
+   El color va SOLO en la tinta del icono, nunca en el fondo: el acento y
+   el espectro son señal, no superficie. El icono sigue siendo el que
+   distingue la acción — el color acompaña, no sustituye. */
+#btn-terminal { color: var(--ui-terminal); border-color: color-mix(in srgb, var(--ui-terminal) 30%, transparent); }
+#btn-copylink { color: var(--ui-link);     border-color: color-mix(in srgb, var(--ui-link) 30%, transparent); }
+
+/* GitHub en blanco pleno, y no en un color del espectro, por dos razones: no
+   es una acción sobre el diagrama (sale de la app), y el espectro ya está
+   repartido entre los 10 tipos de nodo. Blanco en ambos temas porque la
+   navbar se queda en grafito también en claro (ver [data-theme="light"]
+   .obsidiana-nav). Es <a>, así que necesita el line-height y el
+   text-decoration que .cnav-icon-btn daba por hechos en un <button>. */
+#btn-github {
+  color: var(--technical-white);
+  border-color: rgba(255, 255, 255, 0.18);
+  text-decoration: none;
+  line-height: 1;
+}
+#btn-github:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.38);
+  color: var(--technical-white);
+}
+
+#btn-terminal:hover, #btn-terminal.active {
+  color: var(--ui-terminal);
+  background: color-mix(in srgb, var(--ui-terminal) 14%, transparent);
+  border-color: color-mix(in srgb, var(--ui-terminal) 55%, transparent);
+}
+#btn-copylink:hover {
+  color: var(--ui-link);
+  background: color-mix(in srgb, var(--ui-link) 14%, transparent);
+  border-color: color-mix(in srgb, var(--ui-link) 55%, transparent);
+}
+/* Al copiar, el icono cambia a un check durante 2 s (main.js). Que además
+   se ponga verde cierra el gesto: el color confirma lo que dice el icono. */
+#btn-copylink .fa-check { color: var(--success); }
+
+/* Organizar (Pretty) — la acción principal del lienzo, así que le toca el
+   acento del proyecto. Late muy despacio para que se note sin pedir turno:
+   5 s de ciclo está por debajo del umbral en que un parpadeo se lee como
+   alarma, y el rango de opacidad es corto a propósito. */
+#btn-pretty {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 32%, transparent);
+  animation: pretty-latido 5s ease-in-out infinite;
+}
+#btn-pretty:hover,
+#btn-pretty:focus-visible {
+  color: var(--accent);
+  background: var(--accent-tint);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  animation: none;
+  opacity: 1;
+}
+
+@keyframes pretty-latido {
+  0%, 100% { opacity: 0.7; box-shadow: 0 0 0 0 rgba(255,107,53,0); }
+  50%      { opacity: 1;   box-shadow: 0 0 9px 1px var(--accent-glow); }
+}
+
+/* El latido es una invitación, no información: quien pide menos movimiento
+   se queda con el color, que es lo que de verdad identifica al botón. */
+@media (prefers-reduced-motion: reduce) {
+  #btn-pretty { animation: none; opacity: 1; }
+}
+
 
 /* ── Stage wrap fills remaining height ─────────────────── */
 .sim-stage-wrap {
@@ -2759,6 +2951,36 @@ a.pill-btn { text-decoration: none; }
 
 .node-ctx-menu[hidden] { display: none; }
 
+/* Cabecera: el menú se abre sobre un dispositivo concreto y hasta ahora
+   no lo decía. Fondo neutro — el color va en el punto y en el tipo. */
+.ctx-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 10px;
+  margin: -4px -4px 4px;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid var(--divider-dark);
+}
+.ctx-header-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ctx-header-type {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--node-color, var(--text-muted));
+  flex-shrink: 0;
+}
+
 .ctx-item {
   padding: 7px 14px;
   font-size: 0.82rem;
@@ -2780,6 +3002,9 @@ a.pill-btn { text-decoration: none; }
   position: absolute;
   left: 8px;
   bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
   font-size: 0.68rem;
   color: rgba(255, 255, 255, 0.55);
   background: rgba(9, 10, 31, 0.7);
@@ -2787,10 +3012,39 @@ a.pill-btn { text-decoration: none; }
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-pill);
-  padding: 2px 8px;
+  padding: 3px var(--space-sm);
   transition: bottom 0.2s ease-out;
   pointer-events: none;
   z-index: 30;
+}
+.status-counts { white-space: nowrap; }
+
+/* Censo de tipos: la huella del diagrama.
+   Un tramo por tipo presente, proporcional a cuántos dispositivos hay.
+   Es dato —solo aparecen los tipos que existen— y nunca va solo: los
+   conteos van escritos al lado. */
+.status-census {
+  display: flex;
+  width: 72px;
+  height: 4px;
+  gap: 1px;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.status-census-seg {
+  background: var(--node-color, var(--type-pc));
+  min-width: 2px;
+}
+
+/* Herramienta cargada: hasta ahora solo lo decía el fantasma del cursor. */
+.status-armed {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding-left: var(--space-sm);
+  border-left: 1px solid var(--divider-dark);
+  white-space: nowrap;
 }
 
 .status-badge .sim-dot {
@@ -3102,6 +3356,19 @@ a.pill-btn { text-decoration: none; }
 .stage-svg { color: var(--type-switch); }
 .pkt-pulse { pointer-events: none; }
 
+/* Etiquetas de enlace.
+   Las que el plan de `renderer.js` apaga por apiñamiento no se quitan del
+   DOM: se vuelven transparentes. Así el cursor puede revelar la de un
+   enlace concreto sin que haya que repintar el lienzo entero, y el dato
+   sigue estando a un gesto de distancia en vez de desaparecer. */
+.link-label { transition: opacity 120ms ease; }
+.link-label--oculta { opacity: 0; }
+.link-label--revelada { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .link-label { transition: none; }
+}
+
 [data-theme="light"] .pkt-dot { stroke: var(--technical-white); }
 [data-theme="light"] .pkt-label {
   fill: var(--graphite);
@@ -3180,18 +3447,9 @@ a.pill-btn { text-decoration: none; }
 .es-card--error { border-color: var(--error); }
 .es-card-name { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); }
 .es-card-desc { font-size: 0.68rem; color: var(--text-secondary); }
-
-.es-more {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  font-family: var(--font-body);
-  font-size: 0.74rem;
-  cursor: pointer;
-  padding: 0;
-  transition: color var(--transition);
-}
-.es-more:hover { color: var(--accent); }
+/* De qué está hecha la topología, antes de abrirla: lo que una
+   descripción de cuatro palabras no alcanza a decir. */
+.es-card .comp-strip { margin-top: 6px; }
 
 /* Separador */
 .es-sep {
@@ -3375,6 +3633,9 @@ a.pill-btn { text-decoration: none; }
   color: var(--text-secondary);
   margin-top: 3px;
 }
+/* El punto dice de qué tipo es el dispositivo con el problema; el borde
+   y el icono de la fila siguen siendo de severidad. */
+.diag-msg .type-swatch { margin-right: 6px; vertical-align: baseline; }
 .diag-msg {
   font-size: 0.76rem;
   line-height: 1.45;
@@ -3412,6 +3673,16 @@ a.pill-btn { text-decoration: none; }
 .diag-empty p { font-size: 0.78rem; line-height: 1.5; margin: 0; }
 .diag-empty--ok i { color: var(--success); opacity: 1; }
 .diag-empty-sub { font-family: var(--font-mono); font-size: 0.64rem; }
+
+/* Composición de la topología revisada, cuando no hay nada que corregir:
+   en vez de un total, de qué está hecha. */
+.diag-census {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin: var(--space-sm) 0 var(--space-xs);
+}
 
 .diag-foot {
   font-size: 0.66rem;
@@ -3771,9 +4042,17 @@ a.pill-btn { text-decoration: none; }
 }
 
 /* Inline action label shown in batch mode before "Aplicar todo" */
+/* Acciones pendientes: una píldora por acción.
+   Cuando la acción habla de un dispositivo toma el color de su tipo —así
+   se ve qué va a aparecer en el lienzo antes de pulsar Aplicar— y el
+   cobre queda libre para el botón, que es la acción primaria. */
 .fab-action-pending {
-  display: inline-block;
-  margin: 2px 4px 2px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 6px 0;
+}
+.fab-action-pill {
   padding: 1px 7px;
   border-radius: var(--radius-pill);
   background: rgba(255,107,53,0.12);
@@ -3781,6 +4060,10 @@ a.pill-btn { text-decoration: none; }
   font-size: 0.72rem;
   font-family: var(--font-mono);
   font-weight: 600;
+}
+.fab-action-pill[data-type] {
+  background: color-mix(in srgb, var(--node-color) 12%, transparent);
+  color: var(--node-color);
 }
 
 /* System feedback messages (applied / error confirmation) */
@@ -3863,10 +4146,57 @@ a.pill-btn { text-decoration: none; }
   transition: all var(--transition);
   flex-shrink: 0;
 }
+/* Luna en azul, sol en el acento: el estado se lee por color Y por icono,
+   nunca solo por color. El naranja se queda para el tema claro porque es
+   el único matiz que el sistema no tiene ya asignado a un tipo de nodo. */
+.theme-toggle-btn { color: var(--ui-link); }
+[data-theme="light"] .theme-toggle-btn { color: var(--accent); }
+
 .theme-toggle-btn:hover {
-  background: var(--graphite-raised);
-  border-color: var(--divider-dark);
-  color: var(--technical-white);
+  background: color-mix(in srgb, var(--ui-link) 14%, transparent);
+  border-color: color-mix(in srgb, var(--ui-link) 45%, transparent);
+  color: var(--ui-link);
+}
+[data-theme="light"] .theme-toggle-btn:hover {
+  background: var(--accent-tint);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  color: var(--accent);
+}
+
+/* ── Transición del cambio de tema ──
+   Cambiar de tema es reasignar tokens: sin esto, el salto de luminancia
+   ocurre en un solo frame y satura la vista, sobre todo al pasar de
+   oscuro a claro con el lienzo a pantalla completa.
+
+   La clase la pone y la quita `src/ui/themeSwitch.js`, solo durante el
+   cambio. Global y con `!important` porque los tokens los consume medio
+   archivo, y acotada en el tiempo porque dejarla puesta metería
+   transiciones de color en el hover de todo y en el arrastre de nodos,
+   que repinta a 60 fps.
+
+   Solo propiedades de color: `background-image` (la rejilla del lienzo)
+   no interpola, y transform/opacity no cambian con el tema.
+
+   Si se cambia la duración, cambiar también DURACION_MS en el módulo. */
+:root.theme-swap,
+:root.theme-swap *,
+:root.theme-swap *::before,
+:root.theme-swap *::after {
+  transition: background-color 440ms ease,
+              border-color     440ms ease,
+              color            440ms ease,
+              fill             440ms ease,
+              stroke           440ms ease,
+              box-shadow       440ms ease,
+              outline-color    440ms ease !important;
+  transition-delay: 0s !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root.theme-swap,
+  :root.theme-swap *,
+  :root.theme-swap *::before,
+  :root.theme-swap *::after { transition: none !important; }
 }
 
 /* ── Overrides del tema claro ── */
@@ -3908,6 +4238,10 @@ a.pill-btn { text-decoration: none; }
   --success:          #059669;
   --error:            #e11d48;
   --warning:          #b45309;
+
+  /* Cromática de la barra — oscurecida para pasar contraste sobre claro. */
+  --ui-terminal:      var(--success);
+  --ui-link:          #2563eb;
 
   /* Legacy */
   --bg-dark:          var(--mist);
@@ -4009,6 +4343,25 @@ a.pill-btn { text-decoration: none; }
   background: rgba(255,255,255,0.97);
   border-color: rgba(0,0,0,0.12);
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+/* Cabeceras que en oscuro usan --graphite-raised: ese token no se
+   redefine en claro, así que sin esto quedan como una franja negra
+   dentro de un panel blanco. */
+[data-theme="light"] .ctx-header {
+  background: rgba(0,0,0,0.035);
+  border-bottom-color: rgba(0,0,0,0.10);
+}
+[data-theme="light"] .insp-type-header,
+[data-theme="light"] .insp-link-header {
+  background: rgba(0,0,0,0.035);
+  border-bottom-color: rgba(0,0,0,0.10);
+}
+/* El badge de estado es ahora la huella del diagrama: en claro tiene que
+   leerse sobre el lienzo claro, no seguir siendo una píldora negra. */
+[data-theme="light"] .status-badge {
+  background: rgba(255,255,255,0.92);
+  border-color: rgba(0,0,0,0.12);
+  color: var(--alloy);
 }
 [data-theme="light"] .ctx-item { color: rgba(0,0,0,0.75); }
 [data-theme="light"] .ctx-item:hover { background: rgba(0,0,0,0.06); color: var(--graphite); }
@@ -4268,6 +4621,9 @@ a.pill-btn { text-decoration: none; }
   border: 1px solid transparent;
   font-size: 0.78rem;
 }
+/* El fondo sigue siendo de operación (alta / baja / cambio); el punto
+   dice de qué tipo de dispositivo se trata. Dos datos distintos. */
+.preview-item .type-swatch { margin-top: 5px; }
 
 .preview-op-add  { background: rgba(34,197,94,0.07);  border-color: rgba(34,197,94,0.2);  }
 .preview-op-mod  { background: rgba(234,179,8,0.07);  border-color: rgba(234,179,8,0.2);  }

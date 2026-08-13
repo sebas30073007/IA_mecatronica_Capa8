@@ -5,8 +5,8 @@
 // Cuando `nodes.length === 0`, main.js hacía `return` y el usuario se
 // quedaba mirando una rejilla en blanco. Para uso en clase eso es el
 // problema principal: nada de lo que la herramienta sabe hacer —los 8
-// diagnósticos, el CLI, las 11 topologías, las fichas por dispositivo—
-// es descubrible desde una pantalla vacía.
+// diagnósticos, el CLI, las topologías de ejemplo, las fichas por
+// dispositivo— es descubrible desde una pantalla vacía.
 //
 // Ofrece dos caminos hacia el primer nodo:
 //
@@ -18,6 +18,7 @@
 // de bench/emptycanvas_bench.mjs — no a una corazonada.
 
 import { loadExample } from "../examples/index.js";
+import { compDots } from "./typeTag.js";
 
 // Qué camino se presenta como principal.
 //   "describe" → el input arriba, ejemplos debajo
@@ -49,27 +50,41 @@ import { loadExample } from "../examples/index.js";
 // más en el bench de acciones), cambiar esta constante basta.
 const LEAD = "examples";
 
-// Las once topologías, de menor a mayor complejidad: las seis primeras
-// se muestran de entrada y el resto se despliega en el sitio.
+// Seis topologías, de menor a mayor complejidad. Seis y no las once que
+// hay: la galería es la primera pantalla, y una rejilla que se despliega
+// a once tarjetas convierte «elige un ejemplo» en una decisión. Las
+// otras cinco siguen a un clic, en el menú Ejemplos, para quien ya sabe
+// qué busca.
 //
-// Desplegar aquí en vez de mandar al menú Ejemplos es deliberado: el
-// estado vacío no debería depender de que el usuario encuentre un menú
-// —que es justo el problema que este panel viene a resolver— ni el
-// módulo debería acoplarse a la barra de menús para funcionar.
-const EJEMPLOS = [
-  { key: "small_lan",         nombre: "LAN pequeña",    desc: "Router, switch y PCs" },
-  { key: "home_network",      nombre: "Red doméstica",  desc: "Lo que tienes en casa" },
-  { key: "vlan_routing",      nombre: "VLAN + routing", desc: "Segmentar y enrutar" },
-  { key: "dmz",               nombre: "DMZ",            desc: "Dos firewalls, zona pública" },
-  { key: "campus",            nombre: "Campus",         desc: "Varios edificios" },
-  { key: "red_industrial",    nombre: "Industrial",     desc: "PLC, robot y AGV" },
-  { key: "wan_redundant",     nombre: "WAN redundante", desc: "Doble salida" },
-  { key: "data_center",       nombre: "Data center",    desc: "Servidores y core" },
-  { key: "mpls_wan",          nombre: "WAN MPLS",       desc: "Sucursales por MPLS" },
-  { key: "red_universitaria", nombre: "Universitaria",  desc: "Red de una facultad" },
-  { key: "este_proyecto",     nombre: "Este proyecto",  desc: "La arquitectura de Capa 8" },
+// El corte no es por complejidad sino por cobertura: entre estas seis
+// aparecen los diez tipos de dispositivo y las tres escalas —casa, LAN,
+// campus—, así que ninguna de las que se quedan fuera enseñaría algo que
+// no esté ya aquí.
+//
+// `comp` es el censo de tipos de cada topología, y alimenta la fila de
+// puntos de color de cada tarjeta: se ve de qué está hecha una red antes
+// de abrirla, que es justo lo que una descripción de cuatro palabras no
+// alcanza a decir.
+//
+// Va estático a propósito. Las alternativas eran seis `fetch` en el
+// primer paint de la pantalla que debe cargar al instante, o acoplar el
+// estado vacío a los JSON. A cambio hay que evitar la deriva:
+// `tests/examples.test.js` recalcula el censo desde los JSON y falla si
+// alguno de estos mapas deja de coincidir.
+export const EJEMPLOS = [
+  { key: "small_lan",         nombre: "LAN pequeña",    desc: "Router, switch y PCs",
+    comp: { router: 1, switch: 1, pc: 2 } },
+  { key: "home_network",      nombre: "Red doméstica",  desc: "Lo que tienes en casa",
+    comp: { router: 1, ap: 1, pc: 4, server: 1 } },
+  { key: "data_center",       nombre: "Data center",    desc: "Servidores y core",
+    comp: { firewall: 1, switch: 2, server: 6 } },
+  { key: "red_industrial",    nombre: "Industrial",     desc: "PLC, robot y AGV",
+    comp: { firewall: 1, router: 1, switch: 1, plc: 2, ur3: 1, agv: 2, server: 1, pc: 1, ap: 1 } },
+  { key: "campus",            nombre: "Campus",         desc: "Varios edificios",
+    comp: { cloud: 1, router: 1, switch: 4, ap: 3, pc: 5, server: 1 } },
+  { key: "este_proyecto",     nombre: "Este proyecto",  desc: "La arquitectura de Capa 8",
+    comp: { cloud: 4, router: 1, switch: 1, pc: 3 } },
 ];
-const VISIBLES_INICIALMENTE = 6;
 
 function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, c => (
@@ -88,20 +103,17 @@ const bloqueDescribe = () => `
   </form>
   <p class="es-ask-hint">Por ejemplo: «una red de oficina con un router, un switch y 3 PCs»</p>`;
 
-const tarjeta = (e, oculta) => `
-  <button class="es-card${oculta ? " es-card--extra" : ""}" type="button"
-          data-example="${esc(e.key)}"${oculta ? " hidden" : ""}>
+const tarjeta = e => `
+  <button class="es-card" type="button" data-example="${esc(e.key)}">
     <span class="es-card-name">${esc(e.nombre)}</span>
     <span class="es-card-desc">${esc(e.desc)}</span>
+    ${compDots(e.comp)}
   </button>`;
 
 const bloqueEjemplos = () => `
   <div class="es-gallery">
-    ${EJEMPLOS.map((e, i) => tarjeta(e, i >= VISIBLES_INICIALMENTE)).join("")}
-  </div>
-  <button class="es-more" type="button" id="es-more">
-    Ver las ${EJEMPLOS.length} topologías →
-  </button>`;
+    ${EJEMPLOS.map(tarjeta).join("")}
+  </div>`;
 
 /**
  * @param {Object} deps
@@ -125,13 +137,6 @@ export function createEmptyState({ container, onDescribe, onLoadExample }) {
   });
 
   container.addEventListener("click", async e => {
-    const more = e.target.closest("#es-more");
-    if (more) {
-      container.querySelectorAll(".es-card--extra").forEach(el => { el.hidden = false; });
-      more.remove();
-      return;
-    }
-
     const card = e.target.closest("[data-example]");
     if (!card) return;
     card.disabled = true;
@@ -164,7 +169,10 @@ export function createEmptyState({ container, onDescribe, onLoadExample }) {
         ${segundo}
         <p class="es-draw">
           o dibújala tú:
-          <kbd>R</kbd> router · <kbd>S</kbd> switch · <kbd>P</kbd> PC · <kbd>L</kbd> enlace
+          <kbd data-type="router">R</kbd> <span class="type-ink" data-type="router">router</span> ·
+          <kbd data-type="switch">S</kbd> <span class="type-ink" data-type="switch">switch</span> ·
+          <kbd data-type="pc">P</kbd> <span class="type-ink" data-type="pc">PC</span> ·
+          <kbd>L</kbd> enlace
         </p>
       </div>`;
     container.hidden = false;

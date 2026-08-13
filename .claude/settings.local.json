@@ -50,7 +50,18 @@
       "PowerShell(cd \"E:\\\\20_UNI\\\\Html proyects\\\\Claude proyect Capa8\\\\capa8_app\"; foreach \\($f in @\\(\"src\\\\ui\\\\terminalPanel.js\",\"src\\\\ui\\\\inspectorPanel.js\",\"src\\\\ui\\\\menuBar.js\",\"src\\\\render\\\\typePalette.js\"\\)\\) { node --check $f; if \\($?\\) { \"OK  $f\" } })",
       "Artifact",
       "PowerShell(cd \"E:\\\\20_UNI\\\\Html proyects\\\\Claude proyect Capa8\\\\capa8_app\"; Get-ChildItem bench -Recurse | Select-Object @{n='Ruta';e={$_.FullName.Replace\\(\\(Get-Location\\).Path+'\\\\',''\\)}}, Length | Format-Table -AutoSize)",
-      "PowerShell(try { \\(Invoke-WebRequest -Uri \"http://127.0.0.1:11434/api/tags\" -UseBasicParsing -TimeoutSec 6\\).Content | ConvertFrom-Json | ForEach-Object { $_.models } | Select-Object name, size | Format-Table -AutoSize } catch { \"Ollama no responde: \" + $_.Exception.Message })"
+      "PowerShell(try { \\(Invoke-WebRequest -Uri \"http://127.0.0.1:11434/api/tags\" -UseBasicParsing -TimeoutSec 6\\).Content | ConvertFrom-Json | ForEach-Object { $_.models } | Select-Object name, size | Format-Table -AutoSize } catch { \"Ollama no responde: \" + $_.Exception.Message })",
+      "Bash(git restore *)",
+      "Bash(awk '{print $1, $4}')",
+      "Bash(git commit *)",
+      "Bash(git fetch *)",
+      "Bash(git rebase *)",
+      "Bash(git stash *)",
+      "Bash(git push *)",
+      "Bash(git show *)",
+      "Bash(grep -n 'html\\\\[data-theme=\"light\"\\\\], \\\\|^:root\\\\[data-theme=\"light\"\\\\]\\\\|data-theme=\"light\"\\\\] {' style.css)",
+      "Bash(python \"C:/Users/sebas/.claude/skills/sebs-brand/scripts/audit.py\" style.css)",
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:3000/assets/img/favicon.png?v=2\" -UseBasicParsing; \"$\\($r.StatusCode\\) $\\($r.Headers['Content-Type']\\) $\\($r.RawContentLength\\) bytes\")"
     ]
   }
 }

@@ -47,8 +47,10 @@ export const MENUS = [
       { key: "whiteBg",    label: "Fondo blanco",            icon: "fa-solid fa-droplet",             shortcut: "",  action: null,               status: "Fondo alternado." },
       { key: "toggleIPs", label: "Mostrar/Ocultar IPs",     icon: "fa-solid fa-tag",                 shortcut: "I", action: "TOGGLE_IP_LABELS", status: "IPs alternadas." },
       { sep: true },
-      { key: "prettyLayout", label: "Organizar (Pretty)",   icon: "fa-solid fa-wand-magic-sparkles", shortcut: "O", action: "PRETTY_LAYOUT",    status: "Diagrama organizado." },
-      { sep: true },
+      // "Organizar (Pretty)" ya no está aquí: es un botón de la barra
+      // superior (#btn-pretty). No era un ajuste, y enterrada en un menú no
+      // la encontraba nadie.
+      { key: "presentation", label: "Modo Presentación",    icon: "fa-solid fa-presentation-screen", shortcut: "Ctrl+P", action: "TOGGLE_PRESENTATION", status: "Modo presentación." },
       { key: "presentation", label: "Modo Presentación",    icon: "fa-solid fa-presentation-screen", shortcut: "Ctrl+P", action: "TOGGLE_PRESENTATION", status: "Modo presentación." },
     ],
   },
