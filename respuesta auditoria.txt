@@ -1,0 +1,434 @@
+Sí, la diferencia clave entre ambas imágenes ya se puede expresar con bastante claridad:
+
+**Pretty organiza por categoría de dispositivo; tu acomodo organiza por secuencia de conexión y por función dentro de la topología.**
+
+En la segunda imagen, Pretty interpreta:
+
+* Ambos firewalls son `security-edge` → misma fila.
+* Ambos switches son infraestructura equivalente → misma fila.
+* Todas las computadoras son endpoints → mismo grupo inferior.
+
+Matemáticamente queda ordenado, pero visualmente pierde la historia de la red. El `FW-Interno` parece un firewall redundante del `FW-Externo`, aunque en realidad está varios saltos después. Lo mismo sucede con `SW-DMZ` y `SW-LAN`: parecen pares equivalentes, no etapas diferentes.
+
+Tu imagen manual se entiende mejor porque permite leer:
+
+**Internet → FW externo → DMZ → FW interno → LAN**
+
+Y alrededor de ese recorrido coloca las ramas correspondientes:
+
+* Servidores alrededor de la DMZ.
+* Computadoras alrededor de la LAN.
+
+Eso coincide exactamente con el problema principal identificado en la auditoría: el tier actual depende demasiado del rol fijo del dispositivo y no de su posición real dentro del recorrido de la red. 
+
+## El modelo que yo propondría
+
+No intentaría seguir agregando excepciones al sistema actual de tiers. Cambiaría el principio central por uno más sencillo:
+
+> **Pretty debe representar primero el orden topológico de la red y después utilizar el tipo de dispositivo para decidir cómo agrupar y acomodar sus ramas.**
+
+Lo llamaría:
+
+## Layout jerárquico compacto basado en flujo
+
+No significa que siempre vaya completamente de arriba hacia abajo. Significa que la lectura principal sigue un orden reconocible, pero el camino puede doblarse lateralmente para no crear un diagrama excesivamente alto.
+
+---
+
+# 1. La profundidad debe venir de las conexiones, no del tipo
+
+Actualmente un firewall siempre tiende a ocupar el nivel de firewall, aunque se encuentre después de otro firewall, un switch y varios saltos adicionales.
+
+La nueva regla debería ser:
+
+> Cuando dos dispositivos de infraestructura están conectados secuencialmente, el segundo debe aparecer visualmente después del primero.
+
+En términos sencillos:
+
+* Internet está antes que el firewall externo.
+* El firewall externo está antes que el switch DMZ.
+* El switch DMZ está antes que el firewall interno.
+* El firewall interno está antes que el switch LAN.
+* El switch LAN está antes que las computadoras.
+
+El tipo de nodo todavía importa, pero ya no decide su posición vertical absoluta. Serviría para:
+
+* Reconocer qué nodos son infraestructura.
+* Saber cuáles son endpoints.
+* Detectar servidores, firewalls, switches o access points.
+* Elegir entre fila, matriz, arco o pareja redundante.
+* Aplicar estilos y agrupaciones.
+
+### Regla fundamental
+
+**Dos nodos conectados directamente no deberían colocarse en el mismo nivel solo porque son del mismo tipo o rol.**
+
+Solo podrían estar en el mismo nivel si realmente son paralelos, redundantes o equivalentes.
+
+---
+
+# 2. Definir una ruta principal o backbone visual
+
+Pretty necesita encontrar una ruta principal que explique el diagrama.
+
+En este ejemplo sería:
+
+```text
+Internet
+   ↓
+FW-Externo
+   ↓
+SW-DMZ
+   →
+FW-Interno
+   ↓
+SW-LAN
+```
+
+El camino no tiene que ser completamente vertical. Puede plegarse hacia la derecha o izquierda.
+
+La ruta principal debería seleccionarse usando, en este orden:
+
+1. La conexión desde Internet, WAN o cloud.
+2. Los nodos de infraestructura conectados sucesivamente.
+3. La rama que conduce al mayor número de dispositivos finales.
+4. La rama que contiene más infraestructura aguas abajo.
+5. Como desempate, etiquetas o identificadores estables para mantener determinismo.
+
+En el caso DMZ, desde `SW-DMZ` existen tres ramas:
+
+* Mail Server.
+* Web Server.
+* FW-Interno.
+
+Los servidores terminan inmediatamente. El firewall continúa hacia el switch LAN y posteriormente hacia tres equipos. Por lo tanto, el firewall interno debe ser reconocido como la **continuación del backbone**, no como otro hijo equivalente del switch.
+
+Ese cambio por sí solo produciría algo mucho más cercano a tu acomodo.
+
+---
+
+# 3. Permitir que el backbone se doble
+
+Una jerarquía estrictamente vertical funciona para tres o cuatro niveles, pero con cadenas largas genera diagramas demasiado altos.
+
+La solución no debería ser colocar todos los dispositivos del mismo tipo horizontalmente. La solución debería ser **plegar la ruta principal**.
+
+Regla propuesta:
+
+* Iniciar el backbone verticalmente.
+* Después de aproximadamente 3–5 dispositivos, evaluar la relación ancho/alto.
+* Si el resultado será demasiado vertical, mover la continuación a una columna lateral.
+* Continuar descendiendo desde esa nueva columna.
+* Permitir como máximo uno o dos pliegues en diagramas pequeños y medianos.
+
+En tu imagen manual sucede exactamente eso:
+
+```text
+Internet
+   ↓
+FW-Externo
+   ↓
+SW-DMZ → FW-Interno
+              ↓
+           SW-LAN
+```
+
+Esto no rompe la jerarquía. Solo la convierte en una jerarquía **plegada**.
+
+Para que la lectura sea todavía más evidente, yo colocaría `FW-Interno` ligeramente más abajo que `SW-DMZ`, quizá entre 40 y 70 píxeles. Así se conserva el ahorro vertical, pero se evita que ambos parezcan equivalentes.
+
+---
+
+# 4. Diferenciar claramente secuencia y paralelismo
+
+Esta regla debe quedar muy bien definida porque es la causa directa del problema de los firewalls.
+
+## Nodos secuenciales
+
+Dos nodos son secuenciales cuando uno conduce al otro dentro de la ruta principal.
+
+Deben aparecer:
+
+* Uno debajo del otro.
+* O el segundo abajo y a un costado.
+* Nunca perfectamente alineados como pares, salvo que el enlace represente una conexión lateral entre iguales.
+
+## Nodos paralelos
+
+Pueden colocarse en la misma fila cuando:
+
+* Comparten el mismo nodo anterior.
+* Cumplen la misma función.
+* Comparten también el mismo nodo posterior, o forman una pareja redundante comprobable.
+* Ninguno es claramente antecesor del otro.
+
+Ejemplo correcto:
+
+```text
+             ┌─ FW-A ─┐
+Internet ────┤        ├──── Core
+             └─ FW-B ─┘
+```
+
+Ejemplo incorrecto:
+
+```text
+FW-Externo    FW-Interno
+```
+
+cuando la conexión real es:
+
+```text
+FW-Externo → SW-DMZ → FW-Interno
+```
+
+Por ello, la detección de redundancia debe apoyarse principalmente en la topología compartida, no en que ambos nodos se llamen “FW”.
+
+---
+
+# 5. Las ramas no deben competir con la ruta principal
+
+Una vez identificada la ruta principal, el resto debería tratarse como ramas locales.
+
+En esta topología:
+
+* `Mail Server` y `Web Server` son ramas de `SW-DMZ`.
+* `PC-Admin`, `PC-User` y `PC-Dev` son ramas de `SW-LAN`.
+
+Las reglas serían:
+
+### Grupos pequeños de dos o tres elementos
+
+* Colocarlos en una fila compacta o abanico corto.
+* Preferentemente debajo o a un lado de su nodo padre.
+* Mantenerlos juntos.
+* No interrumpir el backbone.
+
+### Grupos grandes
+
+* Usar matriz.
+* Centrar la matriz respecto al padre.
+* Elegir columnas dinámicamente, sin limitar siempre a seis si eso genera 17 filas.
+* Mantener un ancho parecido a la zona de infraestructura relacionada.
+
+### Servidores en DMZ
+
+Los servidores podrían colocarse:
+
+* Ambos debajo y a la izquierda de `SW-DMZ`.
+* O uno debajo del otro, si no hay espacio horizontal.
+* Nunca separados de tal manera que parezcan pertenecer a otros segmentos.
+
+### Endpoints de LAN
+
+Las tres computadoras deberían quedar en una sola fila centrada debajo de `SW-LAN`.
+
+En la segunda imagen, `PC-User` termina en una segunda fila aunque solo existen tres equipos. Eso introduce una profundidad visual inexistente. Para tres endpoints, la regla debería ser siempre una sola fila, salvo que las etiquetas sean demasiado largas.
+
+---
+
+# 6. Pretty debería generar varias alternativas
+
+Actualmente, según la auditoría, el scoring compara esencialmente el resultado normal contra su espejo horizontal. No prueba una estructura realmente diferente. 
+
+Yo generaría al menos estas variantes:
+
+1. Jerarquía vertical.
+2. Jerarquía plegada hacia la derecha.
+3. Jerarquía plegada hacia la izquierda.
+4. Jerarquía horizontal, solo cuando el grafo sea mucho más ancho que profundo.
+5. Layout especial de ciclo, cuando se detecte un anillo.
+
+Después se seleccionaría la mejor mediante puntuación.
+
+No serían cinco algoritmos completamente distintos. La mayoría compartiría:
+
+* La misma ruta principal.
+* Los mismos grupos.
+* Las mismas distancias.
+* Las mismas reglas de colisión.
+
+Solo cambiaría la orientación y el punto de plegado.
+
+---
+
+# 7. El scoring debe premiar lectura, no solamente ausencia de choques
+
+El scoring actual detecta cruces, nodos cercanos y ciertas violaciones de tier, pero no mide bien la calidad global del resultado.
+
+Yo añadiría estas métricas, en este orden de importancia:
+
+1. **Cruces de enlaces.**
+2. **Enlaces atravesando nodos o etiquetas.**
+3. **Colisiones entre nodos y textos.**
+4. **Respeto al orden de la ruta principal.**
+5. **Separación clara entre grupos distintos.**
+6. **Cercanía de cada grupo con su padre.**
+7. **Relación de aspecto del diagrama.**
+8. **Área total utilizada.**
+9. **Longitud total y máxima de los enlaces.**
+10. **Simetría local de grupos repetitivos.**
+
+También incluiría una penalización específica:
+
+> Penalizar fuertemente que dos nodos conectados secuencialmente de infraestructura queden en el mismo nivel, salvo que se hayan clasificado explícitamente como pares.
+
+Eso corregiría directamente el doble firewall.
+
+---
+
+# 8. No complicaría todavía las líneas
+
+Las dos capturas muestran algo importante: las líneas rectas pueden funcionar bien cuando los nodos están bien colocados.
+
+El problema principal no es que sean líneas rectas. Es que el layout actual genera:
+
+* Diagonales innecesarias.
+* Etiquetas acumuladas.
+* Enlaces largos entre niveles artificiales.
+* Varias etiquetas concentradas debajo de un switch.
+
+Por ahora conservaría las líneas rectas y cambiaría tres cosas:
+
+### Puntos de conexión
+
+La línea debería salir del lado adecuado del nodo:
+
+* Abajo para continuaciones verticales.
+* Derecha o izquierda para ramas laterales.
+* No siempre desde el punto que resulta de unir ambos centros.
+
+### Etiquetas de enlace
+
+En tu ejemplo, tres enlaces desde `SW-LAN` producen tres etiquetas casi juntas.
+
+La regla actual reduce el ruido a partir de cuatro PCs. Yo la cambiaría por una evaluación visual:
+
+* Ocultar etiquetas cuando existan tres o más enlaces muy próximos.
+* Mostrar la etiqueta al seleccionar o pasar el cursor.
+* Mantenerla visible cuando el enlace sea único o importante.
+* Evitar que dos etiquetas ocupen la misma zona.
+
+### Enlaces paralelos
+
+Cuando existan dos conexiones muy próximas, desplazarlas unos cuantos píxeles para que no parezcan una sola.
+
+No implementaría todavía routing ortogonal complejo ni curvas Bézier. Primero comprobaría cuánto mejora el sistema solo con mejores posiciones y anchors.
+
+---
+
+# 9. Colisiones con cajas reales
+
+Pretty utiliza una separación circular aproximada, aunque los nodos contienen:
+
+* Icono.
+* Nombre.
+* IP.
+* Indicadores.
+* Etiquetas de enlace cercanas.
+
+La auditoría confirma que el algoritmo no considera realmente esas cajas visuales. 
+
+La nueva regla debería ser:
+
+> Las colisiones se resuelven entre bounding boxes, no únicamente entre centros.
+
+Además:
+
+* Unificar la distancia de Pretty y la del movimiento manual.
+* Reservar espacio adicional para etiquetas largas.
+* Después de resolver colisiones, volver a alinear los grupos tipo fila o matriz.
+* No permitir que la repulsión desarme visualmente una cuadrícula.
+
+---
+
+# 10. Casos que necesitan tratamiento propio
+
+No todo debe entrar en el mismo algoritmo jerárquico.
+
+### Cadena
+
+Colocar en secuencia, vertical o plegada.
+
+### Estrella
+
+Nodo central con hijos en fila, abanico o matriz.
+
+### Redundancia
+
+Pares en paralelo, misma profundidad.
+
+### Ciclo o anillo
+
+Distribución circular o rectangular cerrada. Nunca una fila con un enlace de regreso atravesando todo.
+
+### Malla
+
+Layout compacto basado en fuerzas o una cuadrícula optimizada, no tiers rígidos.
+
+### Nodo con dos padres
+
+Colocarlo entre ambos padres, no asignarlo únicamente al primero encontrado.
+
+### Componentes desconectados
+
+Empaquetarlos en una cuadrícula dinámica de componentes, no siempre en dos columnas.
+
+### Nodos aislados
+
+Colocarlos en una pequeña zona de “sin conexión”, con wrap en varias filas.
+
+---
+
+# Cómo debería quedar este caso concreto
+
+Yo tomaría tu primera imagen como referencia, con tres refinamientos:
+
+```text
+                    Internet
+                       │
+                  FW-Externo
+                       │
+                    SW-DMZ
+             ┌─────────┴──────────────┐
+      Mail Server   Web Server     FW-Interno
+                                        │
+                                     SW-LAN
+                              ┌─────────┼─────────┐
+                          PC-Admin   PC-User   PC-Dev
+```
+
+Pero visualmente plegado:
+
+```text
+Internet
+   │
+FW-Externo
+   │
+SW-DMZ ───────── FW-Interno
+  ╱   ╲                │
+Mail  Web            SW-LAN
+                    ╱   │   ╲
+                 Admin User  Dev
+```
+
+`FW-Interno` debería estar un poco más abajo que `SW-DMZ`, y los dos servidores deberían formar un grupo más alineado. Con eso conservarías la compacidad de tu acomodo sin perder la lectura secuencial.
+
+---
+
+# Orden de implementación recomendado
+
+Yo no intentaría corregir todo de una vez. El orden correcto sería:
+
+1. Sustituir el tier fijo por profundidad topológica.
+2. Identificar una ruta principal.
+3. Diferenciar secuencia de paralelismo.
+4. Implementar ramas locales.
+5. Crear variante vertical y variante plegada.
+6. Añadir relación de aspecto y orden de lectura al scoring.
+7. Corregir grupos de 2–3 endpoints.
+8. Cambiar la política de etiquetas de enlaces.
+9. Unificar colisiones y medir cajas reales.
+10. Después tratar anillos, mallas y dual-homing.
+
+La parte que sí conservaría del Pretty actual es su determinismo, la idempotencia, las matrices para grupos numerosos y la idea de comparar candidatos. El problema no es que el motor esté mal construido; el problema es que su regla principal actual responde **“qué tipo de dispositivo es”**, cuando debería responder primero **“qué lugar ocupa dentro de esta red”**.
